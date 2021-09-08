@@ -1,0 +1,26 @@
+<header>
+	<div class="header-outer">
+		<div class="header-upper">
+			<div class="header-logo-wrap">
+				<a class="header-logo-link" routerLink="annotation">
+					<img class="header-logo" src="assets/logo/BioDATEN_logo.png" alt="" />
+					<span class="header-text">Metadata Annotation</span>
+				</a>
+			</div>
+			<div class="header-menu-toggle-wrap">
+				<div class="header-menu-toggle">
+					<button class="header-menu-button" (click)="onClickToggleMenu()" aria-label="Toggle menu">
+						<mat-icon inline="true">menu</mat-icon>
+					  </button>
+				</div>
+			</div>
+		</div>
+
+		<div class="header-lower">
+			<div class="header-lower-navigation-wrap">
+				<span class="header-lower-navigation-label">Metadata for resource: </span>
+				<span class="header-lower-navigation-value">{{ currentView }}</span>
+			</div>
+		</div>
+	</div>
+</header>

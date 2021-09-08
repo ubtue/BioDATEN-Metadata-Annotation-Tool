@@ -1,0 +1,28 @@
+@import "../shared_variables";
+@import "../mixins";
+
+form {
+
+	label.custom-file-input {
+
+		display: inline-block;
+		width: auto;
+
+		&:focus-within {
+			@include button-hover($buttonBackgroundHover, 1px solid $buttonBackgroundHover, #fff);
+		}
+
+		@include addMarginBottom();
+
+		input[type="file"] {
+			@include hideElementAccessibilty();
+		}
+	}
+
+	.button-heading {
+		display: block;
+		margin-bottom: 2px;
+	}
+}
+
+

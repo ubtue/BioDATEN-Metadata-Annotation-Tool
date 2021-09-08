@@ -1,0 +1,115 @@
+@import "../shared_variables";
+@import "../mixins";
+
+.xsd2html2xml {
+
+	> section {
+		> fieldset {
+			border: none;
+			padding: 0;
+			margin: 0;
+		}
+	}
+
+	fieldset {
+
+		clear: both;
+		overflow: hidden;
+
+		border: 1px solid $borderGrey;
+
+		@include border-radius(3px);
+
+		legend {
+			float: left;
+			display: block;
+		}
+
+		section,
+		label {
+			clear: both;
+			overflow: hidden;
+		}
+
+		section {
+
+			> fieldset {
+
+				> section {
+
+					> button.add {
+						width: auto;
+					}
+				}
+
+			}
+
+		}
+	}
+
+	[hidden] {
+		display: none;
+	}
+
+	label {
+		display: flex;
+		flex-direction: column-reverse;
+		align-items: flex-start;
+		margin: 8px 0;
+
+		span {
+			margin-bottom: 1px;
+		}
+	}
+
+	section {
+		margin: 0;
+		@include addMarginBottom(medium);
+
+		fieldset {
+			margin: 0;
+			@include addMarginBottom(medium);
+		}
+	}
+
+
+	button {
+
+		&.add {
+			width: 100%;
+			text-align: left;
+			background: transparent;
+			border: 1px solid $borderGrey;
+			padding: 6px 8px;
+
+			@include border-radius(3px);
+		}
+
+	}
+
+	legend {
+		> button {
+			margin: 0;
+		}
+	}
+
+	button[type='submit']:before {
+		content: "OK";
+	}
+	button.add:before {
+		content: "+ ";
+	}
+	button.remove:before {
+		content: "-";
+	}
+	input[data-xsd2html2xml-duration='days'] + span:after {
+		content: " (days)";
+	}
+	input[data-xsd2html2xml-duration='minutes'] + span:after {
+		content: " (minutes)";
+	}
+
+	button[type="submit"] {
+		display: none;
+	}
+}

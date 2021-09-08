@@ -1,0 +1,9 @@
+@import '../../../../styles/shared_variables';
+
+$footerBackground: #dddddd;
+
+.footer-outer-wrap {
+	display: flex;
+
+	background: $footerBackground;
+}

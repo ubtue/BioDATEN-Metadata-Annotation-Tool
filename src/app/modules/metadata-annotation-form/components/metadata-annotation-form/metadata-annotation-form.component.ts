@@ -1,0 +1,368 @@
+import { LoadingService } from '../../../core/services/loading.service';
+import { UpdateNavigationService } from '../../../shared/services/update-navigation.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+
+import { DataTransferService } from '../../../core/services/data-transfer.service';
+import { ElementRef } from '@angular/core';
+
+@Component({
+	selector: 'app-metadata-annotation-form',
+	templateUrl: './metadata-annotation-form.component.html',
+	styleUrls: ['./metadata-annotation-form.component.scss'],
+})
+
+export class MetadataAnnotationFormComponent implements OnInit {
+
+	currentTab: string = '';
+	saveEnabled: boolean = false;
+
+	@ViewChild('formResultDatacite') formResultDatacite!: ElementRef;
+	@ViewChild('formResultPremis') formResultPremis!: ElementRef;
+	@ViewChild('formResultBiodatenMinimal')
+	formResultBiodatenMinimal!: ElementRef;
+	@ViewChild('formResultCustom') formResultCustom!: ElementRef;
+	@ViewChild('inputFileSingleTemplate') inputFileSingleTemplate!: ElementRef;
+	@ViewChild('inputFileSingleXML') inputFileSingleXML!: ElementRef;
+
+	constructor(private dataTransferService: DataTransferService,
+				private updateNavigationService: UpdateNavigationService,
+				public loadingService: LoadingService) {}
+
+	ngOnInit(): void {
+		this.currentTab = 'datacite';
+
+		this.updateNavigationService.updateCurrentView("LIVE");
+	}
+
+
+	/**
+	 * onClickTab
+	 * @param tabName
+	 */
+	onClickTab(tabName: string): void {
+		this.activateTab(tabName);
+	}
+
+
+	/**
+	 * onClickTest
+	 */
+	onClickTest(): void {
+		this.updateNavigationService.updateCurrentView("TEST");
+	}
+
+
+	/**
+	 * onClickLoadScheme
+	 * @param scheme
+	 */
+	onClickLoadScheme(scheme: string): void {
+		this.loadSingleScheme(scheme);
+	}
+
+
+	/**
+	 * onClickSave
+	 */
+	onClickSave():void {
+		console.log('Saving the data...');
+
+		if ( document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml') ) {
+			console.log((window as any).htmlToXML(document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml')));
+		}
+
+
+	}
+
+	/**
+	 * onClickReset
+	 */
+	onClickReset(): void {
+		window.location.reload();
+	}
+
+
+	/**
+	 * onChangeFileInput
+	 * @param input
+	 */
+	onChangeFileInput(input: HTMLInputElement) {
+		this.setCustomFileTitle(input);
+	}
+
+	/**
+	 * onSubmitSingleFile
+	 */
+	onSubmitSingleFile(): void {
+
+		let fileTemplate = this.inputFileSingleTemplate.nativeElement
+			.files[0] as File;
+
+		let fileXML = this.inputFileSingleXML.nativeElement.files[0] as File;
+
+		this.loadSingleSchemeByFile(fileTemplate, fileXML);
+
+	}
+
+
+	/**
+	 * activateTab
+	 *
+	 * handles the navigation of the tabs
+	 *
+	 * @param tabName
+	 */
+	private activateTab(tabName: string): void {
+
+		// Declare all variables
+		let i, tabcontent, tablinks;
+
+		// Get all elements with class="tabcontent" and hide them
+		tabcontent = document.getElementsByClassName('tabcontent');
+		for (i = 0; i < tabcontent.length; i++) {
+			tabcontent[i].classList.remove('active');
+		}
+
+		// Get all elements with class="tablinks" and remove the class "active"
+		tablinks = document.getElementsByClassName('tablink');
+		for (i = 0; i < tablinks.length; i++) {
+			tablinks[i].className = tablinks[i].className.replace(
+				' active',
+				''
+			);
+		}
+
+		// Show the current tab, and add an "active" class to the button that opened the tab
+		document
+			.querySelector('div.tabcontent[data-tab="' + tabName + '"]')
+			?.classList.add('active');
+		document
+			.querySelector('button.tablink[data-tab="' + tabName + '"]')
+			?.classList.add('active');
+
+		this.currentTab = tabName;
+
+		// update the save button state
+		this.updateSaveButton();
+	}
+
+
+	/**
+	 * updateSaveButton
+	 *
+	 * checks if the save button should be enabled
+	 */
+	private updateSaveButton(): void {
+
+		if ( document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml') ) {
+			this.saveEnabled = true;
+		} else {
+			this.saveEnabled = false;
+		}
+
+	}
+
+	/**
+	 * loadSingleScheme
+	 *
+	 * loads a single predefined scheme
+	 *
+	 * @param scheme
+	 */
+	private loadSingleScheme(scheme: string): void {
+
+		console.log('Getting form data from service for scheme ' + scheme + '...');
+
+		// get the selected scheme from the server
+		this.dataTransferService
+			.getData('http://localhost:8080/xsdnojs/' + scheme, 'json')
+			.then((result: any) => {
+				console.log('Result from getting data for ' + scheme);
+
+				let resultElement;
+
+				switch ( scheme ) {
+
+					case 'biodatenMinimal':
+						resultElement = this.formResultBiodatenMinimal;
+						break;
+
+					case 'premis':
+						resultElement = this.formResultPremis;
+						break;
+
+					case 'datacite':
+						resultElement = this.formResultDatacite;
+						break;
+
+					default:
+						resultElement = this.formResultCustom;
+				}
+
+
+
+				resultElement.nativeElement.innerHTML = this.customizeHTML(result['html']);
+
+				this.removeDoubleLegends(resultElement.nativeElement);
+
+				// load the js file and execute the code
+				this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
+					((resultFile: any) => {
+
+						eval(resultFile);
+
+						const event = new Event('ubtuejk');
+						window.dispatchEvent(event);
+
+						// update the save button state
+						this.updateSaveButton();
+
+					})
+				);
+			});
+	}
+
+
+	/**
+	 * loadSingleSchemeByFile
+	 *
+	 * loads a single scheme by file
+	 *
+	 * @param fileTemplate
+	 * @param fileXML
+	 */
+	private loadSingleSchemeByFile(fileTemplate: File, fileXML?: File): void {
+
+		if (fileTemplate) {
+			console.log(
+				'Parsing data at server for template file "' +
+					fileTemplate.name +
+					'"...'
+			);
+
+			const formData: FormData = new FormData();
+			formData.append('file', fileTemplate, fileTemplate.name);
+
+
+			// check if there is an xml file to fill the inputs
+			if (fileXML) {
+				formData.append('fileXML', fileXML, fileXML.name);
+			} else {
+				formData.append('fileXML', '');
+			}
+
+			// send the files to the server for parsing
+			this.dataTransferService
+				.postData('http://localhost:8080/xsdnojs', formData)
+				.then((result: any) => {
+					console.log('Parsing complete!');
+
+					let currentTabContent: any | null = document.querySelector(
+						'div.tabcontent[data-tab="custom"]'
+					);
+
+					currentTabContent.innerHTML = this.customizeHTML(result['html']);
+
+					// load the jsfile an execute the code
+					this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
+						((resultFile: any) => {
+
+							resultFile = resultFile.replaceAll('<<REPLACE>>','custom');
+							eval(resultFile);
+
+							const event = new Event('ubtuejk');
+							window.dispatchEvent(event);
+
+							// update the save button state
+							this.updateSaveButton();
+
+						})
+					);
+
+					this.activateTab('custom');
+				});
+			}
+	}
+
+
+	/**
+	 * setCustomFileTitle
+	 *
+	 * sets the title of the custom file input label to the filename
+	 *
+	 * @param input
+	 */
+	private setCustomFileTitle(input: HTMLInputElement) {
+
+		// get the parent label and check if it exists
+		let parentLabel = input.closest('label.custom-file-input');
+
+		if ( parentLabel ) {
+
+			// search for the span with the title
+			let spanTitle = parentLabel.querySelector('.custom-file-input-title');
+
+			if ( spanTitle ) {
+
+				// remove C:\fakepath\ from filename
+				let filename = input.value.replace(/C:\\fakepath\\/, '');
+
+				spanTitle.innerHTML = filename;
+			}
+		}
+	}
+
+
+	/**
+	 * customizeHTML
+	 *
+	 * modifies the html for better use
+	 *
+	 * @param htmlString
+	 * @returns
+	 */
+	private customizeHTML(htmlString: string): string {
+
+		// add novalidate to the form /*TODO*/
+		htmlString = htmlString.replace('<form', '<form novalidate');
+
+		return htmlString;
+	}
+
+
+	/**
+	 * removeDoubleLegends
+	 *
+	 * removes spans if the previous legend is the exact same text
+	 *
+	 * @param rootElement
+	 */
+	private removeDoubleLegends(rootElement: HTMLElement): void {
+
+		let labelSpans = rootElement.querySelectorAll('label > span');
+
+		if ( labelSpans.length ) {
+
+			labelSpans.forEach((labelSpan) => {
+
+				let parentLegend = labelSpan.closest('label')?.parentNode?.querySelector('legend');
+
+				if ( parentLegend ) {
+
+					if ( parentLegend.innerHTML.includes(labelSpan.innerHTML) ) {
+						labelSpan.remove();
+					}
+				}
+			});
+		}
+	}
+
+
+	/**
+	 * debug
+	 * @param input
+	 */
+	debug(input: any): void {
+		console.log(input.closest('label').querySelector('span.custom-file-input-title'));
+	}
+}

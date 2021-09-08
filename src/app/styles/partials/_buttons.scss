@@ -1,0 +1,42 @@
+@import "../shared_variables";
+@import "../mixins";
+
+button,
+input[type="button"],
+input[type="file"],
+input[type="submit"],
+label {
+
+	&:disabled {
+		background: $buttonBackgroundDisabled !important;
+		border: 1px solid $buttonBorderDisabled !important;
+		color: $buttonColorDisabled !important;
+
+		cursor: default !important;
+	}
+
+	&.biodaten-button {
+
+		background: $buttonBackground;
+		border: 1px solid $buttonBorder;
+		color: $textColor;
+		padding: 6px 16px;
+
+		@include border-radius(3px);
+
+		&:hover, &:active, .tab_focus &:focus {
+			@include button-hover($buttonBackgroundHover, 1px solid $buttonBackgroundHover, #fff);
+		}
+
+		&[hover] {
+			cursor: pointer;
+		}
+	}
+}
+
+label {
+
+	&.biodaten-button {
+		padding: 4px 16px;
+	}
+}

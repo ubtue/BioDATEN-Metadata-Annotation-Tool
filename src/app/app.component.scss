@@ -1,0 +1,17 @@
+.side-nav-wrap-container {
+	background: #fff;
+
+	.side-nav-content {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+
+		.main-content {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+		}
+	}
+}
+
+

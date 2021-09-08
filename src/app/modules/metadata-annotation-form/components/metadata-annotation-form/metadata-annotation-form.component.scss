@@ -1,0 +1,95 @@
+@import '../../../../styles/mixins';
+@import '../../../../styles/shared_variables';
+
+/* GENERAL */
+
+/* MENU */
+$menuWidth: 240px;
+$menuBackground: #f8f8f8;
+
+:host {
+	display: flex;
+	flex: 1;
+}
+
+.metadata-annotation-form-outer-wrap {
+
+	display: flex;
+	flex: 1;
+
+	.metadata-annotation-form-menu-wrap {
+
+		flex: 0 0 $menuWidth;
+
+		background: $menuBackground;
+
+		border-right: 1px solid $borderGrey;
+
+		.metadata-annotation-form-menu {
+
+			display: flex;
+			flex-direction: column;
+
+			.metadata-annotation-form-menu-schemes {
+				display: flex;
+				flex-direction: column;
+
+				button {
+					background: none;
+					border: none;
+					text-align: left;
+
+					padding: 24px 20px;
+
+					cursor: pointer;
+
+					&.active {
+						background: $navigationGrey;
+						color: #fff;
+					}
+
+					&:hover, .tab_focus &:focus {
+						background: lighten($navigationGrey, 10%);
+						color: #fff;
+					}
+				}
+			}
+
+			.metadata-annotation-form-menu-buttons {
+				display: flex;
+				justify-content: space-evenly;
+
+				margin-top: 20px;
+			}
+		}
+	}
+
+	.metadata-annotation-form-content-wrap {
+
+		flex: 1;
+
+		padding: 30px;
+
+		.content-block {
+
+			/* Style the tab content */
+			&.tabcontent {
+				display: none;
+
+				&.active {
+					display: block;
+				}
+			}
+
+			form.parse-single-file {
+				input[type="file"] {
+					@include addMarginBottom();
+				}
+
+				div.form-submit {
+					margin-top: 20px;
+				}
+			}
+		}
+	}
+}
