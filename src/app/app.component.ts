@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
 
 	ngOnInit():void {
 
-		// subscribe to the toggleMenu observable
+		// Subscribe to the toggleMenu observable
 		this.currentMenuTogglesubscription = this.updateNavigationService.currentMenuToggle.subscribe((manualToggle: boolean) => {
 
 			if ( manualToggle ) {
@@ -28,14 +28,14 @@ export class AppComponent implements OnInit {
 
 		});
 
-		// add tab_focus to body if content is browsed with tab key
+		// Add tab_focus to body if content is browsed with tab key
 		document.body.addEventListener('keydown', function(event) {
 			if ( event.key === 'Tab' ) {
 				document.body.classList.add('tab_focus');
 			}
 		});
 
-		// remove tab_focus if mouse is used
+		// Remove tab_focus if mouse is used
 		document.body.addEventListener('mousedown', function(event) {
 			document.body.classList.remove('tab_focus');
 		});
@@ -44,7 +44,7 @@ export class AppComponent implements OnInit {
 	/**
 	 * getCurrentMenuToggle
 	 *
-	 * return the current toggle state of the menu
+	 * Return the current toggle state of the menu
 	 *
 	 * @returns
 	 */
@@ -56,7 +56,7 @@ export class AppComponent implements OnInit {
 	/**
 	 * setCurrentMenuToggle
 	 *
-	 * set the current toggle state of the menu
+	 * Set the current toggle state of the menu
 	 *
 	 * @param show
 	 */

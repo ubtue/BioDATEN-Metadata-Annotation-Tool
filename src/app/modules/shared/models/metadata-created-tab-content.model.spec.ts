@@ -1,7 +1,7 @@
 import { MetadataCreatedTabContent } from './metadata-created-tab-content.model';
 
 describe('MetadataCreatedTabContent', () => {
-	it('should create an instance', () => {
-		expect(new MetadataCreatedTabContent()).toBeTruthy();
+	it('should be defined', () => {
+		expect(MetadataCreatedTabContent).toBeDefined();
 	});
 });

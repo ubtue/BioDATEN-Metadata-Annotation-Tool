@@ -1,4 +1,7 @@
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { LoadingService } from 'src/app/modules/core/services/loading.service';
 import { MetadataAnnotationFormTestComponent } from './metadata-annotation-form-test.component';
 
 
@@ -9,6 +12,9 @@ describe('MetadataAnnotationFormTestComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			declarations: [MetadataAnnotationFormTestComponent],
+			imports: [HttpClientModule],
+			providers: [LoadingService],
+			schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 		}).compileComponents();
 	});
 

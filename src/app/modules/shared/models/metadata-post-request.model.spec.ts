@@ -1,7 +1,7 @@
 import { MetadataPostRequest } from './metadata-post-request.model';
 
 describe('MetadataPostRequest', () => {
-	it('should create an instance', () => {
-		expect(new MetadataPostRequest()).toBeTruthy();
+	it('should be defined', () => {
+		expect(MetadataPostRequest).toBeDefined();
 	});
 });

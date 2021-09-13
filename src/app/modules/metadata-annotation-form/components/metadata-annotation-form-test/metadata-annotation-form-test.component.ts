@@ -4,6 +4,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { DataTransferService } from '../../../core/services/data-transfer.service';
 import { ElementRef } from '@angular/core';
+import { HelperService } from 'src/app/modules/core/services/helper.service';
 
 @Component({
 	selector: 'app-metadata-annotation-form-test',
@@ -26,7 +27,8 @@ export class MetadataAnnotationFormTestComponent implements OnInit {
 
 	constructor(private dataTransferService: DataTransferService,
 				private updateNavigationService: UpdateNavigationService,
-				public loadingService: LoadingService) {}
+				public loadingService: LoadingService,
+				private helperService: HelperService) {}
 
 	ngOnInit(): void {
 		this.currentTab = 'datacite';
@@ -209,9 +211,10 @@ export class MetadataAnnotationFormTestComponent implements OnInit {
 				this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
 					((resultFile: any) => {
 
+						resultFile = resultFile.replaceAll('<<REPLACE_FULL>>', scheme).replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(scheme));
 						eval(resultFile);
 
-						const event = new Event('ubtuejk');
+						const event = new Event('load' + this.helperService.removeFileExtension(scheme));
 						window.dispatchEvent(event);
 
 						// update the save button state
@@ -267,10 +270,11 @@ export class MetadataAnnotationFormTestComponent implements OnInit {
 					this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
 						((resultFile: any) => {
 
-							resultFile = resultFile.replaceAll('<<REPLACE>>','custom');
+							resultFile = resultFile.replaceAll('<<REPLACE_FULL>>', fileTemplate.name).replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(fileTemplate.name));
 							eval(resultFile);
 
-							const event = new Event('ubtuejk');
+							// Dispatch the custom event to trigger the code
+							const event = new Event('load' + this.helperService.removeFileExtension(fileTemplate.name));
 							window.dispatchEvent(event);
 
 							// update the save button state

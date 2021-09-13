@@ -701,9 +701,13 @@ window['xsd2html2xml']["<<REPLACE>>"].setValues = function () {
 
 /* XML GENERATORS */
 
-window['xsd2html2xml']["<<REPLACE>>"].htmlToXML = function (root) {
+window['xsd2html2xml']["<<REPLACE>>"].htmlToXML = function (root, contentOnly) {
 	var namespaces = [];
 	var prefixes = [];
+
+	if ( typeof contentOnly === 'undefined' ) {
+		contentOnly = false;
+	}
 
 	root
 		.querySelectorAll(
@@ -773,10 +777,19 @@ window['xsd2html2xml']["<<REPLACE>>"].htmlToXML = function (root) {
 		);
 	});
 
-	return String.fromCharCode(60)
-		.concat('?xml version="1.0"?')
-		.concat(String.fromCharCode(62))
-		.concat(window['xsd2html2xml']["<<REPLACE>>"].getXML(root, false, namespaceString.trim()));
+	// Check if only the content of xml should be returned
+	if ( contentOnly ) {
+
+		return window['xsd2html2xml']["<<REPLACE>>"].getXML(root, false, namespaceString.trim());
+
+	} else {
+		return String.fromCharCode(60)
+			.concat('?xml version="1.0"?')
+			.concat(String.fromCharCode(62))
+			.concat(window['xsd2html2xml']["<<REPLACE>>"].getXML(root, false, namespaceString.trim()));
+	}
+
+
 };
 
 window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly, namespaceString) {
@@ -938,7 +951,7 @@ window['xsd2html2xml']["<<REPLACE>>"].globalValuesMap = [];
 
 window['xsd2html2xml']["<<REPLACE>>"].eventListenerLoad = function() {
 
-	window['xsd2html2xml']["<<REPLACE>>"]['selector'] = document.querySelector(window.TABCONTENT_SELECTOR_STRING + ' span[data-scheme-file="<<REPLACE>>"').closest(TABCONTENT_SELECTOR_STRING);
+	window['xsd2html2xml']["<<REPLACE>>"]['selector'] = document.querySelector(window.TABCONTENT_SELECTOR_STRING + ' span[data-scheme-file="<<REPLACE_FULL>>"').closest(TABCONTENT_SELECTOR_STRING);
 
 	/* INITIAL CALLS */
 	window['xsd2html2xml']["<<REPLACE>>"].addHiddenFields();

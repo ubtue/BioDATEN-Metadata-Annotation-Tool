@@ -7,6 +7,8 @@ import { MetadataCreatedTab } from './../../../shared/models/metadata-created-ta
 import { LoadingService } from '../../../core/services/loading.service';
 import { UpdateNavigationService } from '../../../shared/services/update-navigation.service';
 import { MetadataCreatedTabContent } from 'src/app/modules/shared/models/metadata-created-tab-content.model';
+import { HelperService } from 'src/app/modules/core/services/helper.service';
+import { HtmlHelperService } from 'src/app/modules/core/services/html-helper.service';
 
 @Component({
 	selector: 'app-metadata-annotation-form-test',
@@ -31,7 +33,9 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 
 	constructor(private dataTransferService: DataTransferService,
 				private updateNavigationService: UpdateNavigationService,
-				public loadingService: LoadingService) {}
+				public loadingService: LoadingService,
+				private helperService: HelperService,
+				private htmlHelperService: HtmlHelperService) {}
 
 	ngOnInit(): void {
 		this.currentTab = 'settings';
@@ -77,7 +81,12 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 
 			let schemeFilename = document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] span[data-scheme-file]')?.getAttribute('data-scheme-file') as string;
 
-			console.log((window as any)['xsd2html2xml'][schemeFilename].htmlToXML(document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml')));
+			console.log(
+				(window as any)['xsd2html2xml'][this.helperService.removeFileExtension(schemeFilename)].htmlToXML(
+					document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml'),
+					true
+				)
+			);
 		}
 
 
@@ -96,7 +105,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	 * @param input
 	 */
 	onChangeFileInput(input: HTMLInputElement) {
-		this.setCustomFileTitle(input);
+		this.htmlHelperService.setCustomFileTitle(input);
 	}
 
 	/**
@@ -128,15 +137,13 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 		} else {
 			alert('At least one template file (xsd) needs to be selected.');
 		}
-
-
 	}
 
 
 	/**
 	 * activateTab
 	 *
-	 * handles the navigation of the tabs
+	 * Handles the navigation of the tabs
 	 *
 	 * @param tabName
 	 */
@@ -170,7 +177,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 
 		this.currentTab = tabName;
 
-		// update the save button state
+		// Update the save button state
 		this.updateSaveButton();
 	}
 
@@ -178,7 +185,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	/**
 	 * addTab
 	 *
-	 * adds a tab to the sidebar
+	 * Adds a tab to the sidebar
 	 *
 	 * @param tabName
 	 * @param tabNameDisplay
@@ -187,17 +194,17 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	private addTab(tabName: string, tabNameDisplay: string, addTabContent?: boolean): MetadataCreatedTab {
 		console.log('creating tab "' + tabNameDisplay + '" with internal name "' + tabName + '"');
 
-		// clone the template tab and add/remove specific properties
+		// Clone the template tab and add/remove specific properties
 		let clonedTab = this.templateTab.nativeElement.cloneNode(true) as HTMLElement;
 
-		// remove the tab-hidden class so the new tab is shown
+		// Remove the tab-hidden class so the new tab is shown
 		clonedTab.classList.remove('tab-hidden');
 
-		// add the correct tabName to the data and the corret display name
+		// Add the correct tabName to the data and the corret display name
 		clonedTab.setAttribute('data-tab', tabName);
 		clonedTab.innerHTML = tabNameDisplay;
 
-		// bind click event
+		// Bind click event
 		clonedTab.addEventListener('click', (event) => {
 			this.activateTab(tabName);
 		});
@@ -206,7 +213,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 
 		let tabContentElement = null;
 
-		// add tab content?
+		// Add tab content?
 		if ( addTabContent ) {
 			tabContentElement = this.addTabContent(tabName, true) as HTMLElement;
 		}
@@ -215,7 +222,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 
 		let createdTab = new MetadataCreatedTab(tabName, createdTabContent);
 
-		// add the created content to the global array
+		// Add the created content to the global array
 		this.createdTabs.push(createdTab);
 
 		return createdTab;
@@ -225,7 +232,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	/**
 	 * addTabContent
 	 *
-	 * adds a content block corresponding to a tab
+	 * Adds a content block corresponding to a tab
 	 *
 	 * @param tabName
 	 * @param returnElement
@@ -234,16 +241,16 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	private addTabContent(tabName: string, returnElement?: boolean): HTMLElement | void {
 		console.log('creating tab content for "' + tabName + '"');
 
-		// clone the template tab content and add/remove specific properties
+		// Clone the template tab content and add/remove specific properties
 		let clonedTabContent = this.templateTabContent.nativeElement.cloneNode(true) as HTMLElement;
 
-		// add the correct tabName to the data and the corret display name
+		// Add the correct tabName to the data and the corret display name
 		clonedTabContent.setAttribute('data-tab', tabName);
 		clonedTabContent.innerHTML = "TEST";
 
 		this.templateTabContent.nativeElement.parentNode.insertBefore(clonedTabContent, this.templateTabContent.nativeElement);
 
-		// can return the element if desired
+		// Can return the element if desired
 		if ( returnElement ) {
 			return clonedTabContent;
 		}
@@ -253,7 +260,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	/**
 	 * updateSaveButton
 	 *
-	 * checks if the save button should be enabled
+	 * Checks if the save button should be enabled
 	 */
 	private updateSaveButton(): void {
 
@@ -268,7 +275,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	/**
 	 * loadSingleScheme
 	 *
-	 * loads a single predefined scheme
+	 * Loads a single predefined scheme
 	 *
 	 * @param scheme
 	 */
@@ -329,7 +336,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	/**
 	 * loadMultipleSchemes
 	 *
-	 * loads multiple schemes to the page that are selected via file input
+	 * Loads multiple schemes to the page that are selected via file input
 	 *
 	 * @param filesTemplate
 	 * @param filesXML
@@ -342,56 +349,58 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 		console.log('adding content from files:');
 		console.log(filesXML);
 
-		let formDatas = this.fileListsToFormData(filesTemplate, filesXML);
+		let formDatas = this.helperService.fileListsToFormData(filesTemplate, filesXML);
 
 		let postRequests: MetadataPostRequest[] = [];
 
-		// loop through the FromDatas and create the post requests
+		// Loop through the FromDatas and create the post requests
 		formDatas.forEach((formData: FormData) => {
 			postRequests.push(new MetadataPostRequest(this.serverAddress, formData));
 		});
 
-		// send the post requests
+		// Send the post requests
 		this.dataTransferService.postDataMultiple(postRequests).then(
 			(results: MetadataServerResponse[]) => {
 
-				// loop through each result and add the content to the page
+				// Loop through each result and add the content to the page
 				results.forEach((result: MetadataServerResponse) => {
 
 					let createdTab = this.addTab(
-						this.removeFileExtension(result.scheme),
+						this.helperService.removeFileExtension(result.scheme),
 						this.mapTabNames(
-							this.removeFileExtension(result.scheme)
+							this.helperService.removeFileExtension(result.scheme)
 						),
 						true
 					);
 
 					let createdTabContent = createdTab.tabContent?.contentElement;
 
-					// if there is a content element, display the result html there
+					// If there is a content element, display the result html there
 					if ( createdTabContent ) {
 						createdTabContent.innerHTML = result.html;
-						this.removeDoubleLegends(createdTabContent);
+						this.htmlHelperService.removeDoubleLegends(createdTabContent);
 					}
 
 				});
 
 
-				// load the jsfile an execute the code
+				// Load the jsfile an execute the code
 				this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
 					((resultFile: any) => {
 
 						results.forEach((result: MetadataServerResponse) => {
 
-							let changedResultFile = resultFile.replaceAll('<<REPLACE>>', result.scheme);
+							let changedResultFile = resultFile
+								.replaceAll('<<REPLACE_FULL>>', result.scheme)
+								.replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(result.scheme))
 							eval(changedResultFile);
 
-							// dispatch the custom event to trigger the code
-							const event = new Event('load' + result.scheme);
+							// Dispatch the custom event to trigger the code
+							const event = new Event('load' + this.helperService.removeFileExtension(result.scheme));
 							window.dispatchEvent(event);
 						});
 
-						// update the save button state
+						// Update the save button state
 						this.updateSaveButton();
 
 					})
@@ -404,7 +413,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	/**
 	 * loadSingleSchemeByFile
 	 *
-	 * loads a single scheme by file
+	 * Loads a single scheme by file
 	 *
 	 * @param fileTemplate
 	 * @param fileXML
@@ -422,14 +431,14 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 			formData.append('file', fileTemplate, fileTemplate.name);
 
 
-			// check if there is an xml file to fill the inputs
+			// Check if there is an xml file to fill the inputs
 			if (fileXML) {
 				formData.append('fileXML', fileXML, fileXML.name);
 			} else {
 				formData.append('fileXML', '');
 			}
 
-			// send the files to the server for parsing
+			// Send the files to the server for parsing
 			this.dataTransferService
 				.postData('http://localhost:8080/xsdnojs', formData)
 				.then((result: any) => {
@@ -439,16 +448,16 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 						'div.tabcontent[data-tab="custom"]'
 					);
 
-					currentTabContent.innerHTML = this.customizeHTML(result['html']);
+					currentTabContent.innerHTML = this.htmlHelperService.removeFormValidation(result['html']);
 
 					// load the jsfile an execute the code
 					this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
 						((resultFile: any) => {
 
-							resultFile = resultFile.replaceAll('<<REPLACE>>','custom');
+							resultFile = resultFile.replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(fileTemplate.name));
 							eval(resultFile);
 
-							const event = new Event('ubtuejk');
+							const event = new Event('load' + this.helperService.removeFileExtension(fileTemplate.name));
 							window.dispatchEvent(event);
 
 							// update the save button state
@@ -464,211 +473,9 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 
 
 	/**
-	 * setCustomFileTitle
-	 *
-	 * sets the title of the custom file input label to the filename
-	 *
-	 * @param input
-	 */
-	private setCustomFileTitle(input: HTMLInputElement) {
-
-		// get the parent label and check if it exists
-		let parentLabel = input.closest('label.custom-file-input');
-
-		if ( parentLabel ) {
-
-			// search for the span with the title
-			let spanTitle = parentLabel.querySelector('.custom-file-input-title');
-
-			if ( spanTitle ) {
-
-				let fileNames = '';
-
-				// loop through all selected files and get the filename
-				let files: FileList | null = input.files;
-
-				for ( let i = 0; i < files!.length; i ++ ) {
-
-					fileNames+= files![i].name;
-
-					// add a , if the file is not the last
-					if ( i !== ( files!.length -1 ) ) {
-						fileNames+= ', ';
-					}
-				}
-
-				spanTitle.innerHTML = fileNames;
-			}
-		}
-	}
-
-
-	/**
-	 * customizeHTML
-	 *
-	 * modifies the html for better use
-	 *
-	 * @param htmlString
-	 * @returns
-	 */
-	private customizeHTML(htmlString: string): string {
-
-		// add novalidate to the form /*TODO*/
-		htmlString = htmlString.replace('<form', '<form novalidate');
-
-		return htmlString;
-	}
-
-
-	/**
-	 * removeFileExtension
-	 *
-	 * returns the filename without the file extension
-	 *
-	 * @param filename
-	 * @returns
-	 */
-	private removeFileExtension(filename: string): string {
-		return filename.replace(/(.*)\.(.*?)$/, "$1");
-	}
-
-
-	/**
-	 * fileListsToFormData
-	 *
-	 * converts the FileLists to FormDatas
-	 *
-	 * @param filesTemplate
-	 * @param filesXML
-	 * @returns
-	 */
-	private fileListsToFormData(filesTemplate: FileList, filesXML: FileList): FormData[] {
-
-		let formDatas: FormData[] = [];
-
-		// loop through the template files and search for matching xml files
-		for ( let i = 0; i < filesTemplate.length; i++ ) {
-
-			let formData: FormData = new FormData();
-
-			let match = false;
-
-			let currentFilenameTemplate = this.removeFileExtension(filesTemplate.item(i)?.name as string);
-
-			// add the template file to the formData
-			formData.append('file', filesTemplate.item(i) as File, filesTemplate.item(i)?.name);
-
-			for ( let j = 0; j < filesXML.length; j++ ) {
-
-				let currentFilenameXML = this.removeFileExtension(filesXML.item(j)?.name as string);
-
-				// if the template and xml match -> add XML to formData
-				if ( currentFilenameTemplate === currentFilenameXML ) {
-
-					formData.append('fileXML',  filesXML.item(j) as File,  filesXML.item(j)?.name);
-
-					match = true;
-
-					break;
-				}
-			}
-
-			// If there was no match -> no XML file in formData
-			if ( !match ) {
-				formData.append('fileXML', '');
-			}
-
-			formDatas.push(formData);
-		}
-
-		return formDatas;
-	}
-
-
-	/**
-	 * organizeFileLists
-	 *
-	 * iterates the FileLists and returns a organized array
-	 *
-	 * @param filesTemplate
-	 * @param filesXML
-	 * @returns
-	 */
-	private organizeFileLists(filesTemplate: FileList, filesXML: FileList): any[] {
-
-		let files = [];
-
-		// loop through the template files and search for matching xml files
-		for ( let i = 0; i < filesTemplate.length; i++ ) {
-
-			let match = false;
-
-			let currentFilenameTemplate = this.removeFileExtension(filesTemplate.item(i)?.name as string);
-
-			for ( let j = 0; j < filesXML.length; j++ ) {
-
-				let currentFilenameXML = this.removeFileExtension(filesXML.item(j)?.name as string);
-
-				// if the template and xml match -> save
-				if ( currentFilenameTemplate === currentFilenameXML ) {
-
-					files.push({
-						templateFile: filesTemplate.item(i),
-						xmlFile: filesXML.item(j)
-					});
-
-					match = true;
-
-					break;
-				}
-			}
-
-			// if there was no match, set xmlFile to null
-			if ( !match ) {
-
-				files.push({
-					templateFile: filesTemplate.item(i),
-					xmlFile: null
-				});
-			}
-		}
-
-		return files;
-	}
-
-
-	/**
-	 * removeDoubleLegends
-	 *
-	 * removes spans if the previous legend is the exact same text
-	 *
-	 * @param rootElement
-	 */
-	private removeDoubleLegends(rootElement: HTMLElement): void {
-
-		let labelSpans = rootElement.querySelectorAll('label > span');
-
-		if ( labelSpans.length ) {
-
-			labelSpans.forEach((labelSpan) => {
-
-				let parentLegend = labelSpan.closest('label')?.parentNode?.querySelector('legend');
-
-				if ( parentLegend ) {
-
-					if ( parentLegend.innerHTML.includes(labelSpan.innerHTML) ) {
-						labelSpan.remove();
-					}
-				}
-			});
-		}
-	}
-
-
-	/**
 	 * mapTabNames
 	 *
-	 * maps the tab names to the schemes
+	 * Maps the tab names to the schemes
 	 *
 	 * @param tabName
 	 * @returns

@@ -76,7 +76,7 @@ export class DataTransferService {
 	/**
 	 * postDataMultiple
 	 *
-	 * handles multiple POST requests and returns a single promise once all are completed
+	 * Handles multiple POST requests and returns a single promise once all are completed
 	 *
 	 * @param data
 	 * @param httpOpts
@@ -86,7 +86,7 @@ export class DataTransferService {
 
 		let promises: Promise<any>[] = [];
 
-		// gather all information and add the post requests to the promise array
+		// Gather all information and add the post requests to the promise array
 		data.forEach((dataSingle: MetadataPostRequest) => {
 			promises.push(this.postData(dataSingle.url, dataSingle.body, httpOpts));
 		});

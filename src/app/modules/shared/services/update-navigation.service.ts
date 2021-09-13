@@ -30,13 +30,13 @@ export class UpdateNavigationService {
 	/**
 	 * updateMenuToggle
 	 *
-	 * shows/hides the menu
+	 * Shows/hides the menu
 	 *
 	 * @param show
 	 */
 	updateMenuToggle(manualToggle?: boolean) {
 
-		// if the toggle is triggered manually -> toggle it normally, else close the menu
+		// If the toggle is triggered manually -> toggle it normally, else close the menu
 		if ( typeof manualToggle !== 'undefined' ) {
 			this.toggleMenuSubject.next(manualToggle);
 		} else {
