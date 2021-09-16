@@ -36,7 +36,7 @@ $menuBackground: #f8f8f8;
 				display: flex;
 				flex-direction: column;
 
-				button {
+				.tablink {
 					background: none;
 					border: none;
 					text-align: left;
@@ -53,6 +53,10 @@ $menuBackground: #f8f8f8;
 					&:hover, .tab_focus &:focus {
 						background: lighten($navigationGrey, 10%);
 						color: #fff;
+					}
+
+					&.tab-hidden {
+						display: none;
 					}
 				}
 			}
@@ -91,6 +95,10 @@ $menuBackground: #f8f8f8;
 				&.active {
 					display: block;
 				}
+			}
+
+			.content-inner-block {
+				@include addMarginBottom(large);
 			}
 
 			form.parse-single-file {

@@ -11,12 +11,12 @@ import { HelperService } from 'src/app/modules/core/services/helper.service';
 import { HtmlHelperService } from 'src/app/modules/core/services/html-helper.service';
 
 @Component({
-	selector: 'app-metadata-annotation-form-test',
-	templateUrl: './metadata-annotation-form-test-multi.component.html',
-	styleUrls: ['./metadata-annotation-form-test-multi.component.scss'],
+	selector: 'app-metadata-annotation-form-test-output',
+	templateUrl: './metadata-annotation-form-test-multi-output.component.html',
+	styleUrls: ['./metadata-annotation-form-test-multi-output.component.scss'],
 })
 
-export class MetadataAnnotationFormTestMultiComponent implements OnInit {
+export class MetadataAnnotationFormTestMultiOutputComponent implements OnInit {
 
 	serverAddress: string = 'http://localhost:8080/xsdnojs';
 
@@ -40,7 +40,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	ngOnInit(): void {
 		this.currentTab = 'settings';
 
-		this.updateNavigationService.updateCurrentView("TEST MULTI Import");
+		this.updateNavigationService.updateCurrentView("TEST MULTI Output");
 	}
 
 
@@ -77,16 +77,19 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	onClickSave():void {
 		console.log('Saving the data...');
 
-		if ( document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml') ) {
+		this.saveXMLData();
 
-			let schemeFilename = document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] span[data-scheme-file]')?.getAttribute('data-scheme-file') as string;
+		// if ( document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml') ) {
 
-			console.log(
-				(window as any)['xsd2html2xml'][this.helperService.removeFileExtension(schemeFilename)].htmlToXML(
-					document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml')
-				)
-			);
-		}
+		// 	let schemeFilename = document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] span[data-scheme-file]')?.getAttribute('data-scheme-file') as string;
+
+		// 	console.log(
+		// 		(window as any)['xsd2html2xml'][this.helperService.removeFileExtension(schemeFilename)].htmlToXML(
+		// 			document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml'),
+		// 			this.helperService.removeFileExtension(schemeFilename)
+		// 		)
+		// 	);
+		// }
 
 
 	}
@@ -470,6 +473,60 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 			}
 	}
 
+
+	/**
+	 * saveXMLData
+	 *
+	 * Saves the XML data
+	 */
+	private saveXMLData(): void {
+
+		let xmlData = this.createXMLData();
+
+		if ( xmlData ) {
+			xmlData = this.helperService.addXMLStructure(xmlData);
+
+			console.log(xmlData);
+		}
+	}
+
+
+	/**
+	 * createXMLData
+	 *
+	 * Creates the XML data from all created tabs
+	 *
+	 * @returns
+	 */
+	private createXMLData(): string {
+
+		let xmlData = '';
+
+		// Loop through every tab an save the data
+		if ( this.createdTabs.length > 0 ) {
+
+			this.createdTabs.forEach((createdTab: MetadataCreatedTab) => {
+
+				if ( createdTab.tabContent?.contentElement?.querySelector('form.xsd2html2xml') ) {
+
+					// Get the filename of the scheme
+					let schemeFilename = createdTab.tabContent?.contentElement?.querySelector('span[data-scheme-file]')?.getAttribute('data-scheme-file') as string;
+
+					if ( schemeFilename ) {
+
+						// Get the XML data of the tab
+						xmlData += (window as any)['xsd2html2xml'][this.helperService.removeFileExtension(schemeFilename)].htmlToXML(
+							createdTab.tabContent?.contentElement?.querySelector('form.xsd2html2xml'),
+							'newScheme scheme="' + this.helperService.removeFileExtension(schemeFilename) + '"',
+							'newScheme'
+						)
+					}
+				}
+			});
+		}
+
+		return xmlData;
+	}
 
 	/**
 	 * mapTabNames

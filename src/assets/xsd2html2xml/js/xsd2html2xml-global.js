@@ -1,6 +1,7 @@
 (function() {
 
 	window.TABCONTENT_SELECTOR_STRING = 'div.tabcontent';
+	window.STRUCTUTING_NODE_NAME = '_structuringNode';
 
 if ( typeof window.xsd2html2xml === 'undefined' ) {
 	window['xsd2html2xml'] = [];
@@ -701,12 +702,16 @@ window['xsd2html2xml']["<<REPLACE>>"].setValues = function () {
 
 /* XML GENERATORS */
 
-window['xsd2html2xml']["<<REPLACE>>"].htmlToXML = function (root, contentOnly) {
+window['xsd2html2xml']["<<REPLACE>>"].htmlToXML = function (root, customNodeOpening, customNodeClosing) {
 	var namespaces = [];
 	var prefixes = [];
 
-	if ( typeof contentOnly === 'undefined' ) {
-		contentOnly = false;
+	if ( typeof customNodeOpening === 'undefined' ) {
+		customNodeOpening = '';
+	}
+
+	if ( typeof customNodeClosing === 'undefined' ) {
+		customNodeClosing = '';
 	}
 
 	root
@@ -778,9 +783,16 @@ window['xsd2html2xml']["<<REPLACE>>"].htmlToXML = function (root, contentOnly) {
 	});
 
 	// Check if only the content of xml should be returned
-	if ( contentOnly ) {
+	if ( customNodeOpening !== '' && customNodeClosing !== '' ) {
 
-		return window['xsd2html2xml']["<<REPLACE>>"].getXML(root, false, namespaceString.trim());
+		return String.fromCharCode(60)
+			.concat(customNodeOpening)
+			.concat(String.fromCharCode(62))
+			.concat(window['xsd2html2xml']["<<REPLACE>>"].getXML(root, false, namespaceString.trim()))
+			.concat(String.fromCharCode(60))
+			.concat(String.fromCharCode(47))
+			.concat(customNodeClosing)
+			.concat(String.fromCharCode(62));
 
 	} else {
 		return String.fromCharCode(60)

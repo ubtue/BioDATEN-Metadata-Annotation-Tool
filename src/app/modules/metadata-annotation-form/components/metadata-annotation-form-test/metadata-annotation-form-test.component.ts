@@ -14,6 +14,8 @@ import { HelperService } from 'src/app/modules/core/services/helper.service';
 
 export class MetadataAnnotationFormTestComponent implements OnInit {
 
+	serverAddress: string = 'http://localhost:8080/xsdnojs';
+
 	currentTab: string = '';
 	saveEnabled: boolean = false;
 

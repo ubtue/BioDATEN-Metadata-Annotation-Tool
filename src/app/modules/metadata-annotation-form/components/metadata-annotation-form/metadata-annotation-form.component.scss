@@ -30,6 +30,8 @@ $menuBackground: #f8f8f8;
 			display: flex;
 			flex-direction: column;
 
+			height: 100%;
+
 			.metadata-annotation-form-menu-schemes {
 				display: flex;
 				flex-direction: column;
@@ -64,6 +66,16 @@ $menuBackground: #f8f8f8;
 				justify-content: space-evenly;
 
 				margin-top: 20px;
+			}
+
+			.metadata-annotation-form-menu-server-address {
+				margin-top: auto;
+				padding: 10px;
+
+				> span {
+					display: inline-block;
+					margin-bottom: 2px;
+				}
 			}
 		}
 	}

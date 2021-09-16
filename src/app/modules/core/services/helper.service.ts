@@ -31,15 +31,15 @@ export class HelperService {
 
 
 	/**
-	 * fileListsToFormData
+	 * fileListsToFormDataTemplate
 	 *
-	 * Converts the FileLists to FormDatas
+	 * Converts the FileLists to FormDatas for template files
 	 *
 	 * @param filesTemplate
 	 * @param filesXML
 	 * @returns
 	 */
-	 fileListsToFormData(filesTemplate: FileList, filesXML: FileList): FormData[] {
+	 fileListsToFormDataTemplate(filesTemplate: FileList, filesXML?: FileList): FormData[] {
 
 		let formDatas: FormData[] = [];
 
@@ -55,25 +55,57 @@ export class HelperService {
 			// Add the template file to the formData
 			formData.append('file', filesTemplate.item(i) as File, filesTemplate.item(i)?.name);
 
-			for ( let j = 0; j < filesXML.length; j++ ) {
+			if ( filesXML && filesXML.length > 0 ) {
 
-				let currentFilenameXML = this.removeFileExtension(filesXML.item(j)?.name as string);
+				for ( let j = 0; j < filesXML.length; j++ ) {
 
-				// If the template and xml match -> add XML to formData
-				if ( currentFilenameTemplate === currentFilenameXML ) {
+					let currentFilenameXML = this.removeFileExtension(filesXML.item(j)?.name as string);
 
-					formData.append('fileXML',  filesXML.item(j) as File,  filesXML.item(j)?.name);
+					// If the template and xml match -> add XML to formData
+					if ( currentFilenameTemplate === currentFilenameXML ) {
 
-					match = true;
+						formData.append('fileXML',  filesXML.item(j) as File,  filesXML.item(j)?.name);
 
-					break;
+						match = true;
+
+						break;
+					}
 				}
 			}
+
+
 
 			// If there was no match -> no XML file in formData
 			if ( !match ) {
 				formData.append('fileXML', '');
 			}
+
+			formDatas.push(formData);
+		}
+
+		return formDatas;
+	}
+
+
+	/**
+	 * fileListsToFormDataXML
+	 *
+	 * Converts the FileLists to FormDatas for xml files
+	 *
+	 * @param filesXML
+	 * @returns
+	 */
+	 fileListsToFormDataXML(filesXML: FileList): FormData[] {
+
+		let formDatas: FormData[] = [];
+
+		// Loop through the template files and search for matching xml files
+		for ( let i = 0; i < filesXML.length; i++ ) {
+
+			let formData: FormData = new FormData();
+
+			// Add the template file to the formData
+			formData.append('fileXML', filesXML.item(i) as File, filesXML.item(i)?.name);
 
 			formDatas.push(formData);
 		}
@@ -131,5 +163,29 @@ export class HelperService {
 		}
 
 		return files;
+	}
+
+
+	/**
+	 * addXMLStructure
+	 *
+	 * Adds the XML structure to a string
+	 *
+	 * @param xmlData
+	 * @returns
+	 */
+	addXMLStructure(xmlData: string): string {
+
+		return String.fromCharCode(60)
+			.concat('?xml version="1.0"?')
+			.concat(String.fromCharCode(62))
+			.concat(String.fromCharCode(60))
+			.concat('schemes')
+			.concat(String.fromCharCode(62))
+			.concat(xmlData)
+			.concat(String.fromCharCode(60))
+			.concat(String.fromCharCode(47))
+			.concat('schemes')
+			.concat(String.fromCharCode(62))
 	}
 }

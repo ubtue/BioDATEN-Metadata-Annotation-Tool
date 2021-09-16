@@ -11,14 +11,15 @@ import { HelperService } from 'src/app/modules/core/services/helper.service';
 import { HtmlHelperService } from 'src/app/modules/core/services/html-helper.service';
 
 @Component({
-	selector: 'app-metadata-annotation-form-test',
-	templateUrl: './metadata-annotation-form-test-multi.component.html',
-	styleUrls: ['./metadata-annotation-form-test-multi.component.scss'],
+	selector: 'app-metadata-annotation-form-test-xml-input',
+	templateUrl: './metadata-annotation-form-test-xml-input.component.html',
+	styleUrls: ['./metadata-annotation-form-test-xml-input.component.scss'],
 })
 
-export class MetadataAnnotationFormTestMultiComponent implements OnInit {
+export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
 	serverAddress: string = 'http://localhost:8080/xsdnojs';
+	serverAdressXMLInput: string = 'http://localhost:8080/xsdnojs/xml-input';
 
 	currentTab: string = '';
 	saveEnabled: boolean = false;
@@ -40,7 +41,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	ngOnInit(): void {
 		this.currentTab = 'settings';
 
-		this.updateNavigationService.updateCurrentView("TEST MULTI Import");
+		this.updateNavigationService.updateCurrentView("TEST XML Input");
 	}
 
 
@@ -77,18 +78,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	onClickSave():void {
 		console.log('Saving the data...');
 
-		if ( document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml') ) {
-
-			let schemeFilename = document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] span[data-scheme-file]')?.getAttribute('data-scheme-file') as string;
-
-			console.log(
-				(window as any)['xsd2html2xml'][this.helperService.removeFileExtension(schemeFilename)].htmlToXML(
-					document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml')
-				)
-			);
-		}
-
-
+		this.saveXMLData();
 	}
 
 	/**
@@ -107,34 +97,32 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 		this.htmlHelperService.setCustomFileTitle(input);
 	}
 
-	/**
-	 * onSubmitSingleFile
-	 */
-	onSubmitSingleFile(): void {
-
-		let fileTemplate = this.inputFilesTemplate.nativeElement
-			.files[0] as File;
-
-		let fileXML = this.inputFilesXML.nativeElement.files[0] as File;
-
-		this.loadSingleSchemeByFile(fileTemplate, fileXML);
-
-	}
-
 
 	/**
 	 * onSubmitMultipleFiles
 	 */
 	onSubmitMultipleFiles(): void {
 
-		let filesTemplate = this.inputFilesTemplate.nativeElement.files as FileList;
-
 		let filesXML = this.inputFilesXML.nativeElement.files as FileList;
 
-		if ( filesTemplate.length > 0 ) {
-			this.loadMultipleSchemes(filesTemplate, filesXML);
+		if ( filesXML.length > 0 ) {
+			this.loadSchemes(filesXML);
 		} else {
-			alert('At least one template file (xsd) needs to be selected.');
+			alert('At least one XML file needs to be selected.');
+		}
+	}
+
+	/**
+	 * onSubmitMultipleTemplates
+	 */
+	onSubmitMultipleTemplates(): void {
+
+		let templateFiles = this.inputFilesTemplate.nativeElement.files as FileList;
+
+		if ( templateFiles.length > 0 ) {
+			this.loadMultipleSchemes(templateFiles);
+		} else {
+			alert('At least one template file needs to be selected');
 		}
 	}
 
@@ -271,6 +259,82 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 
 	}
 
+
+	/**
+	 * loadSchemes
+	 *
+	 * Loads all schemes present in the given XML
+	 *
+	 * @param filesXML
+	 */
+	private loadSchemes(filesXML: FileList): void {
+
+		let formDatas = this.helperService.fileListsToFormDataXML(filesXML);
+
+		let postRequest: MetadataPostRequest;
+
+		// Take the first and only entry in formData and make the post request
+		if ( formDatas.length > 0 ) {
+			postRequest = (new MetadataPostRequest(this.serverAdressXMLInput, formDatas[0]));
+
+			// Send the post requests
+			this.dataTransferService.postData(postRequest.url, postRequest.body).then(
+				(results: any) => {
+
+					// Loop through each result and add the content to the page
+					for (const i in results) {
+						let result = results[i] as MetadataServerResponse;
+
+						console.log(result);
+
+						let createdTab = this.addTab(
+							this.helperService.removeFileExtension(result.scheme),
+							this.mapTabNames(
+								this.helperService.removeFileExtension(result.scheme)
+							),
+							true
+						);
+
+						let createdTabContent = createdTab.tabContent?.contentElement;
+
+						// If there is a content element, display the result html there
+						if ( createdTabContent ) {
+							createdTabContent.innerHTML = result.html;
+							this.htmlHelperService.removeDoubleLegends(createdTabContent);
+						}
+					}
+
+
+					// Load the jsfile an execute the code
+					this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
+						((resultFile: any) => {
+
+							for (const j in results) {
+								let result = results[j] as MetadataServerResponse;
+
+								let changedResultFile = resultFile
+									.replaceAll('<<REPLACE_FULL>>', result.scheme)
+									.replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(result.scheme));
+
+								eval(changedResultFile);
+
+								// Dispatch the custom event to trigger the code
+								const event = new Event('load' + this.helperService.removeFileExtension(result.scheme));
+								window.dispatchEvent(event);
+							};
+
+							// Update the save button state
+							this.updateSaveButton();
+
+						})
+					);
+
+
+				}
+			);
+		}
+	}
+
 	/**
 	 * loadSingleScheme
 	 *
@@ -340,7 +404,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	 * @param filesTemplate
 	 * @param filesXML
 	 */
-	private loadMultipleSchemes(filesTemplate: FileList, filesXML: FileList): void {
+	private loadMultipleSchemes(filesTemplate: FileList, filesXML?: FileList): void {
 
 		console.log('loading schemes:');
 		console.log(filesTemplate);
@@ -391,7 +455,8 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 
 							let changedResultFile = resultFile
 								.replaceAll('<<REPLACE_FULL>>', result.scheme)
-								.replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(result.scheme))
+								.replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(result.scheme));
+
 							eval(changedResultFile);
 
 							// Dispatch the custom event to trigger the code
@@ -470,6 +535,60 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 			}
 	}
 
+
+	/**
+	 * saveXMLData
+	 *
+	 * Saves the XML data
+	 */
+	private saveXMLData(): void {
+
+		let xmlData = this.createXMLData();
+
+		if ( xmlData ) {
+			xmlData = this.helperService.addXMLStructure(xmlData);
+
+			console.log(xmlData);
+		}
+	}
+
+
+	/**
+	 * createXMLData
+	 *
+	 * Creates the XML data from all created tabs
+	 *
+	 * @returns
+	 */
+	private createXMLData(): string {
+
+		let xmlData = '';
+
+		// Loop through every tab an save the data
+		if ( this.createdTabs.length > 0 ) {
+
+			this.createdTabs.forEach((createdTab: MetadataCreatedTab) => {
+
+				if ( createdTab.tabContent?.contentElement?.querySelector('form.xsd2html2xml') ) {
+
+					// Get the filename of the scheme
+					let schemeFilename = createdTab.tabContent?.contentElement?.querySelector('span[data-scheme-file]')?.getAttribute('data-scheme-file') as string;
+
+					if ( schemeFilename ) {
+
+						// Get the XML data of the tab
+						xmlData += (window as any)['xsd2html2xml'][this.helperService.removeFileExtension(schemeFilename)].htmlToXML(
+							createdTab.tabContent?.contentElement?.querySelector('form.xsd2html2xml'),
+							'newScheme scheme="' + this.helperService.removeFileExtension(schemeFilename) + '"',
+							'newScheme'
+						)
+					}
+				}
+			});
+		}
+
+		return xmlData;
+	}
 
 	/**
 	 * mapTabNames
