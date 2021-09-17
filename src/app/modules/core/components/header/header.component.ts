@@ -1,4 +1,4 @@
-import { UpdateNavigationService } from './../../../shared/services/update-navigation.service';
+import { UpdateNavigationService } from './../../../core/services/update-navigation.service';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 

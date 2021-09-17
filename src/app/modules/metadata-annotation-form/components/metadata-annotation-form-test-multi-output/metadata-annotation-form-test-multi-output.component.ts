@@ -5,10 +5,10 @@ import { MetadataPostRequest } from 'src/app/modules/shared/models/metadata-post
 import { MetadataServerResponse } from 'src/app/modules/shared/models/metadata-server-response.model';
 import { MetadataCreatedTab } from './../../../shared/models/metadata-created-tab.model';
 import { LoadingService } from '../../../core/services/loading.service';
-import { UpdateNavigationService } from '../../../shared/services/update-navigation.service';
+import { UpdateNavigationService } from '../../../core/services/update-navigation.service';
 import { MetadataCreatedTabContent } from 'src/app/modules/shared/models/metadata-created-tab-content.model';
-import { HelperService } from 'src/app/modules/core/services/helper.service';
-import { HtmlHelperService } from 'src/app/modules/core/services/html-helper.service';
+import { HelperService } from '../../../shared/services/helper.service';
+import { HtmlHelperService } from '../../../shared/services/html-helper.service';
 
 @Component({
 	selector: 'app-metadata-annotation-form-test-output',

@@ -5,8 +5,8 @@ import { MetadataPostRequest } from 'src/app/modules/shared/models/metadata-post
 import { MetadataServerResponse } from 'src/app/modules/shared/models/metadata-server-response.model';
 import { MetadataCreatedTab } from './../../../shared/models/metadata-created-tab.model';
 import { LoadingService } from '../../../core/services/loading.service';
-import { UpdateNavigationService } from '../../../shared/services/update-navigation.service';
-import { MetadataCreatedTabContent } from 'src/app/modules/shared/models/metadata-created-tab-content.model';
+import { UpdateNavigationService } from '../../../core/services/update-navigation.service';
+import { MetadataCreatedTabContent } from '../../../shared/models/metadata-created-tab-content.model';
 
 @Component({
 	selector: 'app-metadata-annotation-form',

@@ -15,13 +15,14 @@ import { SideNavComponent } from './modules/core/components/side-nav/side-nav.co
 import { LoadingInterceptor } from './modules/core/interceptors/loading.interceptor';
 import { LoadingService } from './modules/core/services/loading.service';
 import { FormsModule } from '@angular/forms';
+import { DirectivesModule } from './modules/shared/directives/directives.module';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		HeaderComponent,
 		FooterComponent,
-		SideNavComponent,
+		SideNavComponent
 	],
 	imports: [
 		BrowserModule,
@@ -31,7 +32,8 @@ import { FormsModule } from '@angular/forms';
 		BrowserAnimationsModule,
 		MatSidenavModule,
 		MatIconModule,
-		MatProgressSpinnerModule
+		MatProgressSpinnerModule,
+		DirectivesModule
 	],
 	providers: [
 		DataTransferService,

@@ -68,14 +68,27 @@ $menuBackground: #f8f8f8;
 				margin-top: 20px;
 			}
 
-			.metadata-annotation-form-menu-server-address {
+			.metadata-annotation-form-menu-settings {
 				margin-top: auto;
 				padding: 10px;
 
-				> span {
-					display: inline-block;
-					margin-bottom: 2px;
+				> div {
+
+					padding: 10px 0;
+
+					&.metadata-annotation-form-menu-autocomplete {
+						display: flex;
+						align-items: center;
+					}
+
+					> span,
+					> label {
+						display: inline-block;
+						margin-bottom: 2px;
+					}
 				}
+
+
 			}
 		}
 	}

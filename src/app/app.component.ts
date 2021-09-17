@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { UpdateNavigationService } from './modules/shared/services/update-navigation.service';
+import { UpdateNavigationService } from './modules/core/services/update-navigation.service';
 
 @Component({
 	selector: 'app-root',

@@ -37,12 +37,23 @@
 				</button>
 			</div>
 
-			<div class="metadata-annotation-form-menu-server-address">
-				<span>Processor Server Address:</span>
-				<input #inputProcessorServerAddress type="text" placeholder="Processor Server Address" [(ngModel)]="serverAddress" />
-				<span>Processor Server Address XML Parse:</span>
-				<input #inputProcessorServerAddress type="text" placeholder="Processor Server Address XML Parse" [(ngModel)]="serverAdressXMLInput" />
+			<div class="metadata-annotation-form-menu-settings" [hidden]="currentTab != 'settings'">
+
+				<div class="metadata-annotation-form-menu-server-address">
+					<span>Processor Server Address:</span>
+					<input #inputProcessorServerAddress type="text" placeholder="Processor Server Address" [(ngModel)]="serverAddress" />
+					<span>Processor Server Address XML Parse:</span>
+					<input #inputProcessorServerAddress type="text" placeholder="Processor Server Address XML Parse" [(ngModel)]="serverAdressXMLInput" />
+				</div>
+
+				<div class="metadata-annotation-form-menu-autocomplete">
+					<label for="input-activate-auto-complete">Activate autocomplete:</label>
+					<input #inputActivateAutoComplete id="input-activate-auto-complete" type="checkbox" [(ngModel)]="toggleAutoComplete" />
+				</div>
+
 			</div>
+
+
 		</div>
 	</div>
 

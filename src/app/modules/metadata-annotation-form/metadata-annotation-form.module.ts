@@ -8,9 +8,16 @@ import { MetadataAnnotationFormComponent } from './components/metadata-annotatio
 import { MetadataAnnotationFormTestMultiComponent } from './components/metadata-annotation-form-test-multi/metadata-annotation-form-test-multi.component';
 import { MetadataAnnotationFormTestMultiOutputComponent } from './components/metadata-annotation-form-test-multi-output/metadata-annotation-form-test-multi-output.component';
 import { MetadataAnnotationFormTestXmlInputComponent } from './components/metadata-annotation-form-test-xml-input/metadata-annotation-form-test-xml-input.component';
+import { DirectivesModule } from '../shared/directives/directives.module';
 
 @NgModule({
-	declarations: [MetadataAnnotationFormTestComponent, MetadataAnnotationFormComponent, MetadataAnnotationFormTestMultiComponent, MetadataAnnotationFormTestMultiOutputComponent, MetadataAnnotationFormTestXmlInputComponent],
-	imports: [CommonModule, MetadataAnnotationFormRoutingModule, FormsModule],
+	declarations: [
+		MetadataAnnotationFormTestComponent,
+		MetadataAnnotationFormComponent,
+		MetadataAnnotationFormTestMultiComponent,
+		MetadataAnnotationFormTestMultiOutputComponent,
+		MetadataAnnotationFormTestXmlInputComponent,
+	],
+	imports: [CommonModule, MetadataAnnotationFormRoutingModule, FormsModule, DirectivesModule],
 })
 export class MetadataAnnotationFormModule {}

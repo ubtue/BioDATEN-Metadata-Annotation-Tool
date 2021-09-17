@@ -5,10 +5,11 @@ import { MetadataPostRequest } from 'src/app/modules/shared/models/metadata-post
 import { MetadataServerResponse } from 'src/app/modules/shared/models/metadata-server-response.model';
 import { MetadataCreatedTab } from './../../../shared/models/metadata-created-tab.model';
 import { LoadingService } from '../../../core/services/loading.service';
-import { UpdateNavigationService } from '../../../shared/services/update-navigation.service';
+import { UpdateNavigationService } from '../../../core/services/update-navigation.service';
 import { MetadataCreatedTabContent } from 'src/app/modules/shared/models/metadata-created-tab-content.model';
-import { HelperService } from 'src/app/modules/core/services/helper.service';
-import { HtmlHelperService } from 'src/app/modules/core/services/html-helper.service';
+import { HelperService } from '../../../shared/services/helper.service';
+import { HtmlHelperService } from '../../../shared/services/html-helper.service';
+import { AutocompleteService } from '../../../shared/services/autocomplete.service';
 
 @Component({
 	selector: 'app-metadata-annotation-form-test-xml-input',
@@ -24,7 +25,11 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	currentTab: string = '';
 	saveEnabled: boolean = false;
 
+	toggleAutoComplete: boolean = false;
+
 	createdTabs: MetadataCreatedTab[] = [];
+
+	onInputTimeout: any = null;
 
 	@ViewChild('templateTab') templateTab!: ElementRef;
 	@ViewChild('templateTabContent') templateTabContent!: ElementRef;
@@ -36,7 +41,8 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				private updateNavigationService: UpdateNavigationService,
 				public loadingService: LoadingService,
 				private helperService: HelperService,
-				private htmlHelperService: HtmlHelperService) {}
+				private htmlHelperService: HtmlHelperService,
+				private autocompleteService: AutocompleteService) {}
 
 	ngOnInit(): void {
 		this.currentTab = 'settings';
@@ -281,55 +287,11 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 			this.dataTransferService.postData(postRequest.url, postRequest.body).then(
 				(results: any) => {
 
-					// Loop through each result and add the content to the page
-					for (const i in results) {
-						let result = results[i] as MetadataServerResponse;
+					// Create the tabs for all schemes
+					this.createTabsForAllSchemes(results);
 
-						console.log(result);
-
-						let createdTab = this.addTab(
-							this.helperService.removeFileExtension(result.scheme),
-							this.mapTabNames(
-								this.helperService.removeFileExtension(result.scheme)
-							),
-							true
-						);
-
-						let createdTabContent = createdTab.tabContent?.contentElement;
-
-						// If there is a content element, display the result html there
-						if ( createdTabContent ) {
-							createdTabContent.innerHTML = result.html;
-							this.htmlHelperService.removeDoubleLegends(createdTabContent);
-						}
-					}
-
-
-					// Load the jsfile an execute the code
-					this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
-						((resultFile: any) => {
-
-							for (const j in results) {
-								let result = results[j] as MetadataServerResponse;
-
-								let changedResultFile = resultFile
-									.replaceAll('<<REPLACE_FULL>>', result.scheme)
-									.replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(result.scheme));
-
-								eval(changedResultFile);
-
-								// Dispatch the custom event to trigger the code
-								const event = new Event('load' + this.helperService.removeFileExtension(result.scheme));
-								window.dispatchEvent(event);
-							};
-
-							// Update the save button state
-							this.updateSaveButton();
-
-						})
-					);
-
-
+					// Load the JS for all schemes
+					this.loadJSForAllSchemes(results);
 				}
 			);
 		}
@@ -425,49 +387,14 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 		this.dataTransferService.postDataMultiple(postRequests).then(
 			(results: MetadataServerResponse[]) => {
 
-				// Loop through each result and add the content to the page
-				results.forEach((result: MetadataServerResponse) => {
+				// Create the tabs for all schemes
+				this.createTabsForAllSchemes(results);
 
-					let createdTab = this.addTab(
-						this.helperService.removeFileExtension(result.scheme),
-						this.mapTabNames(
-							this.helperService.removeFileExtension(result.scheme)
-						),
-						true
-					);
-
-					let createdTabContent = createdTab.tabContent?.contentElement;
-
-					// If there is a content element, display the result html there
-					if ( createdTabContent ) {
-						createdTabContent.innerHTML = result.html;
-						this.htmlHelperService.removeDoubleLegends(createdTabContent);
+				// Load the JS for all schemes
+				this.loadJSForAllSchemes(results).then(
+					() => {
+						this.activateAutocomplete(this.createdTabs);
 					}
-
-				});
-
-
-				// Load the jsfile an execute the code
-				this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
-					((resultFile: any) => {
-
-						results.forEach((result: MetadataServerResponse) => {
-
-							let changedResultFile = resultFile
-								.replaceAll('<<REPLACE_FULL>>', result.scheme)
-								.replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(result.scheme));
-
-							eval(changedResultFile);
-
-							// Dispatch the custom event to trigger the code
-							const event = new Event('load' + this.helperService.removeFileExtension(result.scheme));
-							window.dispatchEvent(event);
-						});
-
-						// Update the save button state
-						this.updateSaveButton();
-
-					})
 				);
 			}
 		);
@@ -533,6 +460,136 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 					this.activateTab('custom');
 				});
 			}
+	}
+
+
+	/**
+	 * createTabsForAllSchemes
+	 *
+	 * Creates the tabs and the content elements for all fetched schemes
+	 *
+	 * @param results
+	 */
+	private createTabsForAllSchemes(results: MetadataServerResponse[]): void {
+
+		console.log(results);
+		console.log(typeof results);
+
+		// Loop through each result and add the content to the page
+		results.forEach((result: MetadataServerResponse) => {
+
+			let createdTab = this.addTab(
+				this.helperService.removeFileExtension(result.scheme),
+				this.mapTabNames(
+					this.helperService.removeFileExtension(result.scheme)
+				),
+				true
+			);
+
+			let createdTabContent = createdTab.tabContent?.contentElement;
+
+			// If there is a content element, display the result html there
+			if ( createdTabContent ) {
+				createdTabContent.innerHTML = result.html;
+				this.htmlHelperService.removeDoubleLegends(createdTabContent);
+			}
+
+		});
+	}
+
+	/**
+	 * loadJSForAllSchemes
+	 *
+	 * Loads the JS for all fetched schemes
+	 *
+	 * @param results
+	 */
+	private loadJSForAllSchemes(results: MetadataServerResponse[]): Promise<void> {
+
+		// Load the jsfile an execute the code
+		return this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
+			((resultFile: any) => {
+
+				results.forEach((result: MetadataServerResponse) => {
+
+					let changedResultFile = resultFile
+						.replaceAll('<<REPLACE_FULL>>', result.scheme)
+						.replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(result.scheme));
+
+					eval(changedResultFile);
+
+					// Dispatch the custom event to trigger the code
+					const event = new Event('load' + this.helperService.removeFileExtension(result.scheme));
+					window.dispatchEvent(event);
+				});
+
+				// Update the save button state
+				this.updateSaveButton();
+
+			})
+		);
+	}
+
+
+	/**
+	 * activateAutocomplete
+	 *
+	 * Activates the autocomplete for all content in desired tabs
+	 */
+	private activateAutocomplete(tabs: MetadataCreatedTab[]): void {
+
+		// Loop through all created tabs and bind a oninput function to the text inputs
+		tabs.forEach((tab: MetadataCreatedTab) => {
+
+			let allTextInputs = tab.tabContent?.contentElement?.querySelectorAll('input[type="text"]') as NodeList;
+
+			if ( allTextInputs && allTextInputs.length > 0 ) {
+
+				// Bind the input event and call the function for autocomplete init
+				// and hand over the text input as an argument
+				allTextInputs.forEach((textInput: Node) => {
+					textInput.addEventListener(
+						'input',
+						(event) => {
+							this.autocompleteOnInput(event.target as HTMLElement)
+						},
+						false
+					);
+				});
+			}
+
+		});
+	}
+
+
+	/**
+	 * autocompleteOnInput
+	 *
+	 * Handles the inputs on a autocomplete element
+	 *
+	 * @param event
+	 */
+	private autocompleteOnInput(input: HTMLElement): void {
+
+		// Use a timeout to make sure that the app waits at least 1.5 seconds
+		// for the code to execute so that there won't be too many requests if the user
+		// types a longer word
+		if ( this.onInputTimeout !== null ) {
+			clearTimeout(this.onInputTimeout);
+			this.onInputTimeout = null;
+		}
+
+		this.onInputTimeout = window.setTimeout(
+			() => {
+
+				// handle autocomplete for the input element
+				this.autocompleteService.handleAutocomplete(input);
+
+				// Set the variable back to null
+				this.onInputTimeout = null;
+			},
+			1500
+		);
 	}
 
 

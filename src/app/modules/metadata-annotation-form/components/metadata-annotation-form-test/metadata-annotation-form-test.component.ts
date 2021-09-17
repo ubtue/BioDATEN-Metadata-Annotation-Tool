@@ -1,10 +1,10 @@
 import { LoadingService } from '../../../core/services/loading.service';
-import { UpdateNavigationService } from '../../../shared/services/update-navigation.service';
+import { UpdateNavigationService } from '../../../core/services/update-navigation.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { DataTransferService } from '../../../core/services/data-transfer.service';
 import { ElementRef } from '@angular/core';
-import { HelperService } from 'src/app/modules/core/services/helper.service';
+import { HelperService } from '../../../shared/services/helper.service';
 
 @Component({
 	selector: 'app-metadata-annotation-form-test',
