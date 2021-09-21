@@ -291,7 +291,11 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 					this.createTabsForAllSchemes(results);
 
 					// Load the JS for all schemes
-					this.loadJSForAllSchemes(results);
+					this.loadJSForAllSchemes(results).then(
+						() => {
+							this.activateAutocomplete(this.createdTabs);
+						}
+					);
 				}
 			);
 		}
@@ -491,7 +495,9 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 			// If there is a content element, display the result html there
 			if ( createdTabContent ) {
 				createdTabContent.innerHTML = result.html;
-				this.htmlHelperService.removeDoubleLegends(createdTabContent);
+				// this.htmlHelperService.removeDoubleLegends(createdTabContent);
+				this.htmlHelperService.addSectionsInFieldset(createdTabContent);
+				this.htmlHelperService.markParentInputSections(createdTabContent);
 			}
 
 		});
@@ -541,22 +547,48 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 		// Loop through all created tabs and bind a oninput function to the text inputs
 		tabs.forEach((tab: MetadataCreatedTab) => {
 
-			let allTextInputs = tab.tabContent?.contentElement?.querySelectorAll('input[type="text"]') as NodeList;
+			// Don't select inputs that already have the event bound
+			// (There elements hat the data-autocomplete-flag attribute)
+			let allTextInputs = tab.tabContent?.contentElement?.querySelectorAll('input[type="text"]:not([data-autocomplete-flag])') as NodeList;
 
 			if ( allTextInputs && allTextInputs.length > 0 ) {
 
 				// Bind the input event and call the function for autocomplete init
 				// and hand over the text input as an argument
 				allTextInputs.forEach((textInput: Node) => {
+
+					let textInputElement = textInput as HTMLElement;
+
 					textInput.addEventListener(
 						'input',
 						(event) => {
-							this.autocompleteOnInput(event.target as HTMLElement)
+							this.autocompleteOnInput(event.target as HTMLInputElement)
 						},
 						false
 					);
+
+					// Set a flag that autocomplete was init
+					textInputElement.setAttribute('data-autocomplete-flag', 'true');
 				});
 			}
+
+			// Make sure that the newly created nodes (via add buttons)
+			// also can use the autocomplete function.
+			// The problem here is that the function cloneNode does not clone event listeners.
+			// Don't select buttons that already have the event bound
+			// (There buttons hat the data-autocomplete-flag attribute)
+			let addButtons = tab.tabContent?.contentElement?.querySelectorAll('button.add:not([data-autocomplete-flag])');
+			console.log(addButtons);
+
+			addButtons?.forEach(addButton => {
+				addButton.addEventListener('click', () => {
+					this.activateAutocomplete(this.createdTabs);
+				});
+
+				// Set a flag that autocomplete was init
+				addButton.setAttribute('data-autocomplete-flag', 'true');
+			});
+
 
 		});
 	}
@@ -569,27 +601,40 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 *
 	 * @param event
 	 */
-	private autocompleteOnInput(input: HTMLElement): void {
+	private autocompleteOnInput(input: HTMLInputElement): void {
 
-		// Use a timeout to make sure that the app waits at least 1.5 seconds
+		// If the autocomplete data for the element is not yet loaded
+		// use a timeout to make sure that the app waits at least 1.5 seconds
 		// for the code to execute so that there won't be too many requests if the user
 		// types a longer word
-		if ( this.onInputTimeout !== null ) {
-			clearTimeout(this.onInputTimeout);
-			this.onInputTimeout = null;
-		}
 
-		this.onInputTimeout = window.setTimeout(
-			() => {
+		// if ( this.autocompleteService.checkIfAutocompleteNotInit(input) ||
+		// 	 this.autocompleteService.checkIfAutocompleteInitIsInProgress(input) ) {
 
-				// handle autocomplete for the input element
-				this.autocompleteService.handleAutocomplete(input);
+		// 	if ( this.onInputTimeout !== null ) {
+		// 		clearTimeout(this.onInputTimeout);
+		// 		this.onInputTimeout = null;
+		// 	}
 
-				// Set the variable back to null
-				this.onInputTimeout = null;
-			},
-			1500
-		);
+		// 	this.onInputTimeout = window.setTimeout(
+		// 		() => {
+
+		// 			// handle autocomplete for the input element
+		// 			this.autocompleteService.handleAutocomplete(input);
+
+		// 			// Set the variable back to null
+		// 			this.onInputTimeout = null;
+		// 		},
+		// 		1500
+		// 	);
+		// } else {
+
+		// 	// handle autocomplete for the input element
+		// 	this.autocompleteService.handleAutocomplete(input);
+		// }
+
+		this.autocompleteService.handleAutocomplete(input);
+
 	}
 
 

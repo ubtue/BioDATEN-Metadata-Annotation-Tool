@@ -94,4 +94,104 @@ export class HtmlHelperService {
 			});
 		}
 	}
+
+
+	/**
+	 * addSectionsInFieldset
+	 *
+	 * Adds sections to labels directly following fieldsets
+	 *
+	 * @param rootElement
+	 */
+	addSectionsInFieldset(rootElement: HTMLElement): void {
+
+		let labelsToChange = rootElement.querySelectorAll('fieldset > label');
+
+		if ( labelsToChange.length ) {
+
+			labelsToChange.forEach((label) => {
+
+				this.wrapNode(label, document.createElement('section'));
+			});
+		}
+	}
+
+
+	/**
+	 * addSectionsInFieldset
+	 *
+	 * Adds fieldsets to labels directly following sections
+	 *
+	 * @param rootElement
+	 */
+	addFieldsetsInSections(rootElement: HTMLElement): void {
+
+		let labelsToChange = rootElement.querySelectorAll('section > label');
+
+		if ( labelsToChange.length ) {
+
+			labelsToChange.forEach((label) => {
+
+				this.wrapNode(label, document.createElement('fieldset'));
+			});
+		}
+	}
+
+
+	/**
+	 * markParentInputSections
+	 *
+	 * Sets a class to all sections that contain inputs
+	 *
+	 * @param rootElement
+	 */
+	markParentInputSections(rootElement: HTMLElement): void {
+
+		let inputs = rootElement.querySelectorAll('input:not([type="button"]), select');
+
+		if ( inputs.length ) {
+
+			inputs.forEach((input) => {
+				let closestSection = input.closest('section');
+
+				if ( !closestSection?.querySelector('fieldset') && !closestSection?.querySelector('button') ) {
+					closestSection?.classList.add('input-section');
+				}
+
+				if ( input.getAttribute('type') === 'radio' ) {
+					input.closest('label')?.classList.add('stretch');
+				}
+			});
+		}
+
+	}
+
+
+	/**
+	 * wrapNode
+	 *
+	 * Wraps a node inside another element
+	 *
+	 * @param node
+	 * @param wrapper
+	 * @returns
+	 */
+	wrapNode(node: Node, wrapper?: HTMLElement): HTMLElement {
+
+		wrapper = wrapper || document.createElement('div');
+
+		// Cache the current parent and previous sibling of the first node.
+		var parent = node.parentNode;
+		var previousSibling = node.previousSibling;
+
+		// Place node in wrapper
+		wrapper.appendChild(node);
+
+		// Place the wrapper just after the cached previousSibling,
+		// or if that is null, just before the first child.
+		var nextSibling = previousSibling ? previousSibling.nextSibling : parent!.firstChild;
+		parent!.insertBefore(wrapper, nextSibling);
+
+		return wrapper;
+	}
 }

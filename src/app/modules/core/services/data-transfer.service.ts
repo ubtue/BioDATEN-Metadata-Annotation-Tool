@@ -17,18 +17,31 @@ export class DataTransferService {
 	 * Wraps the get method for http requests
 	 *
 	 * @param url
-	 * @returns Promise
+	 * @param requestResponseType
+	 * @param skipIntercept
+	 * @returns
 	 */
-	getData(url: string, requestResponseType?: string | any): Promise<any> {
+	getData(url: string, requestResponseType?: string | any, skipIntercept?: boolean): Promise<any> {
 
 		if ( !requestResponseType ) {
 			requestResponseType = 'json';
 		}
 
-		const httpOpts = {
-			headers: new HttpHeaders().set('Accept', 'text/html').set('Content-Type', 'application/json'),
-			responseType: requestResponseType
-		};
+		let httpOpts;
+
+		if ( !skipIntercept ) {
+			httpOpts = {
+				headers: new HttpHeaders().set('Accept', 'text/html').set('Content-Type', 'application/json'),
+				responseType: requestResponseType
+			};
+		} else {
+			httpOpts = {
+				headers: new HttpHeaders().set('Accept', 'text/html').set('Content-Type', 'application/json').set('skipintercept', 'true'),
+				responseType: requestResponseType
+			};
+		}
+
+
 
 		return this.httpClient.get(url, httpOpts).toPromise();
 	}
@@ -40,14 +53,15 @@ export class DataTransferService {
 	 *
 	 * @param urls
 	 * @param requestResponseType
+	 * @param skipIntercept
 	 * @returns
 	 */
-	getDataMultiple(urls: string[], requestResponseType?: string | any): Promise<any> {
+	getDataMultiple(urls: string[], requestResponseType?: string | any, skipIntercept?: boolean): Promise<any> {
 
 		let promises: Promise<any>[] = [];
 
 		urls.forEach((url: string) => {
-			promises.push(this.getData(url, requestResponseType));
+			promises.push(this.getData(url, requestResponseType, skipIntercept));
 		});
 
 		return Promise.all(promises);

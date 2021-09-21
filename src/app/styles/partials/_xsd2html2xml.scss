@@ -14,7 +14,6 @@
 	fieldset {
 
 		clear: both;
-		overflow: hidden;
 
 		border: 1px solid $borderGrey;
 
@@ -22,16 +21,25 @@
 
 		legend {
 			float: left;
-			display: block;
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+
+			padding: 4px 0px;
+
+			width: 100%;
 		}
 
 		section,
 		label {
 			clear: both;
-			overflow: hidden;
+			position: relative;
 		}
 
 		section {
+
+			display: flex;
+			flex-direction: column;
 
 			> fieldset {
 
@@ -82,6 +90,12 @@
 			border: 1px solid $borderGrey;
 			padding: 6px 8px;
 
+			// float: left;
+			// display: block;
+			// clear: both;
+
+			align-self: flex-start;
+
 			@include border-radius(3px);
 		}
 
@@ -93,15 +107,46 @@
 		}
 	}
 
-	button[type='submit']:before {
-		content: "OK";
+
+	button {
+
+		&:hover {
+			cursor: pointer;
+		}
+
+		&[type='submit'] {
+
+			&:before {
+				content: "OK";
+			}
+		}
+
+		&.add {
+
+			&:before {
+				content: "+ ";
+			}
+		}
+
+		&.remove {
+
+			background: none;
+			border: none;
+
+			text-decoration: underline;
+
+			margin-left: 10px;
+
+			&:hover, &:active, .tab_focus &:focus {
+				/*TODO*/
+			}
+
+			&:before {
+				content: "Remove";
+			}
+		}
 	}
-	button.add:before {
-		content: "+ ";
-	}
-	button.remove:before {
-		content: "-";
-	}
+
 	input[data-xsd2html2xml-duration='days'] + span:after {
 		content: " (days)";
 	}
@@ -112,4 +157,32 @@
 	button[type="submit"] {
 		display: none;
 	}
+
+	/* FLEX */
+	// fieldset {
+	// 	display: flex;
+	// 	flex-wrap: wrap;
+
+	// 	> legend {
+	// 		flex: 100%;
+	// 	}
+
+	// 	> label {
+	// 		flex: 50%;
+
+	// 		&.stretch {
+	// 			flex: 100%;
+	// 		}
+	// 	}
+
+	// 	> section {
+
+	// 		flex: 100%;
+
+	// 		&.input-section {
+	// 			flex: 50%;
+	// 		}
+
+	// 	}
+	// }
 }

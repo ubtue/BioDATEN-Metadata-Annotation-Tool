@@ -71,7 +71,13 @@ window['xsd2html2xml']["<<REPLACE>>"].clickAddButton = function (button) {
 	newNode.removeAttribute("hidden");
 
 	newNode.querySelectorAll("input, select, textarea").forEach(function (o) {
-		if (o.closest("[hidden]") == null) o.removeAttribute("disabled");
+		if (o.closest("[hidden]") == null) {
+			o.removeAttribute("disabled");
+		}
+
+		/* CHANGE JK */
+		o.removeAttribute('data-autocomplete-flag');
+
 	});
 
 	//set a new random id for radio buttons
