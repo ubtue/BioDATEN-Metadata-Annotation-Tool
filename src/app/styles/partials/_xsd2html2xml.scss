@@ -28,6 +28,8 @@
 			padding: 4px 0px;
 
 			width: 100%;
+
+			font-weight: $fontWeightLegend;
 		}
 
 		section,
@@ -47,6 +49,8 @@
 
 					> button.add {
 						width: auto;
+
+						margin: 8px 0;
 					}
 				}
 
@@ -104,6 +108,15 @@
 	legend {
 		> button {
 			margin: 0;
+		}
+	}
+
+	input, select {
+		min-width: 340px;
+
+		&[type="radio"],
+		&[type="date"] {
+			min-width: auto;
 		}
 	}
 

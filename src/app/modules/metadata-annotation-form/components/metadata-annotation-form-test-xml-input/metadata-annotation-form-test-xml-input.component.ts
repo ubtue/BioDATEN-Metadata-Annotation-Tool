@@ -25,7 +25,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	currentTab: string = '';
 	saveEnabled: boolean = false;
 
-	toggleAutoComplete: boolean = false;
+	toggleAutoComplete: boolean = true;
 
 	createdTabs: MetadataCreatedTab[] = [];
 
@@ -632,8 +632,10 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 		// 	// handle autocomplete for the input element
 		// 	this.autocompleteService.handleAutocomplete(input);
 		// }
+		if ( this.toggleAutoComplete ) {
+			this.autocompleteService.handleAutocomplete(input);
+		}
 
-		this.autocompleteService.handleAutocomplete(input);
 
 	}
 
@@ -707,15 +709,19 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 		switch (tabName.toLowerCase()) {
 
 			case 'datacite':
-				result = 'Datacite';
+				result = 'Descriptive Metadata';
 				break;
 
 			case 'premis':
-				result = 'Premis';
+				result = 'File Metadata';
 				break;
 
 			case 'biodatenminimal':
-				result = 'BioDATEN Minimal';
+				result = 'Research Metadata';
+				break;
+
+			case 'books':
+				result = 'Rights Metadata';
 				break;
 
 			default:

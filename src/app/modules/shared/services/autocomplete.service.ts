@@ -138,6 +138,9 @@ export class AutocompleteService {
 				// Call the autocomplete function
 				this.autocomplete(inputElement, dataIndex);
 
+				// Activate the keydown handling
+				this.handleKeyDown(inputElement, dataIndex);
+
 				// Set the state of the autocomplete-init to 'done'
 				this.setAutocompleteInitStatus(
 					inputElement,
@@ -227,6 +230,90 @@ export class AutocompleteService {
 
 
 	/**
+	 * handleKeyDown
+	 *
+	 * Handles the keydown event on the input with autocomplete
+	 *
+	 * @param inputElement
+	 * @param dataIndex
+	 */
+	private handleKeyDown(inputElement: HTMLInputElement, dataIndex: number) {
+
+		inputElement.addEventListener('keydown', (event) => {
+
+			// Get the autocomplete list for the input
+			let autocompleteContainer = document.getElementById(dataIndex + '_autocomplete-list');
+
+			// Only use the handler code if the list is present.
+			// This will prevent the code influencing the behaviour of the input
+			// if there is no autocomplete data for the field or if the
+			// autocomplete has been deactivated after initialising
+			if ( autocompleteContainer ) {
+
+				let autocompleteContainerContentDIVs = autocompleteContainer.getElementsByTagName("div");
+
+				if (event.key == "ArrowDown") {
+
+					// Prevent the Cursor from moving within the input
+					event.preventDefault();
+
+					// If the arrow DOWN key is pressed,
+					// increase the currentFocus variable
+					this.currentFocus++;
+
+					// Make the current item more visible
+					this.addActive(autocompleteContainerContentDIVs);
+
+				} else if (event.key == "ArrowUp") {
+
+					// Prevent the Cursor from moving within the input
+					event.preventDefault();
+
+					// If the arrow UP key is pressed,
+					// decrease the currentFocus variable
+					this.currentFocus--;
+
+					// Make the current item more visible
+					this.addActive(autocompleteContainerContentDIVs);
+
+				} else if (event.key == "Enter") {
+
+					// If the ENTER key is pressed, prevent the form from being submitted
+					event.preventDefault();
+
+					if (this.currentFocus > -1) {
+
+						// and simulate a click on the "active" item:*/
+						if (autocompleteContainerContentDIVs) autocompleteContainerContentDIVs[this.currentFocus].click();
+					}
+				}
+			}
+
+
+		});
+	}
+
+
+	private addActive(x: HTMLCollectionOf<HTMLDivElement>): void {
+		/*a function to classify an item as "active":*/
+		if (!x) return;
+		/*start by removing the "active" class on all items:*/
+		this.removeActive(x);
+		if (this.currentFocus >= x.length) this.currentFocus = 0;
+		if (this.currentFocus < 0) this.currentFocus = (x.length - 1);
+		/*add class "autocomplete-active":*/
+		x[this.currentFocus].classList.add("autocomplete-active");
+	}
+
+	private removeActive(x: HTMLCollectionOf<HTMLDivElement>): void {
+		/*a function to remove the "active" class from all autocomplete items:*/
+		for (var i = 0; i < x.length; i++) {
+			x[i].classList.remove("autocomplete-active");
+		}
+	}
+
+
+	/**
 	 * closeAllLists
 	 *
 	 * Close all autocomplete lists in the document,
@@ -260,7 +347,8 @@ export class AutocompleteService {
 
 		let result: string[] = [];
 
-		result = data.replace(/\'/g, "").replace(/\s/g, "").split(",");
+		result = data.replace(/\'/g, "").replace(/,\s/g, ",").split(",");
+		// result = data.replace(/\'/g, "").split(",");
 
 		return result;
 	}
