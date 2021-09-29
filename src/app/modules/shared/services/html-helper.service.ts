@@ -111,7 +111,11 @@ export class HtmlHelperService {
 
 			labelsToChange.forEach((label) => {
 
-				this.wrapNode(label, document.createElement('section'));
+				let newSection = document.createElement('section') as HTMLElement;
+
+				newSection.setAttribute('data-created', 'true');
+
+				this.wrapNode(label, newSection);
 			});
 		}
 	}

@@ -283,7 +283,7 @@ export class AutocompleteService {
 
 					if (this.currentFocus > -1) {
 
-						// and simulate a click on the "active" item:*/
+						// and simulate a click on the "active" item
 						if (autocompleteContainerContentDIVs) autocompleteContainerContentDIVs[this.currentFocus].click();
 					}
 				}
@@ -294,21 +294,52 @@ export class AutocompleteService {
 	}
 
 
-	private addActive(x: HTMLCollectionOf<HTMLDivElement>): void {
-		/*a function to classify an item as "active":*/
-		if (!x) return;
-		/*start by removing the "active" class on all items:*/
-		this.removeActive(x);
-		if (this.currentFocus >= x.length) this.currentFocus = 0;
-		if (this.currentFocus < 0) this.currentFocus = (x.length - 1);
-		/*add class "autocomplete-active":*/
-		x[this.currentFocus].classList.add("autocomplete-active");
+	/**
+	 * addActive
+	 *
+	 * Add the autocomplete-active class to the active div
+	 *
+	 * @param elements
+	 * @returns
+	 */
+	private addActive(elements: HTMLCollectionOf<HTMLDivElement>): void {
+
+		// If no elements were found just return
+		if (!elements) return;
+
+		// Remove the active class from all divs
+		this.removeActive(elements);
+
+		// If the saved focus is greater or equal to the amount of elements
+		// (e.g. if the user navigates "down" from the last element)
+		// Set the focus to 0 (first element)
+		if (this.currentFocus >= elements.length) {
+			this.currentFocus = 0;
+		}
+
+		// If the focus is smaller than 0 (e.g. user navigated "up" from first element)
+		// Set the focus to the last element
+		if (this.currentFocus < 0) {
+			this.currentFocus = (elements.length - 1);
+		}
+
+		// Add the class autocomplete-active to the focused element
+		elements[this.currentFocus].classList.add("autocomplete-active");
 	}
 
-	private removeActive(x: HTMLCollectionOf<HTMLDivElement>): void {
-		/*a function to remove the "active" class from all autocomplete items:*/
-		for (var i = 0; i < x.length; i++) {
-			x[i].classList.remove("autocomplete-active");
+
+	/**
+	 * removeActive
+	 *
+	 * Removes the autocomplete-active class from the divs
+	 *
+	 * @param elements
+	 */
+	private removeActive(elements: HTMLCollectionOf<HTMLDivElement>): void {
+
+		// Loopt through all divs and remove the class autocomplete-active
+		for (var i = 0; i < elements.length; i++) {
+			elements[i].classList.remove("autocomplete-active");
 		}
 	}
 

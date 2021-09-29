@@ -811,13 +811,24 @@ window['xsd2html2xml']["<<REPLACE>>"].htmlToXML = function (root, customNodeOpen
 };
 
 window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly, namespaceString) {
+
 	var xml = "";
 	var children = [].slice.call(parent.children);
+
 	children.forEach(function (o) {
+
+		if ( o.hasAttribute('data-created') ) {
+			var oChildren = [].slice.call(o.children);
+
+			if ( oChildren.length > 0 ) {
+				o = oChildren[0];
+			}
+		}
+
 		if (!o.hasAttribute("hidden")) {
 			switch (o.getAttribute("data-xsd2html2xml-type")) {
 				case "element":
-					if (!attributesOnly)
+					if (!attributesOnly) {
 						xml = xml
 							.concat(String.fromCharCode(60))
 							.concat(o.getAttribute("data-xsd2html2xml-name"))
@@ -827,16 +838,20 @@ window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly,
 								(function () {
 									if (o.nodeName.toLowerCase() === "label") {
 										return window['xsd2html2xml']["<<REPLACE>>"].getContent(o);
-									} else return window['xsd2html2xml']["<<REPLACE>>"].getXML(o);
+									} else {
+										return window['xsd2html2xml']["<<REPLACE>>"].getXML(o);
+									}
 								})()
 							)
 							.concat(String.fromCharCode(60))
 							.concat("/")
 							.concat(o.getAttribute("data-xsd2html2xml-name"))
 							.concat(String.fromCharCode(62));
+					}
 					break;
 				case "attribute":
-					if (attributesOnly)
+					if (attributesOnly) {
+
 						if (
 							window['xsd2html2xml']["<<REPLACE>>"].getContent(o) ||
 							(o.getElementsByTagName("input").length > 0
@@ -847,7 +862,7 @@ window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly,
 										)
 										.toLowerCase() === "boolean"
 								: false)
-						)
+						) {
 							xml = xml
 								.concat(" ")
 								.concat(
@@ -856,14 +871,18 @@ window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly,
 								.concat('="')
 								.concat(window['xsd2html2xml']["<<REPLACE>>"].getContent(o))
 								.concat('"');
+						}
+					}
+
 					break;
 				case "content":
 					if (!attributesOnly) xml = xml.concat(window['xsd2html2xml']["<<REPLACE>>"].getContent(o));
 					break;
 				default:
 					if (!attributesOnly) {
-						if (!o.getAttribute("data-xsd2html2xml-choice"))
+						if (!o.getAttribute("data-xsd2html2xml-choice")) {
 							xml = xml.concat(window['xsd2html2xml']["<<REPLACE>>"].getXML(o));
+						}
 
 						if (o.getAttribute("data-xsd2html2xml-choice")) {
 							var node = o.previousElementSibling;
@@ -877,6 +896,7 @@ window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly,
 								xml = xml.concat(window['xsd2html2xml']["<<REPLACE>>"].getXML(o));
 						}
 					}
+
 					break;
 			}
 		}
