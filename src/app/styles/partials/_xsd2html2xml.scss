@@ -59,15 +59,20 @@
 		}
 	}
 
-	[hidden] {
-		display: none;
-	}
-
 	label {
 		display: flex;
 		flex-direction: column-reverse;
 		align-items: flex-start;
 		margin: 8px 0;
+
+		&.stretch {
+			flex-direction: row;
+    		align-items: stretch;
+
+			input[type="radio"] {
+				margin-right: 6px;
+			}
+		}
 
 		span {
 			margin-bottom: 1px;

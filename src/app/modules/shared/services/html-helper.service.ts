@@ -167,7 +167,6 @@ export class HtmlHelperService {
 				}
 			});
 		}
-
 	}
 
 

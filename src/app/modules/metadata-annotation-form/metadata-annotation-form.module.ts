@@ -1,3 +1,5 @@
+import { LoadingScreenModule } from './../loading-screen/loading-screen-module';
+
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -17,7 +19,8 @@ import { DirectivesModule } from '../shared/directives/directives.module';
 		MetadataAnnotationFormTestMultiComponent,
 		MetadataAnnotationFormTestMultiOutputComponent,
 		MetadataAnnotationFormTestXmlInputComponent,
+
 	],
-	imports: [CommonModule, MetadataAnnotationFormRoutingModule, FormsModule, DirectivesModule],
+	imports: [CommonModule, MetadataAnnotationFormRoutingModule, FormsModule, DirectivesModule, LoadingScreenModule],
 })
 export class MetadataAnnotationFormModule {}

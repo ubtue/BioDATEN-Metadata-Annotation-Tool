@@ -141,8 +141,10 @@ window['xsd2html2xml']["<<REPLACE>>"].clickRemoveButton = function (button) {
 		button
 			.closest("section")
 			.lastElementChild.getAttribute("data-xsd2html2xml-min")
-	)
+	) {
 		button.closest("section").lastElementChild.click();
+		alert('Item cannot be removed because at least one is required.');
+	}
 
 	if (
 		button.closest("section").children.length - 2 ==

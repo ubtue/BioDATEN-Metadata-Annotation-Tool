@@ -1,11 +1,21 @@
+import { AutocompleteData } from './../models/autocomplete-data.model';
+import { AutocompleteServerData } from '../models/autocomplete-server-data.model';
 import { HtmlHelperService } from './html-helper.service';
 import { Injectable } from '@angular/core';
 import { DataTransferService } from '../../core/services/data-transfer.service';
+import { SettingsService } from './settings.service';
+import { devOnlyGuardedExpression } from '@angular/compiler';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class AutocompleteService {
+
+	DESCRIPTION_MODE_INLINE: number = 0;
+	DESCRIPTION_MODE_POPOUT: number = 1;
+
+	descriptionMode: number = this.DESCRIPTION_MODE_INLINE;
+
 	INIT_STATUS = {
 		GET: 'getting',
 		DONE: 'done',
@@ -15,8 +25,10 @@ export class AutocompleteService {
 
 	currentFocus: number = -1;
 
+	// dummyAutocompleteSource: string =
+	// 	'assets/dummy-data/dummy-autocomplete.json';
 	dummyAutocompleteSource: string =
-		'assets/dummy-data/dummy-autocomplete.json';
+		'assets/dummy-data/vocabulary_test.json';
 	dummyAutocompleteSourceArray: string =
 		'assets/dummy-data/dummy-autocomplete-array';
 
@@ -26,7 +38,8 @@ export class AutocompleteService {
 	/**
 	 * constructor
 	 */
-	constructor(private dataTransferService: DataTransferService,
+	constructor(private settingsService: SettingsService,
+				private dataTransferService: DataTransferService,
 				private htmlHelperService: HtmlHelperService) {
 
 		// If the document click event has not been initialized
@@ -50,8 +63,11 @@ export class AutocompleteService {
 	 * @param inputElement
 	 */
 	handleAutocomplete(inputElement: HTMLInputElement): void {
-		console.log('Handling autocomplete for:');
-		console.log(inputElement);
+
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('Handling autocomplete for:');
+			console.log(inputElement);
+		}
 
 		// Check if the input already has a autocomplete initiated
 		if ( this.checkIfAutocompleteInitIsComplete(inputElement) ) {
@@ -89,8 +105,11 @@ export class AutocompleteService {
 	 * @param inputElement
 	 */
 	initNewAutocomplete(inputElement: HTMLInputElement): void {
-		console.log('Creating autocomplete for:');
-		console.log(inputElement);
+
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('Creating autocomplete for:');
+			console.log(inputElement);
+		}
 
 		// Set the state of the autocomplete-init to 'getting'
 		this.setAutocompleteInitStatus(inputElement, this.INIT_STATUS.GET);
@@ -103,22 +122,22 @@ export class AutocompleteService {
 				'data-autocomplete'
 			) as string;
 		} else {
-			// autocompleteSource = this.dummyAutocompleteSource;
-			autocompleteSource = this.dummyAutocompleteSourceArray;
+			autocompleteSource = this.dummyAutocompleteSource;
+			// autocompleteSource = this.dummyAutocompleteSourceArray;
 		}
 
 		// Get the data for the autocomplete
 		this.dataTransferService
-			.getData(autocompleteSource, "text", true)
+			.getData(autocompleteSource, "json", true)
 			.then((dataResult: any) => {
 
-				let autocompleteData: string[] = [];
+				let autocompleteData: AutocompleteData[] = [];
 
 				// Check if result is a string, an array or not (it is asumed the result is an object then)
 				if ( typeof dataResult === 'string' ) {
-					autocompleteData = this.structureDataFromString(dataResult);
+					// autocompleteData = this.structureDataFromString(dataResult);
 				} else if (Array.isArray(dataResult)) {
-					autocompleteData = this.structureDataFromArray(dataResult);
+					// autocompleteData = this.structureDataFromArray(dataResult);
 				} else {
 					autocompleteData = this.structureDataFromObject(dataResult);
 				}
@@ -173,7 +192,7 @@ export class AutocompleteService {
 			return;
 		}
 
-		let data = this.cachedAutocompleteData[dataIndex];
+		let data = this.cachedAutocompleteData[dataIndex] as AutocompleteData[];
 
 		this.currentFocus = -1;
 
@@ -195,7 +214,7 @@ export class AutocompleteService {
 
 			// Check if the item starts with the same letters as the text field value
 			if (
-				data[i].substr(0, val.length).toUpperCase() == val.toUpperCase()
+				data[i].label.substr(0, val.length).toUpperCase() == val.toUpperCase()
 			) {
 
 				// Create a DIV element for each matching element
@@ -203,12 +222,22 @@ export class AutocompleteService {
 
 				// Make the matching letters bold
 				matchingElementDIV.innerHTML =
-					'<strong>' + data[i].substr(0, val.length) + '</strong>';
+					'<strong>' + data[i].label.substr(0, val.length) + '</strong>';
 
-				matchingElementDIV.innerHTML += data[i].substr(val.length);
+				matchingElementDIV.innerHTML += data[i].label.substr(val.length);
 
 				// Insert a input field that will hold the current array item's value
 				matchingElementDIV.innerHTML += "<input type='hidden' value='" + data[i] + "'>";
+
+				// If there is a description, add it acording to settings
+				if ( data[i].description && data[i].description !== '' ) {
+
+					// Inline description
+					if ( this.descriptionMode == this.DESCRIPTION_MODE_INLINE ) {
+						matchingElementDIV.innerHTML += "<p class=\"inline-description\">" + data[i].description + "</p>";
+					}
+				}
+
 
 				let _this = this;
 
@@ -252,7 +281,7 @@ export class AutocompleteService {
 
 				let autocompleteContainerContentDIVs = autocompleteContainer.getElementsByTagName("div");
 
-				if (event.key == "ArrowDown") {
+				if (event.key === "ArrowDown") {
 
 					// Prevent the Cursor from moving within the input
 					event.preventDefault();
@@ -264,7 +293,7 @@ export class AutocompleteService {
 					// Make the current item more visible
 					this.addActive(autocompleteContainerContentDIVs);
 
-				} else if (event.key == "ArrowUp") {
+				} else if (event.key === "ArrowUp") {
 
 					// Prevent the Cursor from moving within the input
 					event.preventDefault();
@@ -276,7 +305,7 @@ export class AutocompleteService {
 					// Make the current item more visible
 					this.addActive(autocompleteContainerContentDIVs);
 
-				} else if (event.key == "Enter") {
+				} else if (event.key === "Enter") {
 
 					// If the ENTER key is pressed, prevent the form from being submitted
 					event.preventDefault();
@@ -286,7 +315,14 @@ export class AutocompleteService {
 						// and simulate a click on the "active" item
 						if (autocompleteContainerContentDIVs) autocompleteContainerContentDIVs[this.currentFocus].click();
 					}
+				} else if (event.key ==="Esc" || event.key === "Escape" ) {
+
+					// If the ESCAPE key is pressed, close the list
+					event.preventDefault();
+
+					this.closeAllLists(inputElement);
 				}
+
 			}
 
 
@@ -410,10 +446,27 @@ export class AutocompleteService {
 	 * @param data
 	 * @returns
 	 */
-	private structureDataFromObject(data: Object): string[] {
-		let result: string[] = [];
+	private structureDataFromObject(data: AutocompleteServerData): AutocompleteData[] {
 
-		result = Object.values(data);
+		let result: AutocompleteData[] = [];
+
+		// Check if results and bindings exist
+		if ( data.results !== null && data.results.bindings !== null ) {
+
+			// Loop through all bindings and get the results back
+			for ( const key in data.results.bindings ) {
+
+				const bindingsData = data.results.bindings[key];
+
+				// Get the value of the label
+				result.push({
+					identifier: bindingsData.identifier.value,
+					label: bindingsData.label.value,
+					description: bindingsData.description.value
+				});
+
+			}
+		}
 
 		return result;
 	}

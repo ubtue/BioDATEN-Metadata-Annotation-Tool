@@ -31,7 +31,6 @@
 
 @mixin addMarginBottom($spacing: default) {
 
-
 	@if $spacing == default {
 		margin-bottom: $addMarginBottomElements;
 	} @else if $spacing == medium {
@@ -57,4 +56,18 @@
 	white-space: nowrap; /* 1 */
 	clip-path: inset(50%);
 	border: 0;
+}
+
+@mixin contentPadding($padding: default) {
+
+	@if $padding == default {
+		padding: $defaultContentPadding;
+	} @else if $padding == medium {
+		padding: $mediumContentPadding;
+	} @else if $padding == large {
+		padding: $largeContentPadding;
+	} @else {
+		padding: $padding;
+	}
+
 }

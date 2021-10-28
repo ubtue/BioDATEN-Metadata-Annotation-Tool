@@ -6,6 +6,9 @@ export class LoadingService {
 	private isLoading$$ = new BehaviorSubject<boolean>(false);
 	isLoading$ = this.isLoading$$.asObservable();
 
+	private isLoadingFullscreen$$ = new BehaviorSubject<boolean>(false);
+	isLoadingFullscreen$ = this.isLoadingFullscreen$$.asObservable();
+
 	/**
 	 * constructor
 	 */
@@ -19,4 +22,14 @@ export class LoadingService {
 	setLoading(isLoading: boolean) {
 		this.isLoading$$.next(isLoading);
 	}
+
+	/**
+	 * setLoadingFullscreen
+	 * @param isLoadingFullscreen
+	 */
+	 setLoadingFullscreen(isLoadingFullscreen: boolean) {
+		this.isLoadingFullscreen$$.next(isLoadingFullscreen);
+	}
+
+
 }

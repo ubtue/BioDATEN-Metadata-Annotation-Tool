@@ -3,8 +3,28 @@ $textColor: #333333;
 $navigationGrey: #3e3e3e;
 $borderGrey: #bbbbbb;
 
+$biodatenRed: #a51e37;
+$biodatenGrey: #7d7d7d;
+$biodatenYellow: #b4a069;
+
+$altRed: #e53636;
+
+$fontSizeContent: 14px;
+
 $fontWeightLegend: 600;
 
+
+/* MENU */
+$menuWidth: 240px;
+$menuBackground: #f8f8f8;
+
+
+/* PADDING */
+$defaultContentPadding: 30px;
+$mediumContentPadding: 40px;
+$largeContentPadding: 50px;
+
+/* MARGIN */
 $addMarginBottomElements: 12px;
 $mediumMarginBottomElements: 20px;
 $largeMarginBottomElements: 28px;
@@ -17,3 +37,6 @@ $buttonBorderHover: $navigationGrey;		// #222222 bio hub
 $buttonBackgroundDisabled: #ededed;
 $buttonBorderDisabled: #bbbbbb;
 $buttonColorDisabled: #717171;
+
+
+/* TABLES */

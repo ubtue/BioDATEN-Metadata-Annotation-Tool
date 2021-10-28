@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class UpdateNavigationService {
 
-	private currentViewSubject = new BehaviorSubject("#placeholder");
+	private currentViewSubject = new BehaviorSubject({label: "#placeholderLabel", value: "#placeholderValue"});
 	currentView = this.currentViewSubject.asObservable();
 
 	private toggleMenuSubject = new BehaviorSubject(false);
@@ -22,8 +22,8 @@ export class UpdateNavigationService {
 	 *
 	 * @param currentView
 	 */
-	updateCurrentView(currentView: string) {
-		this.currentViewSubject.next(currentView);
+	updateCurrentView(currentViewLabel: string, currentViewValue: string) {
+		this.currentViewSubject.next({label: currentViewLabel, value: currentViewValue});
 	}
 
 

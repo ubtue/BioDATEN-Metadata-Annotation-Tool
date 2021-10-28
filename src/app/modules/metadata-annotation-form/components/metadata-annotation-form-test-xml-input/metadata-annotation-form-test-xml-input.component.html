@@ -1,8 +1,6 @@
 <div class="metadata-annotation-form-outer-wrap">
 	<ng-container *ngIf="loadingService.isLoading$ | async">
-		<div class="loading">
-			<img src="assets/loader/ajax-loader.gif" alt="" />
-		</div>
+		<app-loading-screen [textUpper]="'Generating form'" [textLower]="'Please wait...'"></app-loading-screen>
 	</ng-container>
 
 	<div class="metadata-annotation-form-menu-wrap">
@@ -12,6 +10,7 @@
 					data-tab="settings"
 					class="tablink active"
 					(click)="onClickTab('settings')"
+					[hidden]="hideSettings"
 				>
 					Settings
 				</button>
@@ -44,6 +43,8 @@
 					<input #inputProcessorServerAddress type="text" placeholder="Processor Server Address" [(ngModel)]="serverAddress" />
 					<span>Processor Server Address XML Parse:</span>
 					<input #inputProcessorServerAddress type="text" placeholder="Processor Server Address XML Parse" [(ngModel)]="serverAdressXMLInput" />
+					<span>Processor Server Address XML Link:</span>
+					<input #inputProcessorServerAddress type="text" placeholder="Processor Server Address XML Parse" [(ngModel)]="serverAdressXMLAddress" />
 				</div>
 
 				<div class="metadata-annotation-form-menu-autocomplete">
@@ -58,7 +59,7 @@
 	</div>
 
 	<div class="metadata-annotation-form-content-wrap">
-		<div data-tab="settings" class="content-block tabcontent active">
+		<div [hidden]="hideSettings" data-tab="settings" class="content-block tabcontent active">
 
 			<div class="content-inner-block">
 
@@ -95,6 +96,13 @@
 						<input hover class="biodaten-button" type="submit" value="Load templates" />
 					</div>
 				</form>
+
+			</div>
+
+			<div class="content-inner-block">
+
+				<span class="small-content-heading">Link to Resource:</span>
+				<a href (click)="onClickResourceLink($event)">22586-5596337946-21147</a>
 
 			</div>
 		</div>

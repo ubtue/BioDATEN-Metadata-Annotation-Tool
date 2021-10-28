@@ -10,6 +10,10 @@ import { MetadataCreatedTabContent } from 'src/app/modules/shared/models/metadat
 import { HelperService } from '../../../shared/services/helper.service';
 import { HtmlHelperService } from '../../../shared/services/html-helper.service';
 import { AutocompleteService } from '../../../shared/services/autocomplete.service';
+import { SettingsService } from 'src/app/modules/shared/services/settings.service';
+import { KeycloakService } from 'src/app/modules/core/services/keycloak.service';
+import { ActivatedRoute, Router } from '@angular/router';
+
 
 @Component({
 	selector: 'app-metadata-annotation-form-test-xml-input',
@@ -19,8 +23,10 @@ import { AutocompleteService } from '../../../shared/services/autocomplete.servi
 
 export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
-	serverAddress: string = 'http://localhost:8080/xsdnojs';
-	serverAdressXMLInput: string = 'http://localhost:8080/xsdnojs/xml-input';
+	serverAddress: string = 'http://localhost:8080/metadata/xsd';
+	serverAdressXMLInput: string = 'http://localhost:8080/metadata/xsd/xml-input';
+
+	serverAdressXMLAddress: string = 'http://localhost:8080/metadata/xsd/xml-system';
 
 	currentTab: string = '';
 	saveEnabled: boolean = false;
@@ -31,23 +37,35 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
 	onInputTimeout: any = null;
 
+	hideSettings: boolean = false;
+
 	@ViewChild('templateTab') templateTab!: ElementRef;
 	@ViewChild('templateTabContent') templateTabContent!: ElementRef;
 
 	@ViewChild('inputFilesTemplate') inputFilesTemplate!: ElementRef;
 	@ViewChild('inputFilesXML') inputFilesXML!: ElementRef;
 
-	constructor(private dataTransferService: DataTransferService,
+	constructor(private settingsService: SettingsService,
+				private dataTransferService: DataTransferService,
 				private updateNavigationService: UpdateNavigationService,
 				public loadingService: LoadingService,
 				private helperService: HelperService,
 				private htmlHelperService: HtmlHelperService,
-				private autocompleteService: AutocompleteService) {}
+				private autocompleteService: AutocompleteService,
+				private keycloakService: KeycloakService,
+				private router: Router,
+				private route: ActivatedRoute) {}
 
 	ngOnInit(): void {
 		this.currentTab = 'settings';
 
-		this.updateNavigationService.updateCurrentView("TEST XML Input");
+		this.updateNavigationService.updateCurrentView("Metadata for resource:", "");
+
+		// Check if there is an id as a GET param -> send to handler
+		if (this.route.snapshot.queryParamMap.get("id") !== null ) {
+			this.hideSettings = true;
+			this.handleGetResourceId(this.route.snapshot.queryParamMap.get("id"));
+		}
 	}
 
 
@@ -64,8 +82,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 * onClickTest
 	 */
 	onClickTest(): void {
-		this.addTab("datacite", "Datacite", true);
-		this.addTab("premis", "Premis", true);
+		this.keycloakService.biodatenLogout();
 	}
 
 
@@ -82,7 +99,10 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 * onClickSave
 	 */
 	onClickSave():void {
-		console.log('Saving the data...');
+
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('Saving the data...');
+		}
 
 		this.saveXMLData();
 	}
@@ -91,7 +111,11 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 * onClickReset
 	 */
 	onClickReset(): void {
-		window.location.reload();
+		this.router.navigate(["annotation/test-xml-input"]).then(
+			() => {
+				window.location.reload();
+			}
+		);
 	}
 
 
@@ -132,6 +156,14 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 		}
 	}
 
+	onClickResourceLink(event: Event): void {
+
+		event.preventDefault();
+
+		this.getDataByResourceId("22586-5596337946-21147");
+
+	}
+
 
 	/**
 	 * activateTab
@@ -154,10 +186,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 		// Get all elements with class="tablinks" and remove the class "active"
 		tablinks = document.getElementsByClassName('tablink');
 		for (i = 0; i < tablinks.length; i++) {
-			tablinks[i].className = tablinks[i].className.replace(
-				' active',
-				''
-			);
+			tablinks[i].classList.remove('active');
 		}
 
 		// Show the current tab, and add an "active" class to the button that opened the tab
@@ -185,7 +214,10 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 * @param addTabContent
 	 */
 	private addTab(tabName: string, tabNameDisplay: string, addTabContent?: boolean): MetadataCreatedTab {
-		console.log('creating tab "' + tabNameDisplay + '" with internal name "' + tabName + '"');
+
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('creating tab "' + tabNameDisplay + '" with internal name "' + tabName + '"');
+		}
 
 		// Clone the template tab and add/remove specific properties
 		let clonedTab = this.templateTab.nativeElement.cloneNode(true) as HTMLElement;
@@ -232,7 +264,10 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 * @returns
 	 */
 	private addTabContent(tabName: string, returnElement?: boolean): HTMLElement | void {
-		console.log('creating tab content for "' + tabName + '"');
+
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('creating tab content for "' + tabName + '"');
+		}
 
 		// Clone the template tab content and add/remove specific properties
 		let clonedTabContent = this.templateTabContent.nativeElement.cloneNode(true) as HTMLElement;
@@ -246,6 +281,20 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 		// Can return the element if desired
 		if ( returnElement ) {
 			return clonedTabContent;
+		}
+	}
+
+
+	/**
+	 * selectFirstTab
+	 *
+	 * Selects first tab (DOM hierarchy)
+	 */
+	private selectFirstTab(): void {
+
+		if ( this.createdTabs.length > 0 ) {
+			let firstTab = document.querySelector('.metadata-annotation-form-menu button[data-tab="' + this.createdTabs[0].tabName + '"]') as HTMLElement;
+			firstTab.click();
 		}
 	}
 
@@ -372,11 +421,13 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 */
 	private loadMultipleSchemes(filesTemplate: FileList, filesXML?: FileList): void {
 
-		console.log('loading schemes:');
-		console.log(filesTemplate);
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('loading schemes:');
+			console.log(filesTemplate);
 
-		console.log('adding content from files:');
-		console.log(filesXML);
+			console.log('adding content from files:');
+			console.log(filesXML);
+		}
 
 		let formDatas = this.helperService.fileListsToFormDataTemplate(filesTemplate, filesXML);
 
@@ -416,11 +467,14 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	private loadSingleSchemeByFile(fileTemplate: File, fileXML?: File): void {
 
 		if (fileTemplate) {
-			console.log(
-				'Parsing data at server for template file "' +
-					fileTemplate.name +
-					'"...'
-			);
+
+			if ( this.settingsService.enableConsoleLogs ) {
+				console.log(
+					'Parsing data at server for template file "' +
+						fileTemplate.name +
+						'"...'
+				);
+			}
 
 			const formData: FormData = new FormData();
 			formData.append('file', fileTemplate, fileTemplate.name);
@@ -468,6 +522,69 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
 
 	/**
+	 * handleGetResourceId
+	 *
+	 * Handler for the resource ID
+	 *
+	 * @param resourceId
+	 */
+	private handleGetResourceId(resourceId: string | null): void {
+
+		if ( resourceId !== null ) {
+
+			// Check if the passed resource ID is correct
+			if ( this.evaluateResourceId(resourceId) ) {
+
+				// Get the data for the passed resource ID
+				this.getDataByResourceId(resourceId);
+			}
+		}
+	}
+
+
+	/**
+	 * evaluateResourceId
+	 *
+	 * Evaluates the resource ID.
+	 *
+	 * @param resourceId
+	 * @returns
+	 */
+	private evaluateResourceId(resourceId: string): boolean {
+
+		return true;
+	}
+
+
+	/**
+	 * getDataByResourceId
+	 *
+	 * Gets metadata from server by the corresponding resource ID
+	 *
+	 * @param resourceId
+	 */
+	private getDataByResourceId(resourceId: string): void {
+
+		this.dataTransferService.getData(this.serverAdressXMLAddress).then(
+			(results: MetadataServerResponse[]) => {
+
+				// Create the tabs for all schemes
+				this.createTabsForAllSchemes(results);
+
+				// Load the JS for all schemes
+				this.loadJSForAllSchemes(results).then(
+					() => {
+						this.activateAutocomplete(this.createdTabs);
+						this.updateNavigationService.updateCurrentView("Metadata for resource:", resourceId);
+						this.selectFirstTab();
+					}
+				);
+			}
+		)
+	}
+
+
+	/**
 	 * createTabsForAllSchemes
 	 *
 	 * Creates the tabs and the content elements for all fetched schemes
@@ -476,8 +593,10 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 */
 	private createTabsForAllSchemes(results: MetadataServerResponse[]): void {
 
-		console.log(results);
-		console.log(typeof results);
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log(results);
+			console.log(typeof results);
+		}
 
 		// Loop through each result and add the content to the page
 		results.forEach((result: MetadataServerResponse) => {
@@ -496,7 +615,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 			if ( createdTabContent ) {
 				createdTabContent.innerHTML = result.html;
 				// this.htmlHelperService.removeDoubleLegends(createdTabContent);
-				this.htmlHelperService.addSectionsInFieldset(createdTabContent);
+				// this.htmlHelperService.addSectionsInFieldset(createdTabContent);
 				this.htmlHelperService.markParentInputSections(createdTabContent);
 			}
 
@@ -578,7 +697,6 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 			// Don't select buttons that already have the event bound
 			// (There buttons hat the data-autocomplete-flag attribute)
 			let addButtons = tab.tabContent?.contentElement?.querySelectorAll('button.add:not([data-autocomplete-flag])');
-			console.log(addButtons);
 
 			addButtons?.forEach(addButton => {
 				addButton.addEventListener('click', () => {
@@ -652,7 +770,9 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 		if ( xmlData ) {
 			xmlData = this.helperService.addXMLStructure(xmlData);
 
-			console.log(xmlData);
+			if ( this.settingsService.enableConsoleLogs ) {
+				console.log(xmlData);
+			}
 		}
 	}
 
@@ -720,10 +840,6 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				result = 'Research Metadata';
 				break;
 
-			case 'books':
-				result = 'Rights Metadata';
-				break;
-
 			default:
 				result = tabName;
 				break;
@@ -738,6 +854,9 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 * @param input
 	 */
 	debug(input: any): void {
-		console.log(input.closest('label').querySelector('span.custom-file-input-title'));
+
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log(input.closest('label').querySelector('span.custom-file-input-title'));
+		}
 	}
 }

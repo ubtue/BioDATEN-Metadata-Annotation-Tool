@@ -1,3 +1,4 @@
+import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -12,7 +13,7 @@ describe('MetadataAnnotationFormTestXmlInputComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ MetadataAnnotationFormTestXmlInputComponent ],
-	  imports: [HttpClientModule],
+	  imports: [HttpClientModule, FormsModule],
 	  providers: [LoadingService],
 	  schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
     })

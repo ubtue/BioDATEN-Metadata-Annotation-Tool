@@ -1,0 +1,77 @@
+@import "../../../../styles/shared_variables";
+@import "../../../../styles/mixins";
+
+.user-metadata-resource-wrap {
+
+	@include contentPadding();
+
+	.user-metadata-resource-table {
+		width: 100%;
+
+		border: 1px solid $borderGrey;
+
+		.mat-header-row {
+			background: $navigationGrey;
+
+			.mat-header-cell {
+				color: #fff;
+				font-size: $fontSizeContent;
+
+				&.mat-sort-header {
+
+					* {
+						color: #fff;
+					}
+				}
+			}
+		}
+
+		.mat-row {
+
+			.mat-cell {
+				border-bottom: 1px solid transparent;
+				border-top: 1px solid transparent;
+				cursor: pointer;
+
+				font-size: $fontSizeContent;
+			}
+
+			&:hover {
+
+				.mat-cell {
+					background: #f0f0f0;
+				}
+			}
+		}
+
+
+	}
+
+
+	.mat-paginator-outer-container {
+
+		.mat-paginator-container {
+
+			.mat-paginator-range-actions {
+
+				.mat-button-disabled {
+					border: none !important;
+					background: none !important;
+
+					.mat-button-wrapper {
+
+						svg {
+
+							path {
+								color: #a6a6a6;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
+
+

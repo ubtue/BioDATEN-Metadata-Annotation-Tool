@@ -16,7 +16,7 @@ import { MetadataCreatedTabContent } from '../../../shared/models/metadata-creat
 
 export class MetadataAnnotationFormComponent implements OnInit {
 
-	serverAddress: string = 'http://localhost:8080/xsdnojs';
+	serverAddress: string = 'http://localhost:8080/xsd';
 
 	currentTab: string = '';
 	saveEnabled: boolean = false;
@@ -36,7 +36,7 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	ngOnInit(): void {
 		this.currentTab = 'settings';
 
-		this.updateNavigationService.updateCurrentView("LIVE");
+		this.updateNavigationService.updateCurrentView("Metadata for resource:", "LIVE");
 	}
 
 

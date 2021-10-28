@@ -14,7 +14,7 @@ import { HelperService } from '../../../shared/services/helper.service';
 
 export class MetadataAnnotationFormTestComponent implements OnInit {
 
-	serverAddress: string = 'http://localhost:8080/xsdnojs';
+	serverAddress: string = 'http://localhost:8080/xsd';
 
 	currentTab: string = '';
 	saveEnabled: boolean = false;
@@ -35,7 +35,7 @@ export class MetadataAnnotationFormTestComponent implements OnInit {
 	ngOnInit(): void {
 		this.currentTab = 'datacite';
 
-		this.updateNavigationService.updateCurrentView("TEST");
+		this.updateNavigationService.updateCurrentView("Metadata for resource:", "TEST");
 	}
 
 
@@ -52,7 +52,7 @@ export class MetadataAnnotationFormTestComponent implements OnInit {
 	 * onClickTest
 	 */
 	onClickTest(): void {
-		this.updateNavigationService.updateCurrentView("TEST");
+		this.updateNavigationService.updateCurrentView("Metadata for resource:", "TEST");
 	}
 
 

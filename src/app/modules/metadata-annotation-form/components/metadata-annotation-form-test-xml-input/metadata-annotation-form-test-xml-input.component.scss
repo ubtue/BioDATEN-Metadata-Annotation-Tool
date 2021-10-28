@@ -3,9 +3,7 @@
 
 /* GENERAL */
 
-/* MENU */
-$menuWidth: 240px;
-$menuBackground: #f8f8f8;
+
 
 :host {
 	display: flex;
@@ -97,7 +95,7 @@ $menuBackground: #f8f8f8;
 
 		flex: 1;
 
-		padding: 30px;
+		@include contentPadding();
 
 		.content-block {
 
@@ -122,6 +120,10 @@ $menuBackground: #f8f8f8;
 				div.form-submit {
 					margin-top: 20px;
 				}
+			}
+
+			.small-content-heading {
+				display: block;
 			}
 		}
 	}

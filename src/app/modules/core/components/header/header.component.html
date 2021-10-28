@@ -1,25 +1,54 @@
 <header>
 	<div class="header-outer">
 		<div class="header-upper">
-			<div class="header-logo-wrap">
-				<a class="header-logo-link" routerLink="annotation">
-					<img class="header-logo" src="assets/logo/BioDATEN_logo.png" alt="" />
-					<span class="header-text">Metadata Annotation</span>
-				</a>
+			<div class="header-upper-left">
+				<div class="header-logo-wrap">
+					<a class="header-logo-link" routerLink="annotation">
+						<img class="header-logo" src="assets/logo/BioDATEN_logo.png" alt="" />
+						<span class="header-text">Metadata Annotation</span>
+					</a>
+				</div>
 			</div>
-			<div class="header-menu-toggle-wrap">
-				<div class="header-menu-toggle">
-					<button class="header-menu-button" (click)="onClickToggleMenu()" aria-label="Toggle menu">
-						<mat-icon inline="true">menu</mat-icon>
-					  </button>
+
+			<div class="header-upper-right">
+				<div #headerUserIconWrap class="header-user-icon-wrap">
+					<div class="header-user-icon">
+						<button class="header-user-icon-button" (click)="onClickUserIcon()" aria-label="Toggle user menu">
+							<mat-icon *ngIf="userIsLoggedIn">account_circle</mat-icon>
+							<mat-icon *ngIf="!userIsLoggedIn">person</mat-icon>
+						</button>
+					</div>
+					<div class="header-user-icon-menu-wrap" [ngClass]="{'show' : showUserMenu}">
+						<ul class="header-user-icon-menu">
+							<li *ngIf="!userIsLoggedIn">
+								<a href (click)="onClickLogin($event)">Login</a>
+							</li>
+							<li *ngIf="userIsLoggedIn">
+								<a routerLink="user/profile">Profile</a>
+							</li>
+							<li *ngIf="userIsLoggedIn">
+								<a routerLink="user/metadata-resources">Metadata resources</a>
+							</li>
+							<li *ngIf="userIsLoggedIn">
+								<a href (click)="onClickLogout($event)">Logout</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="header-menu-toggle-wrap">
+					<div class="header-menu-toggle">
+						<button class="header-menu-button" (click)="onClickToggleMenu()" aria-label="Toggle menu">
+							<mat-icon inline="true">menu</mat-icon>
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
 
 		<div class="header-lower">
 			<div class="header-lower-navigation-wrap">
-				<span class="header-lower-navigation-label">Metadata for resource: </span>
-				<span class="header-lower-navigation-value">{{ currentView }}</span>
+				<span class="header-lower-navigation-label">{{ currentViewLabel }}</span>
+				<span class="header-lower-navigation-value">{{ currentViewValue }}</span>
 			</div>
 		</div>
 	</div>

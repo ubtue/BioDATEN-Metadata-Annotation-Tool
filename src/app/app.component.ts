@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { UpdateNavigationService } from './modules/core/services/update-navigation.service';
+import { EventHelperService } from './modules/shared/services/event-helper.service';
 
 @Component({
 	selector: 'app-root',
@@ -13,7 +14,35 @@ export class AppComponent implements OnInit {
 
 	currentMenuTogglesubscription: Subscription = new Subscription;
 
-	constructor(private updateNavigationService: UpdateNavigationService) {}
+	constructor(private updateNavigationService: UpdateNavigationService,
+				private eventHelperService: EventHelperService) {}
+
+
+	/**
+	 * HostListener for document click on the entire page
+	 * @param event
+	 */
+	@HostListener('document:click', ['$event'])
+	documentClick(event: any): void {
+
+		// Forward the click to the event helper service with the clicked target attached
+		this.eventHelperService.triggerDocumentClick(event.target);
+
+		// Remove tab_focus if mouse is used
+		document.body.classList.remove('tab_focus');
+	}
+
+
+	/**
+	 * HostListener for document keydown (tab key) on the entire page
+	 * @param event
+	 */
+	@HostListener('document:keydown.tab', ['$event'])
+	documentTab(event: any): void {
+
+		// Add tab_focus to body if content is browsed with tab key
+		document.body.classList.add('tab_focus');
+	}
 
 	ngOnInit():void {
 
@@ -26,18 +55,6 @@ export class AppComponent implements OnInit {
 				this.setCurrentMenuToggle(false);
 			}
 
-		});
-
-		// Add tab_focus to body if content is browsed with tab key
-		document.body.addEventListener('keydown', function(event) {
-			if ( event.key === 'Tab' ) {
-				document.body.classList.add('tab_focus');
-			}
-		});
-
-		// Remove tab_focus if mouse is used
-		document.body.addEventListener('mousedown', function(event) {
-			document.body.classList.remove('tab_focus');
 		});
 	}
 

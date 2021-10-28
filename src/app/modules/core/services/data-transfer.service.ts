@@ -4,12 +4,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { MetadataPostRequest } from '../../shared/models/metadata-post-request.model';
+import { SettingsService } from '../../shared/services/settings.service';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class DataTransferService {
-	constructor(private httpClient: HttpClient) {}
+	constructor(private settingsService: SettingsService,
+				private httpClient: HttpClient) {}
 
 	/**
 	 * getData
@@ -40,8 +42,6 @@ export class DataTransferService {
 				responseType: requestResponseType
 			};
 		}
-
-
 
 		return this.httpClient.get(url, httpOpts).toPromise();
 	}

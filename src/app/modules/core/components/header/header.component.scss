@@ -1,10 +1,14 @@
 @import '../../../../styles/shared_variables';
+@import '../../../../styles/mixins';
 
 /* UPPER HEADER */
 $upperHeaderHeight: 52px;
 $upperHeaderBackground: #fff;
 
 $upperHeaderMenuIconSize: 30px;
+
+/* USER MENU */
+$upperHeaderUserMenuMinWidth: 100px;
 
 /* LOWER HEADER */
 $lowerHeaderHeight: 42px;
@@ -26,45 +30,112 @@ $headerHeight: calc(#{$upperHeaderHeight} + #{$lowerHeaderHeight});
 		align-items: center;
 		justify-content: space-between;
 
-		.header-logo-wrap {
+		.header-upper-left {
 
-			height: $upperHeaderHeight;
-			display: flex;
+			.header-logo-wrap {
 
-			padding: 5px 8px;
-
-			.header-logo-link {
-
+				height: $upperHeaderHeight;
 				display: flex;
-				align-items: center;
 
-				text-decoration: none;
+				padding: 5px 8px;
 
-				.header-logo {
-					height: 100%;
-					width: auto;
-				}
+				.header-logo-link {
 
-				.header-text {
-					font-size: 20px;
-					margin-left: 12px;
+					display: flex;
+					align-items: center;
+
+					text-decoration: none;
+
+					.header-logo {
+						height: 100%;
+						width: auto;
+					}
+
+					.header-text {
+						font-size: 20px;
+						margin-left: 12px;
+					}
 				}
 			}
 		}
 
-		.header-menu-toggle-wrap {
+		.header-upper-right {
+			display: flex;
 
-			.header-menu-toggle {
+			.header-user-icon-wrap {
 
-				height: $upperHeaderMenuIconSize;
+				position: relative;
 
-				.header-menu-button {
-					cursor: pointer;
-					background: none;
-					border: none;
+				.header-user-icon {
 
 					height: $upperHeaderMenuIconSize;
-					font-size: $upperHeaderMenuIconSize;
+
+					.header-user-icon-button {
+						cursor: pointer;
+						background: none;
+						border: none;
+
+						height: $upperHeaderMenuIconSize;
+						font-size: $upperHeaderMenuIconSize;
+					}
+				}
+
+				.header-user-icon-menu-wrap {
+
+					display: none;
+
+					position: absolute;
+					right: 0;
+					top: $upperHeaderMenuIconSize;
+
+					background: #fff;
+					border: 1px solid $borderGrey;
+
+					&.show {
+						display: block;
+					}
+
+					.header-user-icon-menu {
+						min-width: $upperHeaderUserMenuMinWidth;
+						margin: 0;
+						padding: 0;
+
+						list-style-type: none;
+
+						li {
+							a {
+
+								display: inline-block;
+								width: 100%;
+								padding: 6px;
+
+								white-space: nowrap;
+
+								text-decoration: none;
+
+								&:hover, &:active, .tab_focus &:focus {
+									@include button-hover($buttonBackgroundHover, 1px solid $buttonBackgroundHover, #fff);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			.header-menu-toggle-wrap {
+
+				.header-menu-toggle {
+
+					height: $upperHeaderMenuIconSize;
+
+					.header-menu-button {
+						cursor: pointer;
+						background: none;
+						border: none;
+
+						height: $upperHeaderMenuIconSize;
+						font-size: $upperHeaderMenuIconSize;
+					}
 				}
 			}
 		}

@@ -1,0 +1,715 @@
+{
+    "_id": {
+        "$oid": "617930fb383bbb499c16fe71"
+    },
+    "head": {
+        "vars": [
+            "identifier",
+            "label",
+            "description"
+        ]
+    },
+    "results": {
+        "bindings": [{
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000000"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "tissues, cell types and enzyme sources"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A structured controlled vocabulary for the source of an enzyme. It comprises terms of tissues, cell lines, cell types and cell cultures from uni- and multicellular organisms."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000648"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "intestine"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "The tubular part of the alimentary canal that extends from the stomach to the anus."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000006"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "osteoblastoma cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A benign tumor cell of bone."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000372"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "bone cancer cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Cancer cell of the skeleton. Cancers that begin in bone are rare but it is not unusual for cancers to spread (metastasize) to bone from other parts of the body. This is not called bone cancer, but is named for the organ or tissue in which the cancer begins."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0001593"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "osteoblast"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A cell from which bone develops; a bone-forming cell."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000007"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "HEK-293 cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Established from a human primary embryonal kidney transformed by adenovirus type 5."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000011"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "3T3-L1 cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "L1 is a continuous substrain of 3T3 Swiss albino developed through clonal isolation. Cells undergo a pre-adipose to adipose like conversion as they progress from a rapidly dividing to a confluent and contact inhibited state. A high serum content in the medium enhances fat accumulation."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000944"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "NIH-3T3 cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Very widely used mouse fibroblast cell line; 3T3 cells have been derived from different mouse strains and it is therefore important to define the particular cell line. NIH strain were from the National Institute of Health in the USA."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000016"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "A-172 cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Human brain glioblastoma cell line. Established from a 53 year old man."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0001530"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "glioblastoma cell line"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Cell line of a malignant rapidly growing astrocytoma of the central nervous system and usually of a cerebral hemisphere."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000017"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "A-431 cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Human epidermoid carcinoma established from the solid tumor of an 85-year-old woman; cells were reported to have large numbers of EGF binding sites; cell line was used as indicator cell line for anti-TGF binding."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000018"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "A-549 cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Human lung carcinoma established from an explanted lung tumor which was removed from a 58-year-old Caucasian man in 1972; cells were described to induce tumors in athymic mice and to synthesize lecithin."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000019"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "A7r5 cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Rat embryonic thoracic aorta smooth muscle cell line. The cells exhibit an increase in activity of the enzymes myokinase and creatine phosphokinase (CPK) as the culture reaches stationary phase. Muscle type CPK is synthesized after cell division has ceased."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000020"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "abdomen"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "1: The part of the body between the thorax and the pelvis; also: the cavity of this part of the trunk containing the chief viscera. 2: The posterior section of the body behind the thorax in an arthropod."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0001493"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "trunk"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "1: The human or animal body apart from the head and appendages. 2: The thorax of an insect."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0001103"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "skeletal muscle"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A usually voluntary muscle made up of elongated, multinucleated, transversely striated muscle fibers, having principally bony attachments."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000282"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "head"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "The upper or anterior division of the animal body that contains the brain, the chief sense organs, and the mouth."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000022"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "abdominal ganglion"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "The visceral sacs nerve knot is called visceral ganglion. In contrary to the mostly paired other ganglia this nerve knot is unpaired. The visceral ganglion innerves the pallial organs as well as the inner organs."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000497"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "ganglion"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A group of nerve cell bodies located outside the central nervous system. The term is occasionally applied to certain nuclear groups within the brain or spinal cord, such as the basal ganglia."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0001448"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "visceral hump"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Mollusks have three distinct divisions of their body. The head contains the sensory equipment (eyes, antennae, etc) and the primitive brain. The visceral hump, which is the main body, contains most of the organs, including a complete digestive and excretory tract as well as the reproductive organs. The visceral hump also includes the two external flaps of tissue, which are known as the mantle."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000023"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "pectoral muscle"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Any of the muscles which connect the ventral walls of the chest with the bones of the upper arm and shoulder and of which there are two on each side of the human body."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000024"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "abomasum"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "The fourth compartment of the ruminant stomach that follows the omasum and has a true digestive function."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0001307"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "stomach"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A dilatation of the alimentary canal of a vertebrate communicating anteriorly with the esophagus and posteriorly with the duodenum."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000025"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "amniotic cavity"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "The space within the amnion."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000065"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "amnion"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A thin, tough, membranous sac that encloses the embryo or fetus of a mammal, bird, or reptile. It is filled with a serous fluid in which the embryo is suspended."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000027"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "achene"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A small dry indehiscent one-seeded fruit (as of a sunflower) developing from a simple ovary and usually having a thin pericarp attached to the seed at only one point."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000486"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "fruit"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "The mature ovary or ovaries of a seed-bearing plant, together with accessory parts, containing the seeds and occurring in a wide variety of forms."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000028"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "pancreatic acinar cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Cells of the pancreas that secrete digestive enzymes, the archetypal secretory cell upon which much of the early work on the sequence of events in the secretory process was done."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000434"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "exocrine pancreas"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "That part of the pancreas that acts as an exocrine gland, consisting of the pancreatic acini, which produce pancreatic juice and secrete it into the duodenum to aid in protein digestion."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000029"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "adductor longus"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Adductor arising from the superior ramus of the pubis and inserted into the middle third of the linea aspera."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000030"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "adductor"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Any of three powerful triangular muscles that contribute to the adduction of the human thigh."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0001376"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "thigh"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "1: The proximal segment of the vertebrate hind limb extending from the hip to the knee and supported by a single large bone. 2: The segment of the leg immediately distal to the thigh in a bird or in a quadruped in which the true thigh is obscured."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000031"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "fruit peduncle"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A short stalk at the base of a fruit."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000032"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "colonic adenocarcinoma cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A cell of an adenocarcinoma of the colon is a malignant neoplastic epithelial lesion, arising from the colonic mucosa."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000035"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "colorectal adenocarcinoma cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Adenocarcinoma cell related to the colon and/or rectum."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000033"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "SW-403 cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Human colon adenocarcinoma, established from the adenocarcinoma (grade III) of a 51-year-old Caucasian woman; cells were described to produce carcinoembryonic antigen (CEA) and to be tumorigenic in nude mice."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000034"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "apical meristem"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A group of cells at the tip of the stem and root that give rise by cell division to the primary tissues and are ultimately responsible for the structural organization of the entire primary plant body."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000852"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "meristem"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A formative plant tissue usually made up of small cells capable of dividing indefinitely and giving rise to similar cells or to cells that differentiate to produce the definitive tissues and organs."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000247"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "shoot tip"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "The terminal bud (0.1 - 1.0 mm) of a plant, which consists of the apical meristem (0.05 - 0.1 mm) and the immediate surrounding leaf primordia and developing leaves and adjacent stem tissue."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0001188"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "root"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "The usually underground part of a seed plant body that originates usually from the hypocotyl, functions as an organ of absorption, aeration, and food storage or as a means of anchorage and support, and differs from a stem especially in lacking nodes, buds, and leaves."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0001191"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "root tip"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "The root tip is the tip of the root and contains the root cap and the apical meristem -the actively growing region."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0001300"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "stem"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "The main trunk of a plant; specifically: a primary plant axis that develops buds and shoots instead of roots."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000193"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "rectal cancer cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Cancer cell of the rectum."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000586"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "colonic cancer cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A malignant tumour arising from the inner wall of the large intestine."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000604"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "adenocarcinoma cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A cell of a cancer that begins in cells that line certain internal organs and that have glandular (secretory) properties."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000036"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "gastric adenocarcinoma cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A cell of any of a group of common stomach cancers, usually located in the antrum; it may present as a bulky mass with central ulceration invading the wall, a mass that narrows the antral lumen, a polypoid lesion, or a tumor that spreads superficially over the mucosal surface. It is common in Japan, Chile, Iceland, and Finland but the incidence is decreasing in North America and elsewhere. There may be links to certain dietary substances such as nitrosamines and benzpyrene."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000498"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "gastric cancer cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Gastric cancer is a cancer of the stomach."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000037"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "renal cell carcinoma cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Carcinoma cell of the renal parenchyma usually occurring in middle age or later and composed of tubular cells in varying arrangements; symptoms depend on extent of invasion."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000680"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "kidney cancer cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "A cell of a group of cancers that starts in the kidney. The main types of kidney cancer are renal cell cancer (RCC), transitional cell cancer (TCC), and Wilms tumor."
+                }
+            },
+            {
+                "identifier": {
+                    "type": "uri",
+                    "value": "http://purl.obolibrary.org/obo/BTO_0000038"
+                },
+                "label": {
+                    "type": "literal",
+                    "value": "SW-480 cell"
+                },
+                "description": {
+                    "type": "literal",
+                    "value": "Human colon adenocarcinoma, established from the tumor of a 50-year-old Caucasian man with colon adenocarcinoma."
+                }
+            }
+        ]
+    }
+}

@@ -12,6 +12,7 @@ import { of } from 'rxjs';
 @Injectable()
 export class LoadingInterceptor implements HttpInterceptor {
 	private totalRequests = 0;
+	private totalRequestsFullscreen = 0;
 
 	constructor(private loadingService: LoadingService) {}
 
@@ -21,6 +22,7 @@ export class LoadingInterceptor implements HttpInterceptor {
 		if( request.headers.get('skipintercept') ) {
 			return next.handle(request);
 		}
+
 		// Keeps track of the number of ongoing requests
 		// If the number is higher that 0 a loading screen will be shown
 		// If the number is 0 the loading screen will be removed

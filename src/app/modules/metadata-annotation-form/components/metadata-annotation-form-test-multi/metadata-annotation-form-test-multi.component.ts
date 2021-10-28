@@ -18,7 +18,7 @@ import { HtmlHelperService } from '../../../shared/services/html-helper.service'
 
 export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 
-	serverAddress: string = 'http://localhost:8080/xsdnojs';
+	serverAddress: string = 'http://localhost:8080/xsd';
 
 	currentTab: string = '';
 	saveEnabled: boolean = false;
@@ -40,7 +40,7 @@ export class MetadataAnnotationFormTestMultiComponent implements OnInit {
 	ngOnInit(): void {
 		this.currentTab = 'settings';
 
-		this.updateNavigationService.updateCurrentView("TEST MULTI Import");
+		this.updateNavigationService.updateCurrentView("Metadata for resource:", "TEST MULTI Import");
 	}
 
 

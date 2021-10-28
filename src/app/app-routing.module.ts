@@ -9,6 +9,13 @@ const routes: Routes = [
 				'./modules/metadata-annotation-form/metadata-annotation-form.module'
 			).then((m) => m.MetadataAnnotationFormModule),
 	},
+	{
+		path: 'user',
+		loadChildren: () =>
+			import(
+				'./modules/user/user.module'
+			).then((m) => m.UserModule),
+	},
 ];
 
 @NgModule({

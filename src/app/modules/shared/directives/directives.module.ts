@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
-import { AutocompleteDirective } from './autocomplete.directive';
+import { UserIconDirective } from './user-icon.directive';
 
 @NgModule({
 	imports: [],
-	declarations: [AutocompleteDirective],
-	exports: [AutocompleteDirective],
+	declarations: [UserIconDirective],
+	exports: [UserIconDirective],
 })
 export class DirectivesModule {}
