@@ -1,7 +1,10 @@
+import { AlertService } from './modules/shared/services/alert.service';
+import { Platform } from '@angular/cdk/platform';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { UpdateNavigationService } from './modules/core/services/update-navigation.service';
 import { EventHelperService } from './modules/shared/services/event-helper.service';
+import { SettingsService } from './modules/shared/services/settings.service';
 
 @Component({
 	selector: 'app-root',
@@ -9,13 +12,20 @@ import { EventHelperService } from './modules/shared/services/event-helper.servi
 	styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
+
 	title = 'metadata-annotation';
 	currentMenuToggle: boolean = false;
 
 	currentMenuTogglesubscription: Subscription = new Subscription;
 
+	/**
+	 * constructor
+	 */
 	constructor(private updateNavigationService: UpdateNavigationService,
-				private eventHelperService: EventHelperService) {}
+				private eventHelperService: EventHelperService,
+				private platform: Platform,
+				private alertService: AlertService,
+				private settingsService: SettingsService) {}
 
 
 	/**
@@ -44,7 +54,16 @@ export class AppComponent implements OnInit {
 		document.body.classList.add('tab_focus');
 	}
 
+	/**
+	 * ngOnInit
+	 */
 	ngOnInit():void {
+
+		// Override the global alert function
+		// Use the custom alert instead
+		window.alert = (message: string) => {
+			this.alertService.showAlert(this.settingsService.defaultAlertHeaderText, message);
+		}
 
 		// Subscribe to the toggleMenu observable
 		this.currentMenuTogglesubscription = this.updateNavigationService.currentMenuToggle.subscribe((manualToggle: boolean) => {
@@ -56,6 +75,12 @@ export class AppComponent implements OnInit {
 			}
 
 		});
+
+		// If the Browser is Chrome or Edge > v79 (blink) or a webkit Browser
+		// add a flag for supporting @property in CSS
+		if ( this.platform.BLINK || this.platform.WEBKIT ) {
+			document.body.classList.add('css_property_support');
+		}
 	}
 
 	/**

@@ -1,0 +1,39 @@
+<div #alertWrapper class="alert-outer-wrap" *ngIf="alertService.isShowing$ | async">
+
+	<div class="alert-backdrop">
+	</div>
+
+	<div class="alert-wrap">
+
+		<div class="alert-header">
+
+			<div class="alert-header-text">
+				{{ alertService.headerText$ | async }}
+			</div>
+
+			<div class="alert-header-close-wrap">
+				<button class="alert-header-close-button" (click)="onClickClose()">
+					<mat-icon inline="true">close</mat-icon>
+				</button>
+			</div>
+		</div>
+
+		<div class="alert-body">
+
+			<div class="alert-body-text">
+				<p>{{ alertService.bodyText$ | async }}</p>
+			</div>
+
+			<div class="alert-body-buttons-wrap">
+
+				<button class="biodaten-button alert-body-button" (click)="alertButton.function()" *ngFor="let alertButton of alertService.buttons$ | async">{{ alertButton.text }}</button>
+
+				<!-- If there are no buttons, set the default one -->
+				<button class="biodaten-button alert-body-button" (click)="onClickClose()" *ngIf="(alertService.hasButtons$ | async) === false ">OK</button>
+			</div>
+		</div>
+
+
+	</div>
+
+</div>

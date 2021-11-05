@@ -24,10 +24,10 @@
 								<a href (click)="onClickLogin($event)">Login</a>
 							</li>
 							<li *ngIf="userIsLoggedIn">
-								<a routerLink="user/profile">Profile</a>
+								<a routerLink="user/profile" (click)="closeUserMenu()">Profile</a>
 							</li>
 							<li *ngIf="userIsLoggedIn">
-								<a routerLink="user/metadata-resources">Metadata resources</a>
+								<a routerLink="user/metadata-resources" (click)="closeUserMenu()">Metadata resources</a>
 							</li>
 							<li *ngIf="userIsLoggedIn">
 								<a href (click)="onClickLogout($event)">Logout</a>

@@ -28,20 +28,64 @@
 
 		.mat-row {
 
-			.mat-cell {
-				border-bottom: 1px solid transparent;
-				border-top: 1px solid transparent;
-				cursor: pointer;
-
-				font-size: $fontSizeContent;
-			}
-
 			&:hover {
 
 				.mat-cell {
 					background: #f0f0f0;
 				}
 			}
+
+			.mat-cell {
+				border-bottom: 1px solid transparent;
+				border-top: 1px solid transparent;
+				cursor: pointer;
+
+				font-size: $fontSizeContent;
+
+				&.cdk-column-title {
+					width: 28%;
+				}
+
+				&.cdk-column-status {
+					width: 100px;
+
+					position: relative;
+
+					&:after {
+						content: " ";
+						position: absolute;
+
+						height: 100%;
+						width: 14px;
+
+						right: 0;
+						top: 0;
+					}
+
+					&.new {
+						&:after {
+							background: #b8daff;
+						}
+
+					}
+
+					&.progress {
+						&:after {
+							background: #ffeeba;
+						}
+					}
+
+					&.finished {
+						&:after {
+							background: #c3e6cb;
+						}
+					}
+
+				}
+
+
+			}
+
 		}
 
 

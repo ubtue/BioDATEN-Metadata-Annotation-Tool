@@ -1,4 +1,3 @@
-import { LoadingScreenModule } from './app/modules/loading-screen/loading-screen-module';
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
@@ -19,17 +18,8 @@ window.setTimeout(
 			loadingWrapper.classList.remove('hide');
 		}
 
-	}, 500
+	}, 1000
 );
-
-// OUTDATED:
-// This is the loading screen module. It will be bootstraped without
-// any dependencies, so it will be shown at beginning.
-// All other content may have need some time to load (requests etc.)
-// After the AppModule is finished loading and bootstraped
-// this will no longer be shown
-// platformBrowserDynamic().bootstrapModule(LoadingScreenModule)
-// 	.catch(err => console.error(err));
 
 
 // This is the main content of the app

@@ -1,46 +1,108 @@
+@import "../shared_variables";
+@import "../mixins";
+
+// Simple loading screen (ajax loader)
 .loading {
-	position: absolute;
+	position: fixed;
 	left: 0;
 	right: 0;
 	top: 0;
 	bottom: 0;
-	background: rgba(0,0,0, .3);
+	background: $backdropBackground;
 
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
-
+// Advanced loading screen (Logo + colors)
 @property --a {
-    initial-value: 0deg;
-    inherits: false;
-    syntax: '<angle>';
+	initial-value: 0deg;
+	inherits: false;
+	syntax: '<angle>';
 }
 
 @property --h {
-    initial-value: 349;
-    inherits: false;
-    syntax: '<number>';
+	initial-value: 349;
+	inherits: false;
+	syntax: '<number>';
 }
 
 @property --s {
-    initial-value: 69%;
-    inherits: false;
-    syntax: '<percentage>';
+	initial-value: 69%;
+	inherits: false;
+	syntax: '<percentage>';
 }
 
 @property --l {
-    initial-value: 38%;
-    inherits: false;
-    syntax: '<percentage>';
+	initial-value: 38%;
+	inherits: false;
+	syntax: '<percentage>';
+}
+
+// This is used to hide the loading backup loading graphic for browsers
+// that do not support property. Only Chrome, Edge > v79 and Webkit support it.
+@property --hide {
+	initial-value: none;
+	inherits: false;
+	syntax: '*';
+}
+
+@-webkit-keyframes load {
+
+	0%,
+	10% {
+		--a: 0deg;
+		--h: 0;
+		--s: 69%;
+		--l: 38%;
+	}
+
+	50% {
+		--a: 180deg;
+		--h: 0;
+		--s: 0%;
+		--l: 49%;
+	}
+
+	100% {
+		--a: 360deg;
+		--h: 44;
+		--s: 33%;
+		--l: 56%;
+	}
+}
+
+@keyframes load {
+
+	0%,
+	10% {
+		--a: 0deg;
+		--h: 0;
+		--s: 69%;
+		--l: 38%;
+	}
+
+	50% {
+		--a: 180deg;
+		--h: 0;
+		--s: 0%;
+		--l: 49%;
+	}
+
+	100% {
+		--a: 360deg;
+		--h: 44;
+		--s: 33%;
+		--l: 56%;
+	}
 }
 
 .loader-wrap {
 
 	display: block;
 
-	position: absolute;
+	position: fixed;
 	top: 0;
 	right: 0;
 	bottom: 0;
@@ -72,11 +134,19 @@
 			border-style: solid;
 			border-width: 1vmin;
 			font-size: 2rem;
+
+			// Only supported by browsers that support @property
+			// Others won't show this. They won't hide .backup-loader
 			--charge: hsl(var(--h), var(--s), var(--l));
 			-o-border-image: conic-gradient(var(--charge) var(--a), transparent calc(var(--a) + 0.5deg)) 30;
 			border-image: conic-gradient(var(--charge) var(--a), transparent calc(var(--a) + 0.5deg)) 30;
 			-webkit-animation: load 2s infinite ease-in-out;
 			animation: load 2s infinite ease-in-out;
+		}
+
+		// Browsers that support @property will hide this container
+		.backup-loader {
+			display: var(--hide);
 		}
 
 		.logo {
@@ -92,54 +162,4 @@
 
 	}
 
-}
-
-@-webkit-keyframes load {
-
-    0%,
-    10% {
-        --a: 0deg;
-        --h: 0;
-		--s: 69%;
-		--l: 38%;
-    }
-
-	50% {
-		--a: 180deg;
-        --h: 0;
-		--s: 0%;
-		--l: 49%;
-	}
-
-    100% {
-        --a: 360deg;
-        --h: 44;
-		--s: 33%;
-		--l: 56%;
-    }
-}
-
-@keyframes load {
-
-    0%,
-    10% {
-        --a: 0deg;
-        --h: 0;
-		--s: 69%;
-		--l: 38%;
-    }
-
-	50% {
-		--a: 180deg;
-        --h: 0;
-		--s: 0%;
-		--l: 49%;
-	}
-
-    100% {
-        --a: 360deg;
-        --h: 44;
-		--s: 33%;
-		--l: 56%;
-    }
 }

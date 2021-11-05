@@ -4,4 +4,5 @@ export interface MetadataUserResource {
 	title: string;
 	lastChange: string;
 	status: string;
+	statusKey: string;
 }

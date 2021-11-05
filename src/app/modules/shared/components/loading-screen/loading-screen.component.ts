@@ -10,25 +10,20 @@ import { LoadingService } from 'src/app/modules/core/services/loading.service';
 export class LoadingScreenComponent implements OnInit {
 
 	@ViewChild('loadingWrapper') loadingWrapper!: ElementRef;
-	@Input() textUpper = '';
+	@Input() textUpper = 'Loading...';
 	@Input() textLower = '';
 
+
+	/**
+	 * constructor
+	 */
 	constructor(public loadingService: LoadingService) { }
 
-	ngOnInit(): void {
 
-		if ( this.textUpper === '' ) {
-			this.textUpper = 'Loading...';
-		}
-
-		// Only display the loading screen if the process takes longer than
-		// 500 ms
-		// window.setTimeout(
-		// 	() => {
-		// 		this.loadingWrapper.nativeElement.classList.add('show');
-		// 	}, 500
-		// );
-	}
+	/**
+	 * ngOnInit
+	 */
+	ngOnInit(): void {}
 
 
 

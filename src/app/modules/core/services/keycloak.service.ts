@@ -14,6 +14,10 @@ export class KeycloakService extends AngularKeycloakService {
 
 	_userInformation: KeycloakProfile = null as any;
 
+
+	/**
+	 * constructor
+	 */
 	constructor() {
 		super();
 	}

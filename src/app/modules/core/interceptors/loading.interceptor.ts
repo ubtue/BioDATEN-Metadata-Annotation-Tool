@@ -14,8 +14,22 @@ export class LoadingInterceptor implements HttpInterceptor {
 	private totalRequests = 0;
 	private totalRequestsFullscreen = 0;
 
+
+	/**
+	 * constructor
+	 */
 	constructor(private loadingService: LoadingService) {}
 
+
+	/**
+	 * intercept
+	 *
+	 * Intercepts HttpRequests and modifies the request
+	 *
+	 * @param request
+	 * @param next
+	 * @returns
+	 */
 	intercept(request: HttpRequest<any>, next: HttpHandler) {
 
 		// Skip the intercept?

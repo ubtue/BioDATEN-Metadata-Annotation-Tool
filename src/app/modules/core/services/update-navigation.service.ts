@@ -12,6 +12,10 @@ export class UpdateNavigationService {
 	private toggleMenuSubject = new BehaviorSubject(false);
 	currentMenuToggle = this.toggleMenuSubject.asObservable();
 
+
+	/**
+	 * constructor
+	 */
 	constructor() {}
 
 

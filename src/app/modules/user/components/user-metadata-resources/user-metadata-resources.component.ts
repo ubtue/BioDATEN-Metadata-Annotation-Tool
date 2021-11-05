@@ -16,6 +16,21 @@ import { KeycloakService } from 'src/app/modules/core/services/keycloak.service'
 })
 export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 
+	readonly RESOURCE_DATA_STATUS = {
+		new: {
+			label: "New",
+			key: "new"
+		},
+		progress: {
+			label: "In progress",
+			key: "progress"
+		},
+		finished: {
+			label: "Finished",
+			key: "finished"
+		}
+	};
+
 	userResourceData: MetadataUserResource[] = [];
 
 	sortableUserResourceData: any = [];
@@ -52,19 +67,19 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 
 		// Get the data that is used for the table
 		this.userResourceData = [
-			{ position: 1, id: "34232-234245-88964", title: "Title", lastChange: "2021-10-18", status: "new"},
-			{ position: 2, id: "13353-564547-23453", title: "Title", lastChange: "2021-10-17", status: "new"},
-			{ position: 3, id: "63564-287434-25332", title: "Title", lastChange: "2021-08-21", status: "new"},
-			{ position: 4, id: "18744-564345-63563", title: "Title", lastChange: "2021-10-11", status: "new"},
-			{ position: 5, id: "45542-457842-32452", title: "Title", lastChange: "2021-10-14", status: "new"},
-			{ position: 6, id: "74562-953453-94342", title: "Title", lastChange: "2021-09-28", status: "new"},
-			{ position: 7, id: "98653-643542-24535", title: "Title", lastChange: "2021-06-30", status: "new"},
-			{ position: 8, id: "73422-876345-86742", title: "Title", lastChange: "2021-07-10", status: "new"},
-			{ position: 9, id: "78764-654221-76452", title: "Title", lastChange: "2021-08-20", status: "new"},
-			{ position: 10, id: "05645-057643-25255", title: "Title", lastChange: "2021-06-20", status: "new"},
-			{ position: 11, id: "26322-764321-36311", title: "Title", lastChange: "2020-12-11", status: "new"},
-			{ position: 12, id: "13533-555421-13542", title: "Title", lastChange: "2021-04-10", status: "new"},
-			{ position: 13, id: "34221-563225-74243", title: "Title", lastChange: "2021-06-19", status: "new"},
+			{ position: 1, id: "34232-234245-88964", title: "Research 1", lastChange: "2021-10-18", status: this.RESOURCE_DATA_STATUS.new.label, statusKey: this.RESOURCE_DATA_STATUS.new.key},
+			{ position: 2, id: "13353-564547-23453", title: "Research 2", lastChange: "2021-10-17", status: this.RESOURCE_DATA_STATUS.new.label, statusKey: this.RESOURCE_DATA_STATUS.new.key},
+			{ position: 3, id: "63564-287434-25332", title: "Research 3", lastChange: "2021-08-21", status: this.RESOURCE_DATA_STATUS.finished.label, statusKey: this.RESOURCE_DATA_STATUS.finished.key},
+			{ position: 4, id: "18744-564345-63563", title: "Research 4", lastChange: "2021-10-11", status: this.RESOURCE_DATA_STATUS.progress.label, statusKey: this.RESOURCE_DATA_STATUS.progress.key},
+			{ position: 5, id: "45542-457842-32452", title: "Research 5", lastChange: "2021-10-14", status: this.RESOURCE_DATA_STATUS.progress.label, statusKey: this.RESOURCE_DATA_STATUS.progress.key},
+			{ position: 6, id: "74562-953453-94342", title: "Research 6", lastChange: "2021-09-28", status: this.RESOURCE_DATA_STATUS.progress.label, statusKey: this.RESOURCE_DATA_STATUS.progress.key},
+			{ position: 7, id: "98653-643542-24535", title: "Research 7", lastChange: "2021-06-30", status: this.RESOURCE_DATA_STATUS.finished.label, statusKey: this.RESOURCE_DATA_STATUS.finished.key},
+			{ position: 8, id: "73422-876345-86742", title: "Research 8", lastChange: "2021-07-10", status: this.RESOURCE_DATA_STATUS.finished.label, statusKey: this.RESOURCE_DATA_STATUS.finished.key},
+			{ position: 9, id: "78764-654221-76452", title: "Research 9", lastChange: "2021-08-20", status: this.RESOURCE_DATA_STATUS.progress.label, statusKey: this.RESOURCE_DATA_STATUS.progress.key},
+			{ position: 10, id: "05645-057643-25255", title: "Research 10", lastChange: "2021-06-20", status: this.RESOURCE_DATA_STATUS.finished.label, statusKey: this.RESOURCE_DATA_STATUS.finished.key},
+			{ position: 11, id: "26322-764321-36311", title: "Research 11", lastChange: "2020-12-11", status: this.RESOURCE_DATA_STATUS.finished.label, statusKey: this.RESOURCE_DATA_STATUS.finished.key},
+			{ position: 12, id: "13533-555421-13542", title: "Research 12", lastChange: "2021-04-10", status: this.RESOURCE_DATA_STATUS.finished.label, statusKey: this.RESOURCE_DATA_STATUS.finished.key},
+			{ position: 13, id: "34221-563225-74243", title: "Research 13", lastChange: "2021-06-19", status: this.RESOURCE_DATA_STATUS.finished.label, statusKey: this.RESOURCE_DATA_STATUS.finished.key},
 		];
 
 		// Put the data in an MatTableDataSource, so it can be sorted

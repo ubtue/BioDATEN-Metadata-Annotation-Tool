@@ -1,4 +1,5 @@
-import { LoadingScreenModule } from './modules/loading-screen/loading-screen-module';
+import { SharedModule } from './modules/shared/shared.module';
+import { LoadingScreenComponent } from './modules/shared/components/loading-screen/loading-screen.component';
 import { KeycloakProfile } from 'keycloak-js';
 import { KeycloakService } from './modules/core/services/keycloak.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -20,49 +21,22 @@ import { LoadingInterceptor } from './modules/core/interceptors/loading.intercep
 import { LoadingService } from './modules/core/services/loading.service';
 import { FormsModule } from '@angular/forms';
 import { DirectivesModule } from './modules/shared/directives/directives.module';
-import { KeycloakAngularModule} from 'keycloak-angular';
+import { KeycloakAngularModule } from 'keycloak-angular';
+import { PlatformModule } from '@angular/cdk/platform';
 
 
-function initializeKeycloak(keycloak: KeycloakService, loadingService: LoadingService): () => Promise<void> {
+
+/**
+ * initializeKeycloak
+ *
+ * Initializes the keycloak functionality (also connects to keycloak service)
+ *
+ * @param keycloak
+ * @param loadingService
+ * @returns
+ */
+ function initializeKeycloak(keycloak: KeycloakService, loadingService: LoadingService): () => Promise<void> {
 	return () =>
-
-	  	// keycloak.init({
-
-		// 	config: {
-		// 		url: 'http://localhost:8081/auth',
-		// 		realm: 'master',
-		// 		clientId: 'keycloak-angular',
-		// 	},
-		// 	initOptions: {
-		// 		onLoad: 'check-sso',
-		// 		silentCheckSsoRedirectUri:
-		// 			window.location.origin + '/assets/auth/silent-check-sso.html',
-		// 	},
-		// 	enableBearerInterceptor: true,
-		// 	bearerExcludedUrls: ['/assets']
-	  	// })
-		// .then(
-		// 	(isUserLoggedIn: boolean) => {
-
-		// 		// After init, check if the user is logged in and safe the user profile
-		// 		if ( isUserLoggedIn ) {
-
-		// 			keycloak.loadUserProfile().then(
-		// 				(userProfile: KeycloakProfile) => {
-		// 					keycloak.userInformation = userProfile;
-		// 				}
-		// 			)
-		// 		} else {
-		// 			keycloak.userInformation = null as any;
-		// 		}
-
-		// 	}
-		// ).catch(
-		// 	(reason: any) => {
-		// 		console.warn('Error with Keycloak:');
-		// 		console.warn(reason);
-		// 	}
-		// );
 
 		keycloak.init({
 			config: {
@@ -75,11 +49,11 @@ function initializeKeycloak(keycloak: KeycloakService, loadingService: LoadingSe
 				silentCheckSsoRedirectUri:
 					window.location.origin + '/assets/auth/silent-check-sso.html',
 			},
-	  	}).then(
+		}).then(
 			(isUserLoggedIn: boolean) => {
 
 				// After init, check if the user is logged in and safe the user profile
-				if ( isUserLoggedIn ) {
+				if (isUserLoggedIn) {
 
 					keycloak.loadUserProfile().then(
 						(userProfile: KeycloakProfile) => {
@@ -96,6 +70,61 @@ function initializeKeycloak(keycloak: KeycloakService, loadingService: LoadingSe
 				console.warn(reason);
 			}
 		);
+
+}
+
+
+
+/**
+ * initializeKeycloakDev
+ *
+ * DEV VERSION: Initializes the keycloak functionality (also connects to keycloak service)
+ *
+ * @param keycloak
+ * @param loadingService
+ * @returns
+ */
+function initializeKeycloakDev(keycloak: KeycloakService, loadingService: LoadingService): () => Promise<void> {
+	return () =>
+
+		keycloak.init({
+
+			config: {
+				url: 'http://localhost:8081/auth',
+				realm: 'master',
+				clientId: 'keycloak-angular',
+			},
+			initOptions: {
+				onLoad: 'check-sso',
+				silentCheckSsoRedirectUri:
+					window.location.origin + '/assets/auth/silent-check-sso.html',
+			},
+			enableBearerInterceptor: true,
+			bearerExcludedUrls: ['/assets']
+		})
+		.then(
+			(isUserLoggedIn: boolean) => {
+
+				// After init, check if the user is logged in and safe the user profile
+				if ( isUserLoggedIn ) {
+
+					keycloak.loadUserProfile().then(
+						(userProfile: KeycloakProfile) => {
+							keycloak.userInformation = userProfile;
+						}
+					)
+				} else {
+					keycloak.userInformation = null as any;
+				}
+
+			}
+		).catch(
+			(reason: any) => {
+				console.warn('Error with Keycloak:');
+				console.warn(reason);
+			}
+		);
+
 }
 
 @NgModule({
@@ -117,7 +146,8 @@ function initializeKeycloak(keycloak: KeycloakService, loadingService: LoadingSe
 		DirectivesModule,
 		KeycloakAngularModule,
 		MatTableModule,
-		LoadingScreenModule
+		PlatformModule,
+		SharedModule
 	],
 	providers: [
 		DataTransferService,
@@ -130,11 +160,11 @@ function initializeKeycloak(keycloak: KeycloakService, loadingService: LoadingSe
 		},
 		{
 			provide: APP_INITIALIZER,
-			useFactory: initializeKeycloak,
+			useFactory: initializeKeycloakDev,
 			multi: true,
 			deps: [KeycloakService],
 		},
 	],
 	bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

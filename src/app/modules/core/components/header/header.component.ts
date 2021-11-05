@@ -24,6 +24,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
 	showUserMenu: boolean = false;
 
+
+	/**
+	 * constructor
+	 */
 	constructor(private updateNavigationService: UpdateNavigationService,
 				private keycloakService: KeycloakService,
 				private settingsService: SettingsService,
@@ -41,6 +45,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 					);
 				}
 
+
+	/**
+	 * ngOnInit
+	 */
 	ngOnInit(): void {
 		this.currentViewsubscription = this.updateNavigationService.currentView.subscribe((currentView: UpdateNavigation) => {
 			this.currentViewLabel = currentView.label + " ";
@@ -51,24 +59,46 @@ export class HeaderComponent implements OnInit, OnDestroy {
 		this.eventHelperService.documentClickedTarget.subscribe(target => this.documentClickListener(target));
 	}
 
+
+	/**
+	 * onClickToggleMenu
+	 */
 	onClickToggleMenu():void {
 		this.updateNavigationService.updateMenuToggle(true);
 	}
 
+
+	/**
+	 * onClickUserIcon
+	 */
 	onClickUserIcon() : void {
 		this.toggleUserMenu();
 	}
 
+
+	/**
+	 * onClickLogin
+	 * @param event
+	 */
 	onClickLogin(event: Event): void {
 		event.preventDefault();
 		this.keycloakService.customLogin();
 	}
 
+
+	/**
+	 * onClickLogout
+	 * @param event
+	 */
 	onClickLogout(event: Event): void {
 		event.preventDefault();
 		this.keycloakService.customLogout();
 	}
 
+
+	/**
+	 * ngOnDestroy
+	 */
 	ngOnDestroy(): void {
 		this.currentViewsubscription.unsubscribe();
 	}
@@ -118,11 +148,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	 *
 	 * Closes user menu
 	 */
-	private closeUserMenu(): void {
+	closeUserMenu(): void {
 		this.toggleUserMenu(false, true);
 	}
 
 
+
+	/**
+	 * documentClickListener
+	 *
+	 * Handles a click on the document
+	 *
+	 * @param target
+	 */
 	private documentClickListener(target: HTMLElement): void {
 		if (!this.headerUserIconWrap.nativeElement.contains(target) ) {
 			this.closeUserMenu();

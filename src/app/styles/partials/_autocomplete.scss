@@ -3,11 +3,30 @@
 
 .autocomplete-wrapper {
 	position: relative;
-}
 
-.input[data-autocomplete-init] {
-	position: relative;
-	display: inline-block;
+	&[data-autocomplete-init="getting"] {
+
+		&:after {
+			content: " ";
+
+			display: block;
+
+			background: url("../../../assets/loader/ajax-loader_input.gif");
+			background-repeat: no-repeat;
+
+			position: absolute;
+			top: 3px;
+			right: 0;
+
+			width: 20px;
+			height: 20px;
+		}
+	}
+
+	input[data-autocomplete-init] {
+		position: relative;
+		display: inline-block;
+	}
 }
 
 .autocomplete-items {
@@ -21,12 +40,29 @@
 	left: 0;
 	right: 0;
 
-	div {
+	max-height: 400px;
+	overflow-y: scroll;
+
+	&.description-inline {
+
+		.autocomplete-element {
+			display: block;
+		}
+	}
+
+	.autocomplete-element {
+
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
 
 		padding: 10px;
 		cursor: pointer;
 		background-color: #fff;
 		border-bottom: 1px solid #d4d4d4;
+
+		overflow: hidden;
 
 		&:hover {
 			background-color: #e9e9e9;
@@ -35,6 +71,20 @@
 		.inline-description {
 			font-size: 13px;
 			margin: 4px 0;
+		}
+
+		.popout-description-icon {
+
+			width: 18px;
+			height: 18px;
+
+			i {
+				font-size: 18px;
+
+				width: 18px;
+				height: 18px;
+				line-height: 22px;
+			}
 		}
 	}
 }
@@ -45,11 +95,50 @@
 	background-color: $buttonBackgroundHover !important;
 	color: #fff;
 
-	strong {
-		color: #fff;
+	* {
+		color: #fff !important;
+	}
+}
+
+.autocomplete-popout-description-wrap {
+
+	visibility: hidden;
+
+	position: absolute;
+    width: 300px;
+    height: auto;
+
+    top: 0;
+    left: 100%;
+    z-index: 1;
+
+	border: 1px solid $borderGrey;
+    background: #fff;
+    padding: 10px;
+	margin-left: 15px;
+
+	&.show {
+		visibility: visible;
 	}
 
-	.inline-description {
-		color: #fff;
+	&:before,
+	&:after {
+		content:"\A";
+		border-style: solid;
+		border-width: 10px 15px 10px 0;
+
+		@include centerVertical();
+	}
+
+	&:before {
+		border-color: transparent $borderGrey transparent transparent;
+
+		left: -16px;
+	}
+
+	&:after {
+		border-color: transparent #fff transparent transparent;
+
+		left: -14px;
 	}
 }

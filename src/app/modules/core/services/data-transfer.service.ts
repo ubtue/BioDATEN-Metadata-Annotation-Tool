@@ -10,6 +10,10 @@ import { SettingsService } from '../../shared/services/settings.service';
 	providedIn: 'root',
 })
 export class DataTransferService {
+
+	/**
+	 * constructor
+	 */
 	constructor(private settingsService: SettingsService,
 				private httpClient: HttpClient) {}
 

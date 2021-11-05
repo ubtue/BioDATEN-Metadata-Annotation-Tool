@@ -12,9 +12,9 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
 	declarations: [
-    UserProfileComponent,
-    UserMetadataResourcesComponent
-  ],
+		UserProfileComponent,
+		UserMetadataResourcesComponent
+	],
 	imports: [
 		CommonModule,
 		UserRoutingModule,

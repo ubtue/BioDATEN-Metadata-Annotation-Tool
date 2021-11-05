@@ -188,4 +188,31 @@ export class HelperService {
 			.concat('schemes')
 			.concat(String.fromCharCode(62))
 	}
+
+	/**
+	 * sort
+	 *
+	 * Sorting function
+	 *
+	 * @param valuePath
+	 * @param array
+	 * @returns
+	 */
+	 sort(valuePath: string, array: any) {
+		let path = valuePath.split('.')
+
+		return array.sort((a: any, b: any) => {
+			let aSort = getValue(a, path).toLowerCase(), bSort = getValue(b, path).toLowerCase();
+			if (aSort < bSort) //sort string ascending
+				return -1;
+			if (aSort > bSort)
+				return 1;
+			return 0; //default return value (no sorting)
+		});
+
+		function getValue(obj: any, path: any) {
+			path.forEach((path: any) => obj = obj[path])
+			return obj;
+		}
+	}
 }

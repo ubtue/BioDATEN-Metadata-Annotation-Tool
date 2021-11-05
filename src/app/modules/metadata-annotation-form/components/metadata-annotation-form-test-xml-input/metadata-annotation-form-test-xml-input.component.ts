@@ -23,7 +23,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
-	serverAddress: string = 'http://localhost:8080/metadata/xsd';
+	serverAddress: string = '';
 	serverAdressXMLInput: string = 'http://localhost:8080/metadata/xsd/xml-input';
 
 	serverAdressXMLAddress: string = 'http://localhost:8080/metadata/xsd/xml-system';
@@ -54,7 +54,11 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				private autocompleteService: AutocompleteService,
 				private keycloakService: KeycloakService,
 				private router: Router,
-				private route: ActivatedRoute) {}
+				private route: ActivatedRoute) {
+
+					// Get the server address
+					this.serverAddress = this.settingsService.backendServerAddress;
+				}
 
 	ngOnInit(): void {
 		this.currentTab = 'settings';

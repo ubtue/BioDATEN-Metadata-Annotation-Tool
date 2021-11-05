@@ -1,3 +1,4 @@
+import { HelperService } from './helper.service';
 import { AutocompleteData } from './../models/autocomplete-data.model';
 import { AutocompleteServerData } from '../models/autocomplete-server-data.model';
 import { HtmlHelperService } from './html-helper.service';
@@ -11,12 +12,7 @@ import { devOnlyGuardedExpression } from '@angular/compiler';
 })
 export class AutocompleteService {
 
-	DESCRIPTION_MODE_INLINE: number = 0;
-	DESCRIPTION_MODE_POPOUT: number = 1;
-
-	descriptionMode: number = this.DESCRIPTION_MODE_INLINE;
-
-	INIT_STATUS = {
+	readonly INIT_STATUS = {
 		GET: 'getting',
 		DONE: 'done',
 	};
@@ -27,8 +23,13 @@ export class AutocompleteService {
 
 	// dummyAutocompleteSource: string =
 	// 	'assets/dummy-data/dummy-autocomplete.json';
+	// dummyAutocompleteSource: string =
+	// 	'assets/dummy-data/vocabulary_from_ncbitaxonOntology.json';
+	// dummyAutocompleteSource: string =
+	// 	'assets/dummy-data/vocabulary_test.json';
 	dummyAutocompleteSource: string =
-		'assets/dummy-data/vocabulary_test.json';
+		'assets/dummy-data/ontologies/vocabulary_from_tissueOntology.json';
+
 	dummyAutocompleteSourceArray: string =
 		'assets/dummy-data/dummy-autocomplete-array';
 
@@ -39,14 +40,16 @@ export class AutocompleteService {
 	 * constructor
 	 */
 	constructor(private settingsService: SettingsService,
-				private dataTransferService: DataTransferService,
-				private htmlHelperService: HtmlHelperService) {
+		private dataTransferService: DataTransferService,
+		private helperService: HelperService,
+		private htmlHelperService: HtmlHelperService) {
 
 		// If the document click event has not been initialized
 		// make sure that a click on the document closes all lists except the one clicked
-		if ( !this.documentClickInit ) {
+		if (!this.documentClickInit) {
 			document.addEventListener("click", (e) => {
 				this.closeAllLists(e.target as HTMLElement);
+				this.removeDescriptionPopout();
 			});
 
 			this.documentClickInit = true;
@@ -64,23 +67,23 @@ export class AutocompleteService {
 	 */
 	handleAutocomplete(inputElement: HTMLInputElement): void {
 
-		if ( this.settingsService.enableConsoleLogs ) {
+		if (this.settingsService.enableConsoleLogs) {
 			console.log('Handling autocomplete for:');
 			console.log(inputElement);
 		}
 
 		// Check if the input already has a autocomplete initiated
-		if ( this.checkIfAutocompleteInitIsComplete(inputElement) ) {
+		if (this.checkIfAutocompleteInitIsComplete(inputElement)) {
 
 			// Handle the autocomplete
 			// Get the data-index of the input element and call the autocomplete function
 			let dataIndex = inputElement.getAttribute('data-autocomplete-index');
 
-			if ( dataIndex ) {
+			if (dataIndex) {
 				this.autocomplete(inputElement, parseInt(dataIndex));
 			}
 
-		} else if ( this.checkIfAutocompleteInitIsInProgress(inputElement) ) {
+		} else if (this.checkIfAutocompleteInitIsInProgress(inputElement)) {
 
 			// What to do here?
 			/*TODO*/
@@ -106,10 +109,16 @@ export class AutocompleteService {
 	 */
 	initNewAutocomplete(inputElement: HTMLInputElement): void {
 
-		if ( this.settingsService.enableConsoleLogs ) {
+		if (this.settingsService.enableConsoleLogs) {
 			console.log('Creating autocomplete for:');
 			console.log(inputElement);
 		}
+
+		// Wrap the input element in a DIV container
+		let inputWrapper = document.createElement('div');
+		inputWrapper.classList.add('autocomplete-wrapper');
+
+		this.htmlHelperService.wrapNode(inputElement, inputWrapper);
 
 		// Set the state of the autocomplete-init to 'getting'
 		this.setAutocompleteInitStatus(inputElement, this.INIT_STATUS.GET);
@@ -134,7 +143,7 @@ export class AutocompleteService {
 				let autocompleteData: AutocompleteData[] = [];
 
 				// Check if result is a string, an array or not (it is asumed the result is an object then)
-				if ( typeof dataResult === 'string' ) {
+				if (typeof dataResult === 'string') {
 					// autocompleteData = this.structureDataFromString(dataResult);
 				} else if (Array.isArray(dataResult)) {
 					// autocompleteData = this.structureDataFromArray(dataResult);
@@ -146,11 +155,6 @@ export class AutocompleteService {
 				let dataIndex = this.cachedAutocompleteData.length;
 
 				this.cachedAutocompleteData[dataIndex] = autocompleteData;
-
-				let inputWrapper = document.createElement('div');
-				inputWrapper.classList.add('autocomplete-wrapper');
-
-				this.htmlHelperService.wrapNode(inputElement, inputWrapper);
 
 				inputElement.focus();
 
@@ -165,6 +169,8 @@ export class AutocompleteService {
 					inputElement,
 					this.INIT_STATUS.DONE
 				);
+
+
 			});
 	}
 
@@ -183,10 +189,14 @@ export class AutocompleteService {
 
 		let autocompleteDIV,
 			matchingElementDIV,
+			matchingElementDIVText,
+			popoutDescriptionDIV,
 			val = inputElement.value;
 
 		/*close any already open lists of autocompleted values*/
 		this.closeAllLists(inputElement);
+
+		this.removeDescriptionPopout();
 
 		if (!val) {
 			return;
@@ -199,14 +209,38 @@ export class AutocompleteService {
 		// Create a DIV element that will contain the items (values)
 		autocompleteDIV = document.createElement('DIV');
 		autocompleteDIV.setAttribute('id', dataIndex + '_autocomplete-list');
-		autocompleteDIV.setAttribute('class', 'autocomplete-items');
+
+		// Set classes
+		autocompleteDIV.classList.add('autocomplete-items');
+
+		// Description mode
+		if ( this.settingsService.descriptionMode === this.settingsService.DESCRIPTION_MODE_INLINE ) {
+
+			// Inline
+			autocompleteDIV.classList.add('description-inline');
+
+		} else if ( this.settingsService.descriptionMode === this.settingsService.DESCRIPTION_MODE_POPOUT ) {
+
+			// Popout
+			autocompleteDIV.classList.add('description-popout');
+		}
 
 		// Add the data-index to the input element
 		inputElement.setAttribute('data-autocomplete-index', dataIndex.toString());
 
 		// Append the DIV element as a child of the autocomplete container
-		if ( inputElement !== null && inputElement.parentNode !== null ) {
+		if (inputElement !== null && inputElement.parentNode !== null) {
 			inputElement.parentNode.appendChild(autocompleteDIV);
+
+
+			// Create a DIV for the popout description if set up
+			if ( this.settingsService.descriptionMode === this.settingsService.DESCRIPTION_MODE_POPOUT ) {
+				popoutDescriptionDIV = document.createElement('DIV');
+				popoutDescriptionDIV.setAttribute('id', dataIndex + '_autocomplete-popout-description');
+				popoutDescriptionDIV.classList.add('autocomplete-popout-description-wrap');
+
+				inputElement.parentNode.appendChild(popoutDescriptionDIV);
+			}
 		}
 
 		// For each item in the array
@@ -219,39 +253,106 @@ export class AutocompleteService {
 
 				// Create a DIV element for each matching element
 				matchingElementDIV = document.createElement('DIV') as HTMLElement;
+				matchingElementDIV.classList.add('autocomplete-element');
+
+				// Create a DIV tag for the text
+				matchingElementDIVText = document.createElement('DIV') as HTMLElement;
+				matchingElementDIVText.classList.add('autocomplete-element-text');
 
 				// Make the matching letters bold
-				matchingElementDIV.innerHTML =
+				matchingElementDIVText.innerHTML +=
 					'<strong>' + data[i].label.substr(0, val.length) + '</strong>';
 
-				matchingElementDIV.innerHTML += data[i].label.substr(val.length);
+				matchingElementDIVText.innerHTML += data[i].label.substr(val.length);
 
-				// Insert a input field that will hold the current array item's value
-				matchingElementDIV.innerHTML += "<input type='hidden' value='" + data[i] + "'>";
+				// Insert a input field that will hold the current array item's label
+				matchingElementDIVText.innerHTML += '<input type="hidden" name="label" value="' + data[i].label + '">';
+
+				// Insert a input field that will hold the current array item's identifier
+				matchingElementDIVText.innerHTML += '<input type="hidden" name="identifier" value="' + data[i].identifier + '">';
+
+				// Insert text DIV into element DIV
+				matchingElementDIV.appendChild(matchingElementDIVText);
 
 				// If there is a description, add it acording to settings
-				if ( data[i].description && data[i].description !== '' ) {
+				if (data[i].description && data[i].description !== '') {
 
-					// Inline description
-					if ( this.descriptionMode == this.DESCRIPTION_MODE_INLINE ) {
+					// Description style (inline | popout)
+					if (this.settingsService.descriptionMode === this.settingsService.DESCRIPTION_MODE_INLINE) {
+
+						// Inline description
 						matchingElementDIV.innerHTML += "<p class=\"inline-description\">" + data[i].description + "</p>";
+
+					} else if (this.settingsService.descriptionMode === this.settingsService.DESCRIPTION_MODE_POPOUT) {
+
+						// Popout description
+						matchingElementDIV.innerHTML +=
+							"<div class=\"popout-description-icon\" data-description=\"" + data[i].description + "\">" +
+								"<i class=\"material-icons\">info_outlined</i>" +
+							"</div>";
+
 					}
+
 				}
 
 
 				let _this = this;
 
 				// Execute a function when the item is clicked or selected
-				matchingElementDIV.addEventListener('click', function(e) {
+				matchingElementDIV.addEventListener('click', function (e) {
+
+					// Input element holding the label
+					let valueInputElement = this.querySelector('input[name="label"]') as HTMLInputElement;
 
 					// Insert the value for the autocomplete text field
-					inputElement.value = this.getElementsByTagName('input')[0].value;
+					inputElement.value = valueInputElement.value;
+
+					// Check if there is a identifier -> add it as a data-identifier to the input element
+					let identifierInputElement = this.querySelector('input[name="identifier"]') as HTMLInputElement;
+
+					if (identifierInputElement.value !== '') {
+						inputElement.dataset.identifier = identifierInputElement.value;
+					}
+
+					// Remove all description popouts
+					_this.removeDescriptionPopout();
 
 					// Close the list of autocompleted values,
 					// (or any other open lists of autocompleted values
 					// _this.closeAllLists(inputElement);
 				});
 
+
+				// Popout description?
+				if (this.settingsService.descriptionMode === this.settingsService.DESCRIPTION_MODE_POPOUT) {
+
+					// Add a Eventlistener for the info icon on mouseover and mouseout
+					let infoIcon = matchingElementDIV.querySelector('.popout-description-icon') as HTMLElement;
+
+					if ( infoIcon ) {
+
+						let parentElement = infoIcon.parentElement as HTMLElement;
+
+						// Mouseover -> show description
+						infoIcon.addEventListener('mouseover', function(e) {
+
+							if ( parentElement ) {
+								_this.showElementDescriptionInPopout(parentElement, dataIndex);
+							}
+						});
+
+						// Mouseout -> remove description
+						infoIcon.addEventListener('mouseout', function(e) {
+
+							if ( parentElement ) {
+								_this.hideDescriptionPopout(dataIndex);
+							}
+						});
+					}
+
+				}
+
+				// Add the complete construct to the parent DIV
 				autocompleteDIV.appendChild(matchingElementDIV);
 			}
 		}
@@ -277,9 +378,9 @@ export class AutocompleteService {
 			// This will prevent the code influencing the behaviour of the input
 			// if there is no autocomplete data for the field or if the
 			// autocomplete has been deactivated after initialising
-			if ( autocompleteContainer ) {
+			if (autocompleteContainer) {
 
-				let autocompleteContainerContentDIVs = autocompleteContainer.getElementsByTagName("div");
+				let autocompleteContainerContentDIVs = autocompleteContainer.querySelectorAll("div.autocomplete-element");
 
 				if (event.key === "ArrowDown") {
 
@@ -291,7 +392,7 @@ export class AutocompleteService {
 					this.currentFocus++;
 
 					// Make the current item more visible
-					this.addActive(autocompleteContainerContentDIVs);
+					this.addActive(autocompleteContainerContentDIVs, dataIndex);
 
 				} else if (event.key === "ArrowUp") {
 
@@ -303,7 +404,7 @@ export class AutocompleteService {
 					this.currentFocus--;
 
 					// Make the current item more visible
-					this.addActive(autocompleteContainerContentDIVs);
+					this.addActive(autocompleteContainerContentDIVs, dataIndex);
 
 				} else if (event.key === "Enter") {
 
@@ -313,14 +414,21 @@ export class AutocompleteService {
 					if (this.currentFocus > -1) {
 
 						// and simulate a click on the "active" item
-						if (autocompleteContainerContentDIVs) autocompleteContainerContentDIVs[this.currentFocus].click();
+						if (autocompleteContainerContentDIVs) {
+
+							let currentFocus = autocompleteContainerContentDIVs[this.currentFocus] as HTMLElement;
+
+							currentFocus.click();
+						}
 					}
-				} else if (event.key ==="Esc" || event.key === "Escape" ) {
+				} else if (event.key === "Esc" || event.key === "Escape") {
 
 					// If the ESCAPE key is pressed, close the list
 					event.preventDefault();
 
 					this.closeAllLists(inputElement);
+
+					this.removeDescriptionPopout();
 				}
 
 			}
@@ -336,9 +444,10 @@ export class AutocompleteService {
 	 * Add the autocomplete-active class to the active div
 	 *
 	 * @param elements
+	 * @param dataIndex
 	 * @returns
 	 */
-	private addActive(elements: HTMLCollectionOf<HTMLDivElement>): void {
+	private addActive(elements: NodeListOf<Element>, dataIndex?: number): void {
 
 		// If no elements were found just return
 		if (!elements) return;
@@ -361,6 +470,21 @@ export class AutocompleteService {
 
 		// Add the class autocomplete-active to the focused element
 		elements[this.currentFocus].classList.add("autocomplete-active");
+
+		// Popout description?
+		if ( this.settingsService.descriptionMode === this.settingsService.DESCRIPTION_MODE_POPOUT ) {
+
+			// Check if element has description and set the popout text and visibilty
+			let element = elements[this.currentFocus] as HTMLElement;
+
+			if ( typeof dataIndex !== 'undefined' ) {
+				this.showElementDescriptionInPopout(element, dataIndex);
+			}
+
+		}
+
+		// Scroll the element into view
+		elements[this.currentFocus].scrollIntoView({ block: "nearest", inline: "nearest" });
 	}
 
 
@@ -371,7 +495,7 @@ export class AutocompleteService {
 	 *
 	 * @param elements
 	 */
-	private removeActive(elements: HTMLCollectionOf<HTMLDivElement>): void {
+	private removeActive(elements: NodeListOf<Element>): void {
 
 		// Loopt through all divs and remove the class autocomplete-active
 		for (var i = 0; i < elements.length; i++) {
@@ -395,10 +519,12 @@ export class AutocompleteService {
 		let allLists = document.getElementsByClassName("autocomplete-items");
 
 		for (let i = 0; i < allLists.length; i++) {
-		  	if ( clickedElement != allLists[i] && clickedElement != inputElement ) {
+			if (clickedElement != allLists[i] && clickedElement != inputElement) {
 				allLists[i].parentNode!.removeChild(allLists[i]);
 			}
 		}
+
+
 	}
 
 
@@ -451,18 +577,25 @@ export class AutocompleteService {
 		let result: AutocompleteData[] = [];
 
 		// Check if results and bindings exist
-		if ( data.results !== null && data.results.bindings !== null ) {
+		if (data.results !== null && data.results.bindings !== null) {
+
+			let bindings = data.results.bindings;
+
+			// Sort items?
+			if (this.settingsService.frontendSorting) {
+				bindings = this.helperService.sort('label.value', bindings);
+			}
 
 			// Loop through all bindings and get the results back
-			for ( const key in data.results.bindings ) {
+			for (const key in bindings) {
 
-				const bindingsData = data.results.bindings[key];
+				const bindingsData = bindings[key];
 
-				// Get the value of the label
+				// Get the values of the label, identifier and description
 				result.push({
-					identifier: bindingsData.identifier.value,
-					label: bindingsData.label.value,
-					description: bindingsData.description.value
+					identifier: bindingsData.identifier && bindingsData.identifier.value ? bindingsData.identifier.value : '',
+					label: bindingsData.label && bindingsData.label.value ? bindingsData.label.value : '',
+					description: bindingsData.description && bindingsData.description.value ? bindingsData.description.value : ''
 				});
 
 			}
@@ -482,6 +615,7 @@ export class AutocompleteService {
 	 */
 	private setAutocompleteInitStatus(inputElement: HTMLInputElement, status: string): void {
 		inputElement.setAttribute('data-autocomplete-init', status);
+		inputElement.parentElement?.setAttribute('data-autocomplete-init', status);
 	}
 
 
@@ -508,7 +642,7 @@ export class AutocompleteService {
 	 */
 	public checkIfAutocompleteNotInit(inputElement: HTMLInputElement): boolean {
 
-		if ( this.getAutocompleteInitStatus(inputElement) === null ) {
+		if (this.getAutocompleteInitStatus(inputElement) === null) {
 			return true;
 		} else {
 			return false;
@@ -526,7 +660,7 @@ export class AutocompleteService {
 	 */
 	public checkIfAutocompleteInitIsInProgress(inputElement: HTMLInputElement): boolean {
 
-		if ( this.getAutocompleteInitStatus(inputElement) === this.INIT_STATUS.GET ) {
+		if (this.getAutocompleteInitStatus(inputElement) === this.INIT_STATUS.GET) {
 			return true;
 		} else {
 			return false;
@@ -544,10 +678,177 @@ export class AutocompleteService {
 	 */
 	public checkIfAutocompleteInitIsComplete(inputElement: HTMLInputElement): boolean {
 
-		if ( this.getAutocompleteInitStatus(inputElement) === this.INIT_STATUS.DONE ) {
+		if (this.getAutocompleteInitStatus(inputElement) === this.INIT_STATUS.DONE) {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+
+	/**
+	 * getElementDescription
+	 *
+	 * Gets the description within an element
+	 *
+	 * @param element
+	 * @returns
+	 */
+	private getElementDescription(element: HTMLElement): string {
+
+		let description: string = '';
+
+		// Check if there is an element with a description and get the description
+		if ( element.querySelector('[data-description]') && element.querySelector('[data-description]')?.getAttribute('data-description') !== '' ) {
+
+			description = element.querySelector('[data-description]')!.getAttribute('data-description') as string;
+		}
+
+		return description;
+	}
+
+
+	/**
+	 * showElementDescriptionInPopout
+	 *
+	 * Shows the description of the element in the popout
+	 *
+	 * @param sourceElement
+	 * @param dataIndex
+	 */
+	private showElementDescriptionInPopout(sourceElement: HTMLElement, dataIndex: number) {
+
+		// Get the description
+		let description = this.getElementDescription(sourceElement);
+
+		// Put the text in the Popout
+		let popout = document.getElementById(dataIndex + '_autocomplete-popout-description');
+
+		if ( popout ) {
+			popout.innerHTML = description;
+
+			this.showDescriptionPopout(dataIndex, sourceElement);
+		}
+	}
+
+
+	/**
+	 * showDescriptionPopout
+	 *
+	 * Shows the description popout
+	 *
+	 * @param dataIndex
+	 * @param sourceElement
+	 */
+	private showDescriptionPopout(dataIndex: number, sourceElement?: HTMLElement): void {
+
+		// Put the text in the Popout
+		let popout = document.getElementById(dataIndex + '_autocomplete-popout-description');
+
+		if ( popout ) {
+
+
+
+			// If a source element is passed, it should be used as the
+			// reference for the top position of the popout
+			if ( typeof sourceElement !== 'undefined' ) {
+				this.positionPopoutRelativeToSourceElement(popout, sourceElement);
+			} else {
+
+				// Of there is no source element passed, show the popout
+				popout.classList.add('show');
+			}
+		}
+	}
+
+
+	/**
+	 * hideDescriptionPopout
+	 *
+	 * Hides a description popout
+	 *
+	 * @param dataIndex
+	 */
+	 private hideDescriptionPopout(dataIndex: number): void {
+
+		let popout = document.getElementById(dataIndex + '_autocomplete-popout-description');
+
+		if ( popout ) {
+			popout.classList.remove('show');
+		}
+	}
+
+
+	/**
+	 * removeDescriptionPopout
+	 *
+	 * Removes one or all description popouts
+	 *
+	 * @param specificPopout
+	 */
+	private removeDescriptionPopout(specificPopout?: HTMLElement): void {
+
+		// Remove specific popout?
+		if ( specificPopout ) {
+			specificPopout.remove();
+
+		} else {
+
+			// Remove all popouts
+			let popouts = document.querySelectorAll('div.autocomplete-popout-description-wrap');
+
+			if ( popouts ) {
+
+				popouts.forEach(
+					(popout: Element) => {
+						popout.remove();
+					}
+				)
+			}
+		}
+	}
+
+
+	/**
+	 * positionPopoutRelativeToSourceElement
+	 *
+	 * Positions the popout element relative to the source element
+	 *
+	 * @param popout
+	 * @param sourceElement
+	 */
+	private positionPopoutRelativeToSourceElement(popout: HTMLElement, sourceElement: HTMLElement): void {
+
+		// Do both exist?
+		if ( popout && sourceElement ) {
+
+			// Get all the relevant positions and coords
+			let sourceElementRelativeTop = sourceElement.offsetTop,
+				sourceElementHeight = sourceElement.offsetHeight,
+				popoutHeight = popout.offsetHeight;
+
+			// Calculate the top position of the popout:
+			// Relative top of the source element + source element height - (parent input height + borders (3x))
+			// minus popout height / 2
+			// plus source element height / 2
+			let topPosition = 	Math.round((sourceElementRelativeTop + sourceElementHeight - 19)) -
+								Math.round((popoutHeight / 2)) +
+								Math.round((sourceElementHeight / 2 ));
+
+			// minus the scrolltop of the scrollable parent in a timeout
+			// because it takes the browser a few ms to scroll the parent
+			window.setTimeout(
+				() => {
+					topPosition -= Math.round(sourceElement.parentElement!.scrollTop);
+
+					// Set the top position and show the popout
+					popout.style.top = topPosition + 'px';
+
+					popout.classList.add('show');
+				}, 10
+			);
+
+
 		}
 	}
 }

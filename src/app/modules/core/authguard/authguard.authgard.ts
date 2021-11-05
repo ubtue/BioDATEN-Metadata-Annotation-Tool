@@ -11,6 +11,10 @@ import { KeycloakService } from '../services/keycloak.service';
 	providedIn: 'root',
 })
 export class AuthGuard extends KeycloakAuthGuard {
+
+	/**
+	 * constructor
+	 */
 	constructor(
 		protected readonly router: Router,
 		protected readonly keycloak: KeycloakService
@@ -18,6 +22,16 @@ export class AuthGuard extends KeycloakAuthGuard {
 		super(router, keycloak);
 	}
 
+
+	/**
+	 * isAccessAllowed
+	 *
+	 * Checks if user is allow access to route
+	 *
+	 * @param route
+	 * @param state
+	 * @returns
+	 */
 	public async isAccessAllowed(
 		route: ActivatedRouteSnapshot,
 		state: RouterStateSnapshot
