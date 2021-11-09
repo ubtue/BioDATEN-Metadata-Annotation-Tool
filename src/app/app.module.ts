@@ -36,43 +36,8 @@ import { PlatformModule } from '@angular/cdk/platform';
  * @returns
  */
  function initializeKeycloak(keycloak: KeycloakService, loadingService: LoadingService): () => Promise<void> {
-	return () =>
-
-		keycloak.init({
-			config: {
-				url: keycloak.authServerAddress,
-				realm: keycloak.keycloakRealm,
-				clientId: keycloak.keycloakClientId,
-			},
-			initOptions: {
-				onLoad: 'check-sso',
-				silentCheckSsoRedirectUri:
-					window.location.origin + '/assets/auth/silent-check-sso.html',
-			},
-		}).then(
-			(isUserLoggedIn: boolean) => {
-
-				// After init, check if the user is logged in and safe the user profile
-				if (isUserLoggedIn) {
-
-					keycloak.loadUserProfile().then(
-						(userProfile: KeycloakProfile) => {
-							keycloak.userInformation = userProfile;
-						}
-					)
-				} else {
-					keycloak.userInformation = null as any;
-				}
-			}
-		).catch(
-			(reason: any) => {
-				console.warn('Error with Keycloak:');
-				console.warn(reason);
-			}
-		);
-
+	return KeycloakService.initializeKeycloak(keycloak, loadingService);
 }
-
 
 
 /**
@@ -85,45 +50,7 @@ import { PlatformModule } from '@angular/cdk/platform';
  * @returns
  */
 function initializeKeycloakDev(keycloak: KeycloakService, loadingService: LoadingService): () => Promise<void> {
-	return () =>
-
-		keycloak.init({
-
-			config: {
-				url: 'http://localhost:8081/auth',
-				realm: 'master',
-				clientId: 'keycloak-angular',
-			},
-			initOptions: {
-				onLoad: 'check-sso',
-				silentCheckSsoRedirectUri:
-					window.location.origin + '/assets/auth/silent-check-sso.html',
-			},
-			enableBearerInterceptor: true,
-			bearerExcludedUrls: ['/assets']
-		})
-		.then(
-			(isUserLoggedIn: boolean) => {
-
-				// After init, check if the user is logged in and safe the user profile
-				if ( isUserLoggedIn ) {
-
-					keycloak.loadUserProfile().then(
-						(userProfile: KeycloakProfile) => {
-							keycloak.userInformation = userProfile;
-						}
-					)
-				} else {
-					keycloak.userInformation = null as any;
-				}
-
-			}
-		).catch(
-			(reason: any) => {
-				console.warn('Error with Keycloak:');
-				console.warn(reason);
-			}
-		);
+	return KeycloakService.initializeKeycloak(keycloak, loadingService, true);
 
 }
 

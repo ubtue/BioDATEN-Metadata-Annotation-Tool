@@ -1,3 +1,4 @@
+import { KeycloakProfile } from 'keycloak-js';
 import { EventHelperService } from './../../../shared/services/event-helper.service';
 import { UpdateNavigation } from './../../../shared/models/update-navigation.model';
 import { UpdateNavigationService } from './../../../core/services/update-navigation.service';
@@ -20,7 +21,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	currentViewValue: string = "";
 
 	userIsLoggedIn: boolean = false;
-	userInformation: any = null;
+	userInformation: KeycloakProfile = null as any;
 
 	showUserMenu: boolean = false;
 
@@ -37,6 +38,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 					this.keycloakService.isLoggedIn().then(
 						(loginResult: boolean) => {
 							this.userIsLoggedIn = loginResult;
+
+							this.userInformation = this.keycloakService.userInformation;
 
 							if ( loginResult && this.settingsService.enableConsoleLogs ) {
 								this.keycloakService.printLoginInformation();
@@ -105,6 +108,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
 
 	/**
+	 * openUserMenu
+	 *
+	 * Opens user menu
+	 */
+	 openUserMenu(): void {
+		this.toggleUserMenu(true, false);
+	}
+
+
+	/**
+	 * closeUserMenu
+	 *
+	 * Closes user menu
+	 */
+	closeUserMenu(): void {
+		this.toggleUserMenu(false, true);
+	}
+
+
+	/**
 	 * toggleUserMenu
 	 *
 	 * Toggles the user menu
@@ -131,27 +154,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 			}
 		}
 	}
-
-
-	/**
-	 * openUserMenu
-	 *
-	 * Opens user menu
-	 */
-	private openUserMenu(): void {
-		this.toggleUserMenu(true, false);
-	}
-
-
-	/**
-	 * closeUserMenu
-	 *
-	 * Closes user menu
-	 */
-	closeUserMenu(): void {
-		this.toggleUserMenu(false, true);
-	}
-
 
 
 	/**

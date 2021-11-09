@@ -1,2 +1,10 @@
-<p>user-profile works!</p>
-<button (click)="onClickTest()">TEST</button>
+<div class="user-profile-outer-wrap">
+
+	<div class="user-profile-information-wrap" *ngIf="userInformation">
+
+		<div class="user-profile-information-logged-in-as" *ngIf="userInformation.firstName && userInformation.lastName">
+			Logged in as: <span class="bold">{{ userInformation.firstName }} {{ userInformation.lastName }}</span>
+		</div>
+
+	</div>
+</div>

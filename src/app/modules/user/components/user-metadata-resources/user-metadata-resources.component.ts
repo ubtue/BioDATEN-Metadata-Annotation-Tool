@@ -54,9 +54,7 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 	 * ngOnInit
 	 */
 	ngOnInit(): void {
-		this.updateNavigationService.updateCurrentView(
-			"Metadata resources:",
-			this.keycloakService.userInformation.firstName! + " " + this.keycloakService.userInformation.lastName!);
+		this.updateNavigationService.updateCurrentView("Metadata resources", "");
 	}
 
 

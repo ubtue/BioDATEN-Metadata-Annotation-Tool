@@ -1,3 +1,4 @@
+import { SettingsService } from 'src/app/modules/shared/services/settings.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import { DataTransferService } from '../../../core/services/data-transfer.service';
@@ -35,7 +36,8 @@ export class MetadataAnnotationFormTestMultiOutputComponent implements OnInit {
 				private updateNavigationService: UpdateNavigationService,
 				public loadingService: LoadingService,
 				private helperService: HelperService,
-				private htmlHelperService: HtmlHelperService) {}
+				private htmlHelperService: HtmlHelperService,
+				private settingsService: SettingsService) {}
 
 	ngOnInit(): void {
 		this.currentTab = 'settings';
@@ -75,23 +77,9 @@ export class MetadataAnnotationFormTestMultiOutputComponent implements OnInit {
 	 * onClickSave
 	 */
 	onClickSave():void {
-		console.log('Saving the data...');
 
+		// Save XML data
 		this.saveXMLData();
-
-		// if ( document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml') ) {
-
-		// 	let schemeFilename = document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] span[data-scheme-file]')?.getAttribute('data-scheme-file') as string;
-
-		// 	console.log(
-		// 		(window as any)['xsd2html2xml'][this.helperService.removeFileExtension(schemeFilename)].htmlToXML(
-		// 			document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml'),
-		// 			this.helperService.removeFileExtension(schemeFilename)
-		// 		)
-		// 	);
-		// }
-
-
 	}
 
 	/**
@@ -194,7 +182,10 @@ export class MetadataAnnotationFormTestMultiOutputComponent implements OnInit {
 	 * @param addTabContent
 	 */
 	private addTab(tabName: string, tabNameDisplay: string, addTabContent?: boolean): MetadataCreatedTab {
-		console.log('creating tab "' + tabNameDisplay + '" with internal name "' + tabName + '"');
+
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('creating tab "' + tabNameDisplay + '" with internal name "' + tabName + '"');
+		}
 
 		// Clone the template tab and add/remove specific properties
 		let clonedTab = this.templateTab.nativeElement.cloneNode(true) as HTMLElement;

@@ -1,3 +1,4 @@
+import { KeycloakProfile } from 'keycloak-js';
 import { Component, OnInit } from '@angular/core';
 import { KeycloakService } from 'src/app/modules/core/services/keycloak.service';
 import { UpdateNavigationService } from 'src/app/modules/core/services/update-navigation.service';
@@ -9,14 +10,20 @@ import { UpdateNavigationService } from 'src/app/modules/core/services/update-na
 })
 export class UserProfileComponent implements OnInit {
 
+	userInformation: KeycloakProfile = null as any;
+
 	constructor(private updateNavigationService: UpdateNavigationService,
-				private keycloakService: KeycloakService) { }
+				private keycloakService: KeycloakService) {
+
+					this.userInformation = keycloakService.userInformation;
+
+				}
 
 	ngOnInit(): void {
-		this.updateNavigationService.updateCurrentView("User:", "Profile");
+		this.updateNavigationService.updateCurrentView("User profile", "");
 	}
 
 	onClickTest(): void {
-		console.log(this.keycloakService.userInformation);
+
 	}
 }

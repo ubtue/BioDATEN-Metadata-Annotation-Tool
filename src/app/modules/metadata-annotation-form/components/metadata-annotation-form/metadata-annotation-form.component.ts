@@ -71,7 +71,6 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 * onClickSave
 	 */
 	onClickSave():void {
-		console.log('Saving the data...');
 
 		if ( document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml') ) {
 

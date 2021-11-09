@@ -495,7 +495,10 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 			this.dataTransferService
 				.postData('http://localhost:8080/xsdnojs', formData)
 				.then((result: any) => {
-					console.log('Parsing complete!');
+
+					if ( this.settingsService.enableConsoleLogs ) {
+						console.log('Parsing complete!');
+					}
 
 					let currentTabContent: any | null = document.querySelector(
 						'div.tabcontent[data-tab="custom"]'

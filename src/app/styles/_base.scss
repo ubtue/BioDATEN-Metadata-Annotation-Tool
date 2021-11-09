@@ -18,6 +18,10 @@ body {
 	[hidden] {
 		display: none !important;
 	}
+
+	.bold {
+		font-weight: $fontWeightBoldContent;
+	}
 }
 
 body {

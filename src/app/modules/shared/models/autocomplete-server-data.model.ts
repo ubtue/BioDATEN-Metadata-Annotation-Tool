@@ -16,7 +16,7 @@ export interface AutocompleteServerData {
 				type: string;
 				value: string;
 			},
-			description: {
+			description?: {
 				type: string;
 				value: string;
 			}
