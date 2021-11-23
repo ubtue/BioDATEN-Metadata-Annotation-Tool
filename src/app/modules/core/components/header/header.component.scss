@@ -5,7 +5,8 @@
 $upperHeaderHeight: 52px;
 $upperHeaderBackground: #fff;
 
-$upperHeaderMenuIconSize: 30px;
+$upperHeaderMenuIconSize: 28px;
+$upperHeaderMenuIconSizeLG: 30px;
 
 /* USER MENU */
 $upperHeaderUserMenuMinWidth: 100px;
@@ -52,8 +53,19 @@ $headerHeight: calc(#{$upperHeaderHeight} + #{$lowerHeaderHeight});
 					}
 
 					.header-text {
-						font-size: 20px;
+						font-size: 16px;
+						height: 16px;
 						margin-left: 12px;
+
+						@include respond-above(md) {
+							font-size: 18px;
+							height: 18px;
+						}
+
+						@include respond-above(lg) {
+							font-size: 20px;
+							height: 20px;
+						}
 					}
 				}
 			}
@@ -70,6 +82,10 @@ $headerHeight: calc(#{$upperHeaderHeight} + #{$lowerHeaderHeight});
 
 					height: $upperHeaderMenuIconSize;
 
+					@include respond-above(lg) {
+						height: $upperHeaderMenuIconSizeLG;
+					}
+
 					.header-user-icon-button {
 						cursor: pointer;
 						background: none;
@@ -77,6 +93,11 @@ $headerHeight: calc(#{$upperHeaderHeight} + #{$lowerHeaderHeight});
 
 						height: $upperHeaderMenuIconSize;
 						font-size: $upperHeaderMenuIconSize;
+
+						@include respond-above(lg) {
+							height: $upperHeaderMenuIconSizeLG;
+							font-size: $upperHeaderMenuIconSizeLG;
+						}
 					}
 				}
 
@@ -87,6 +108,10 @@ $headerHeight: calc(#{$upperHeaderHeight} + #{$lowerHeaderHeight});
 					position: absolute;
 					right: 0;
 					top: $upperHeaderMenuIconSize;
+
+					@include respond-above(lg) {
+						top: $upperHeaderMenuIconSizeLG;
+					}
 
 					background: #fff;
 					border: 1px solid $borderGrey;
@@ -142,6 +167,10 @@ $headerHeight: calc(#{$upperHeaderHeight} + #{$lowerHeaderHeight});
 
 					height: $upperHeaderMenuIconSize;
 
+					@include respond-above(lg) {
+						height: $upperHeaderMenuIconSizeLG;
+					}
+
 					.header-menu-button {
 						cursor: pointer;
 						background: none;
@@ -149,6 +178,11 @@ $headerHeight: calc(#{$upperHeaderHeight} + #{$lowerHeaderHeight});
 
 						height: $upperHeaderMenuIconSize;
 						font-size: $upperHeaderMenuIconSize;
+
+						@include respond-above(lg) {
+							height: $upperHeaderMenuIconSizeLG;
+							font-size: $upperHeaderMenuIconSizeLG;
+						}
 					}
 				}
 			}

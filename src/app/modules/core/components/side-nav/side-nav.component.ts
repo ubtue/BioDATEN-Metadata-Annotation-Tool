@@ -1,3 +1,4 @@
+import { UpdateNavigationService } from 'src/app/modules/core/services/update-navigation.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -10,13 +11,21 @@ export class SideNavComponent implements OnInit {
 	/**
 	 * constructor
 	 */
-	constructor() { }
+	constructor(private updateNavigationService: UpdateNavigationService) { }
 
 
 	/**
 	 * ngOnInit
 	 */
 	ngOnInit(): void {
+	}
+
+
+	/**
+	 * onClickClose
+	 */
+	onClickClose(): void {
+		this.updateNavigationService.updateMenuToggle(false);
 	}
 
 }

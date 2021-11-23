@@ -89,6 +89,7 @@ export class HtmlHelperService {
 
 					if ( parentLegend.innerHTML.includes(labelSpan.innerHTML) ) {
 						labelSpan.remove();
+						parentLegend.classList.add('child-span-removed');
 					}
 				}
 			});
@@ -151,19 +152,111 @@ export class HtmlHelperService {
 	 */
 	markParentInputSections(rootElement: HTMLElement): void {
 
+		// Search all inputs and loop through them
 		let inputs = rootElement.querySelectorAll('input:not([type="button"]), select');
 
 		if ( inputs.length ) {
 
 			inputs.forEach((input) => {
+
+				// Find the closest section of the input element
 				let closestSection = input.closest('section');
 
-				if ( !closestSection?.querySelector('fieldset') && !closestSection?.querySelector('button') ) {
-					closestSection?.classList.add('input-section');
+				// If the element already has the class skip it
+				if ( !closestSection?.classList.contains('input-section') ) {
+
+					// Check if the section has no child fieldsets or child buttons
+					if ( !closestSection?.querySelector('fieldset') && !closestSection?.querySelector('button') ) {
+						closestSection?.classList.add('input-section');
+					}
 				}
 
+				// If the input is of type radio add the class "stretch"
 				if ( input.getAttribute('type') === 'radio' ) {
 					input.closest('label')?.classList.add('stretch');
+				}
+
+			});
+		}
+	}
+
+
+	/**
+	 * addDataCountToFieldset
+	 *
+	 * Adds a data-attribute to the parent fieldset to show how many
+	 * input-section sections children there are.
+	 * Also adds a indicator if the number is even or odd
+	 *
+	 * @param rootElement
+	 */
+	addDataCountToFieldset(rootElement: HTMLElement): void {
+
+		// Find all fieldsets and loop through them
+		let fieldsets = rootElement.querySelectorAll('fieldset');
+
+		if ( fieldsets.length ) {
+
+			fieldsets.forEach((fieldset) => {
+
+				// Get all children of the fieldset
+				let fieldsetChildren = fieldset.children;
+
+				let inputSectionCount = 0;
+
+				if ( fieldsetChildren.length ) {
+
+					// Save the children to an array
+					let fieldsetChildrenArray = Array.from(fieldsetChildren);
+
+					// Loop through the array and add a class 'even' or 'odd' to the
+					// child element if it's an section.input-section.
+					// This needs to be resetted if another element is present
+					let currentClass = 'odd';
+
+					for ( let fieldsetChild of fieldsetChildrenArray ) {
+
+						if ( fieldsetChild.classList.contains('input-section') && currentClass === 'odd' ) {
+
+							// Add the odd class and change the current class to even
+							fieldsetChild.classList.add('odd');
+
+							currentClass = 'even';
+
+						} else if ( fieldsetChild.classList.contains('input-section') && currentClass === 'even' ) {
+
+							// Add the even class and change the current class to odd
+							fieldsetChild.classList.add('even');
+
+							currentClass = 'odd';
+						} else {
+
+							// If neither of the conditions is true, set the current class back to odd
+							currentClass = 'odd';
+						}
+					}
+
+					// Loop through the reveresed array and check how many section.input-section
+					// There are before another element is present
+					// This is the count needed to decide if the display is even or odd
+					for ( let fieldsetChild of fieldsetChildrenArray.reverse() ) {
+
+						if ( fieldsetChild.classList.contains('input-section') ) {
+							inputSectionCount++;
+						} else {
+							break;
+						}
+					}
+				}
+
+				// If there are any put the number and even/odd in a data-attribute
+				if ( inputSectionCount > 0 ) {
+					fieldset.setAttribute('data-input-section-count', inputSectionCount.toString());
+
+					fieldset.setAttribute(
+						'data-input-section-even-odd',
+						(inputSectionCount % 2 === 1 ? 'odd' : 'even')
+					);
 				}
 			});
 		}

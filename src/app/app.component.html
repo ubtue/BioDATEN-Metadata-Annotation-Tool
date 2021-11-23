@@ -1,5 +1,5 @@
 <mat-sidenav-container class="side-nav-wrap-container">
-	<mat-sidenav #sidenav class="side-nav" mode="side" position="end" [opened]="currentMenuToggle">
+	<mat-sidenav #sidenav class="side-nav" mode="over" position="end" (openedChange)="onMenuOpenedChange($event)" [opened]="currentMenuToggle">
 		<app-side-nav></app-side-nav>
 	</mat-sidenav>
 	<mat-sidenav-content class="side-nav-content">

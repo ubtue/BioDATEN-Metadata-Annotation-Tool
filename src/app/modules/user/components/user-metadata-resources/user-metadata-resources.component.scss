@@ -1,113 +1,208 @@
 @import "../../../../styles/shared_variables";
 @import "../../../../styles/mixins";
 
-.user-metadata-resource-wrap {
+.user-metadata-resource-outer-wrap {
 
 	@include contentPadding();
 
-	.user-metadata-resource-table {
-		width: 100%;
+	.user-metadata-resource-wrap-blocks {
 
-		border: 1px solid $borderGrey;
+		display: block;
 
-		.mat-header-row {
-			background: $navigationGrey;
+		@include respond-above(md) {
+			display: none;
+		}
 
-			.mat-header-cell {
-				color: #fff;
-				font-size: $fontSizeContent;
+		.user-metadata-resource-blocks-sort-wrap {
 
-				&.mat-sort-header {
+			.mat-form-field {
+				width: 100%;
 
-					* {
-						color: #fff;
+				&.mat-focused {
+
+					.mat-form-field-ripple {
+						background-color: $navigationGrey;
+					}
+
+					&.mat-primary {
+
+						.mat-select-arrow {
+							color: $navigationGrey;
+						}
 					}
 				}
 			}
 		}
 
-		.mat-row {
+		.user-metadata-resource-block {
 
-			&:hover {
+			@include addMarginBottom(medium);
 
-				.mat-cell {
-					background: #f0f0f0;
+			.user-metadata-resource-block-content-wrap {
+
+				position: relative;
+				border: 1px solid $borderGrey;
+
+				&:after {
+					content: " ";
+					position: absolute;
+
+					height: 100%;
+					width: 10px;
+
+					right: 0;
+					top: 0;
 				}
-			}
 
-			.mat-cell {
-				border-bottom: 1px solid transparent;
-				border-top: 1px solid transparent;
-				cursor: pointer;
-
-				font-size: $fontSizeContent;
-
-				&.cdk-column-title {
-					width: 28%;
-				}
-
-				&.cdk-column-status {
-					width: 100px;
-
-					position: relative;
-
+				&.a_new {
 					&:after {
-						content: " ";
-						position: absolute;
-
-						height: 100%;
-						width: 14px;
-
-						right: 0;
-						top: 0;
-					}
-
-					&.new {
-						&:after {
-							background: #b8daff;
-						}
-
-					}
-
-					&.progress {
-						&:after {
-							background: #ffeeba;
-						}
-					}
-
-					&.finished {
-						&:after {
-							background: #c3e6cb;
-						}
+						background: #b8daff;
 					}
 
 				}
 
+				&.k_progress {
+					&:after {
+						background: #ffeeba;
+					}
+				}
 
+				&.z_finished {
+					&:after {
+						background: #c3e6cb;
+					}
+				}
+
+
+				.user-metadata-resource-block-content {
+
+					display: flex;
+					align-items: center;
+
+					padding: 8px;
+
+					background: #f3f3f3;
+
+					&:nth-child(2n) {
+						background: #fff;
+					}
+
+					.user-metadata-resource-block-label {
+						width: 120px;
+					}
+				}
 			}
-
 		}
-
-
 	}
 
+	.user-metadata-resource-wrap-table {
 
-	.mat-paginator-outer-container {
+		display: none;
 
-		.mat-paginator-container {
+		@include respond-above(md) {
+			display: block;
+		}
 
-			.mat-paginator-range-actions {
+		.user-metadata-resource-table {
+			width: 100%;
 
-				.mat-button-disabled {
-					border: none !important;
-					background: none !important;
+			border: 1px solid $borderGrey;
 
-					.mat-button-wrapper {
+			.mat-header-row {
+				background: $navigationGrey;
 
-						svg {
+				.mat-header-cell {
+					color: #fff;
+					font-size: $fontSizeContent;
 
-							path {
-								color: #a6a6a6;
+					&.mat-sort-header {
+
+						* {
+							color: #fff;
+						}
+					}
+				}
+			}
+
+			.mat-row {
+
+				&:hover {
+
+					.mat-cell {
+						background: #f0f0f0;
+					}
+				}
+
+				.mat-cell {
+					border-bottom: 1px solid transparent;
+					border-top: 1px solid transparent;
+					cursor: pointer;
+
+					padding-right: 10px;
+
+					font-size: $fontSizeContent;
+
+					&.cdk-column-title {
+						width: 28%;
+					}
+
+					&.cdk-column-status {
+						width: 100px;
+
+						position: relative;
+
+						&:after {
+							content: " ";
+							position: absolute;
+
+							height: 100%;
+							width: 14px;
+
+							right: 0;
+							top: 0;
+						}
+
+						&.a_new {
+							&:after {
+								background: #b8daff;
+							}
+
+						}
+
+						&.k_progress {
+							&:after {
+								background: #ffeeba;
+							}
+						}
+
+						&.z_finished {
+							&:after {
+								background: #c3e6cb;
+							}
+						}
+
+					}
+				}
+			}
+		}
+
+		.mat-paginator-outer-container {
+
+			.mat-paginator-container {
+
+				.mat-paginator-range-actions {
+
+					.mat-button-disabled {
+						border: none !important;
+						background: none !important;
+
+						.mat-button-wrapper {
+
+							svg {
+
+								path {
+									color: #a6a6a6;
+								}
 							}
 						}
 					}
@@ -115,7 +210,6 @@
 			}
 		}
 	}
-
 }
 
 

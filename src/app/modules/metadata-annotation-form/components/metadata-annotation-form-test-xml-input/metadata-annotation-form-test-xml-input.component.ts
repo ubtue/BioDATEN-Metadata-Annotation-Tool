@@ -1,3 +1,4 @@
+import { MetadataAnnotationFormHelperService } from './../../services/metadata-annotation-form-helper.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import { DataTransferService } from '../../../core/services/data-transfer.service';
@@ -50,6 +51,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				private updateNavigationService: UpdateNavigationService,
 				public loadingService: LoadingService,
 				private helperService: HelperService,
+				private metadataAnnotationFormHelperService: MetadataAnnotationFormHelperService,
 				private htmlHelperService: HtmlHelperService,
 				private autocompleteService: AutocompleteService,
 				private keycloakService: KeycloakService,
@@ -347,6 +349,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 					this.loadJSForAllSchemes(results).then(
 						() => {
 							this.activateAutocomplete(this.createdTabs);
+							this.metadataAnnotationFormHelperService.replaceOntologyIdentifiers();
 						}
 					);
 				}
@@ -453,6 +456,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				this.loadJSForAllSchemes(results).then(
 					() => {
 						this.activateAutocomplete(this.createdTabs);
+						this.metadataAnnotationFormHelperService.replaceOntologyIdentifiers();
 					}
 				);
 			}
@@ -582,6 +586,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				this.loadJSForAllSchemes(results).then(
 					() => {
 						this.activateAutocomplete(this.createdTabs);
+						this.metadataAnnotationFormHelperService.replaceOntologyIdentifiers();
 						this.updateNavigationService.updateCurrentView("Metadata for resource:", resourceId);
 						this.selectFirstTab();
 					}
@@ -620,10 +625,26 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
 			// If there is a content element, display the result html there
 			if ( createdTabContent ) {
+
 				createdTabContent.innerHTML = result.html;
-				// this.htmlHelperService.removeDoubleLegends(createdTabContent);
-				// this.htmlHelperService.addSectionsInFieldset(createdTabContent);
+
+				// If NOT in flex layout: Remove double legends
+				if ( this.settingsService.metadataAnnotationFormFlexLayout === false ) {
+					this.htmlHelperService.removeDoubleLegends(createdTabContent);
+				}
+
+				// In flex layout: Add sections around fieldsets without fieldsets
+				if ( this.settingsService.metadataAnnotationFormFlexLayout === true ) {
+					this.htmlHelperService.addSectionsInFieldset(createdTabContent);
+				}
+
+				// Mark the parent sections of inputs
 				this.htmlHelperService.markParentInputSections(createdTabContent);
+
+				// In flex layout: Add a count of the input-sections to the parent fieldset
+				if ( this.settingsService.metadataAnnotationFormFlexLayout === true ) {
+					this.htmlHelperService.addDataCountToFieldset(createdTabContent);
+				}
 			}
 
 		});
@@ -772,9 +793,12 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 */
 	private saveXMLData(): void {
 
-		let xmlData = this.createXMLData();
+		// Create the XML Data
+		let xmlData = this.metadataAnnotationFormHelperService.createXMLData(this.createdTabs);
 
 		if ( xmlData ) {
+
+			// Add the XML structure to it
 			xmlData = this.helperService.addXMLStructure(xmlData);
 
 			if ( this.settingsService.enableConsoleLogs ) {
@@ -783,43 +807,6 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 		}
 	}
 
-
-	/**
-	 * createXMLData
-	 *
-	 * Creates the XML data from all created tabs
-	 *
-	 * @returns
-	 */
-	private createXMLData(): string {
-
-		let xmlData = '';
-
-		// Loop through every tab an save the data
-		if ( this.createdTabs.length > 0 ) {
-
-			this.createdTabs.forEach((createdTab: MetadataCreatedTab) => {
-
-				if ( createdTab.tabContent?.contentElement?.querySelector('form.xsd2html2xml') ) {
-
-					// Get the filename of the scheme
-					let schemeFilename = createdTab.tabContent?.contentElement?.querySelector('span[data-scheme-file]')?.getAttribute('data-scheme-file') as string;
-
-					if ( schemeFilename ) {
-
-						// Get the XML data of the tab
-						xmlData += (window as any)['xsd2html2xml'][this.helperService.removeFileExtension(schemeFilename)].htmlToXML(
-							createdTab.tabContent?.contentElement?.querySelector('form.xsd2html2xml'),
-							'newScheme scheme="' + this.helperService.removeFileExtension(schemeFilename) + '"',
-							'newScheme'
-						)
-					}
-				}
-			});
-		}
-
-		return xmlData;
-	}
 
 	/**
 	 * mapTabNames

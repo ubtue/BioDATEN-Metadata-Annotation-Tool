@@ -1,42 +1,128 @@
-<div class="user-metadata-resource-wrap">
+<div class="user-metadata-resource-outer-wrap">
 
-	<table mat-table matSort [dataSource]="dataSource" class="user-metadata-resource-table">
+	<!-- For small devices list the content in blocks -->
+	<div class="user-metadata-resource-wrap-blocks">
 
-		<!-- Position Column -->
-		<ng-container matColumnDef="position">
-			<th mat-header-cell *matHeaderCellDef mat-sort-header>No.</th>
-			<td mat-cell *matCellDef="let element">{{element.position}}</td>
-		</ng-container>
+		<div class="user-metadata-resource-blocks-sort-wrap">
+			<!-- <div class="user-metadata-resource-blocks-sort-label">
+				Sort by:
+			</div>
 
-		<!-- ID Column -->
-		<ng-container matColumnDef="id">
-			<th mat-header-cell *matHeaderCellDef mat-sort-header>Resource</th>
-			<td mat-cell *matCellDef="let element">{{element.id}}</td>
-		</ng-container>
+			<div class="user-metadata-resource-blocks-sort-select-wrap">
 
-		<!-- ID Column -->
-		<ng-container matColumnDef="title">
-			<th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
-			<td mat-cell *matCellDef="let element">{{element.title}}</td>
-		</ng-container>
+				<select class="user-metadata-resource-blocks-sort-select"></select>
+
+			</div> -->
+
+			<mat-form-field appearance="fill">
+				<mat-label>Sort by</mat-label>
+				<mat-select [(value)]="selectedBlockSortableField" (valueChange)="onBlockSortSelectChange()">
+					<mat-option *ngFor="let sortableField of blockSortableFields" [value]="sortableField.value">
+						{{sortableField.label}}
+					</mat-option>
+				</mat-select>
+			</mat-form-field>
+		</div>
+
+		<div class="user-metadata-resource-block" *ngFor="let resource of userResourceDataSortedForBlocks">
+
+			<div class="user-metadata-resource-block-content-wrap" [ngClass]="resource.statusKey" (click)="onClickTableRow(resource)">
+
+				<!-- Position -->
+				<div class="user-metadata-resource-block-content user-metadata-resource-block-content-position">
+					<div class="user-metadata-resource-block-label user-metadata-resource-block-label-position">
+						Position
+					</div>
+					<div class="user-metadata-resource-block-value user-metadata-resource-block-value-position">
+						{{ resource.position }}
+					</div>
+				</div>
+
+				<!-- ID -->
+				<div class="user-metadata-resource-block-content user-metadata-resource-block-content-id">
+					<div class="user-metadata-resource-block-label user-metadata-resource-block-label-id">
+						ID
+					</div>
+					<div class="user-metadata-resource-block-value user-metadata-resource-block-value-id">
+						{{ resource.id }}
+					</div>
+				</div>
+
+				<!-- Title -->
+				<div class="user-metadata-resource-block-content user-metadata-resource-block-content-title">
+					<div class="user-metadata-resource-block-label user-metadata-resource-block-label-title">
+						Title
+					</div>
+					<div class="user-metadata-resource-block-value user-metadata-resource-block-value-title">
+						{{ resource.title }}
+					</div>
+				</div>
+
+				<!-- Last change -->
+				<div class="user-metadata-resource-block-content user-metadata-resource-block-content-last-change">
+					<div class="user-metadata-resource-block-label user-metadata-resource-block-label-last-change">
+						Last change
+					</div>
+					<div class="user-metadata-resource-block-value user-metadata-resource-block-value-last-change">
+						{{ resource.lastChange }}
+					</div>
+				</div>
+
+				<!-- Status -->
+				<div class="user-metadata-resource-block-content user-metadata-resource-block-content-status">
+					<div class="user-metadata-resource-block-label user-metadata-resource-block-label-status">
+						Status
+					</div>
+					<div class="user-metadata-resource-block-value user-metadata-resource-block-value-status">
+						{{ resource.status }}
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- For larger devices list the content in a table -->
+	<div class="user-metadata-resource-wrap-table">
+
+		<table mat-table matSort [dataSource]="dataSource" class="user-metadata-resource-table">
+
+			<!-- Position Column -->
+			<ng-container matColumnDef="position">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>No.</th>
+				<td mat-cell *matCellDef="let element">{{element.position}}</td>
+			</ng-container>
+
+			<!-- ID Column -->
+			<ng-container matColumnDef="id">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>Resource</th>
+				<td mat-cell *matCellDef="let element">{{element.id}}</td>
+			</ng-container>
+
+			<!-- Title Column -->
+			<ng-container matColumnDef="title">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+				<td mat-cell *matCellDef="let element">{{element.title}}</td>
+			</ng-container>
 
 
-		<!-- Last change Column -->
-		<ng-container matColumnDef="lastChange">
-			<th mat-header-cell *matHeaderCellDef mat-sort-header>Last change</th>
-			<td mat-cell *matCellDef="let element">{{element.lastChange}}</td>
-		</ng-container>
+			<!-- Last change Column -->
+			<ng-container matColumnDef="lastChange">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>Last change</th>
+				<td mat-cell *matCellDef="let element">{{element.lastChange}}</td>
+			</ng-container>
 
-		<!-- Last change Column -->
-		<ng-container matColumnDef="status">
-			<th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-			<td [ngClass]="element.statusKey" mat-cell *matCellDef="let element">{{element.status}}</td>
-		</ng-container>
+			<!-- Status Column -->
+			<ng-container matColumnDef="status">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+				<td [ngClass]="element.statusKey" mat-cell *matCellDef="let element">{{element.status}}</td>
+			</ng-container>
 
-		<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-		<tr mat-row (click)="onClickTableRow(row)" *matRowDef="let row; columns: displayedColumns;"></tr>
-	</table>
+			<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+			<tr mat-row (click)="onClickTableRow(row)" *matRowDef="let row; columns: displayedColumns;"></tr>
+		</table>
 
-	<mat-paginator [pageSizeOptions]="[10,20]" showFirstLastButtons aria-label="Select page of periodic elements">
-	</mat-paginator>
+		<mat-paginator [pageSizeOptions]="[10,20]" showFirstLastButtons aria-label="Select page of periodic elements">
+		</mat-paginator>
+	</div>
 </div>

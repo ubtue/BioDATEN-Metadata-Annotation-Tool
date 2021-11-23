@@ -1,21 +1,23 @@
 import { AlertService } from './modules/shared/services/alert.service';
 import { Platform } from '@angular/cdk/platform';
-import { Component, HostListener, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Subscription, Subject } from 'rxjs';
 import { UpdateNavigationService } from './modules/core/services/update-navigation.service';
 import { EventHelperService } from './modules/shared/services/event-helper.service';
 import { SettingsService } from './modules/shared/services/settings.service';
+import { startWith, takeUntil } from 'rxjs/operators';
 
 @Component({
 	selector: 'app-root',
 	templateUrl: './app.component.html',
 	styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
 
 	title = 'metadata-annotation';
 	currentMenuToggle: boolean = false;
 
+	private ngUnsubscribe = new Subject();
 	currentMenuTogglesubscription: Subscription = new Subscription;
 
 	/**
@@ -57,7 +59,7 @@ export class AppComponent implements OnInit {
 	/**
 	 * ngOnInit
 	 */
-	ngOnInit():void {
+	ngOnInit(): void {
 
 		// Override the global alert function
 		// Use the custom alert instead
@@ -66,7 +68,12 @@ export class AppComponent implements OnInit {
 		}
 
 		// Subscribe to the toggleMenu observable
-		this.currentMenuTogglesubscription = this.updateNavigationService.currentMenuToggle.subscribe((manualToggle: boolean) => {
+		this.currentMenuTogglesubscription = this.updateNavigationService.currentMenuToggle
+		.pipe(
+			startWith(false),
+			takeUntil(this.ngUnsubscribe)
+		)
+		.subscribe((manualToggle: boolean) => {
 
 			if ( manualToggle ) {
 				this.setCurrentMenuToggle(!!!this.currentMenuToggle);
@@ -81,6 +88,25 @@ export class AppComponent implements OnInit {
 		if ( this.platform.BLINK || this.platform.WEBKIT ) {
 			document.body.classList.add('css_property_support');
 		}
+	}
+
+
+	/**
+	 * ngOnDestroy
+	 */
+	ngOnDestroy(): void {
+		this.ngUnsubscribe.next();
+		this.ngUnsubscribe.complete();
+	}
+
+
+	/**
+	 * onMenuOpenedChange
+	 *
+	 * @param currentState
+	 */
+	onMenuOpenedChange(currentState: boolean): void {
+		this.currentMenuToggle = currentState;
 	}
 
 	/**

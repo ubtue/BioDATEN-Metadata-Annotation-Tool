@@ -17,11 +17,12 @@ export class SettingsService {
 
 
 	/******************************************************************
-								AUTOCOMPLETE
+								ALERTS
 	*******************************************************************/
 
 	// Default header text for window.alert calls
 	private _defaultAlertHeaderText: string = 'Notification';
+
 
 	/******************************************************************
 								AUTOCOMPLETE
@@ -34,8 +35,30 @@ export class SettingsService {
 	// Description mode
 	private _descriptionMode: number = this.DESCRIPTION_MODE_POPOUT;
 
+	// Pixel threshold for mobile display of popout
+	private _popoutDescriptionMobileWidthThreshold:number = 768;
+
 	// Frontend sorting
 	private _frontendSorting: boolean = false;
+
+
+	/******************************************************************
+							METADATA ANNOTATION FORM
+	*******************************************************************/
+
+	// Flex Layout (Wether to display inputs side by side on larger displays)
+	private _metadataAnnotationFormFlexLayout = false;
+
+
+	/******************************************************************
+								USER RESOURCES
+	*******************************************************************/
+
+	// Default Sorting field of user resouces
+	private _defaultUserResourceSortingField: string = 'lastChange';
+
+	// Default Sorting method of user resouces
+	private _defaultUserResourceSortingMethod: string = 'desc';
 
 
 	/**
@@ -113,6 +136,22 @@ export class SettingsService {
 
 
 	/**
+	 * Getter popoutDescriptionMobileWidthThreshold
+	 */
+	 get popoutDescriptionMobileWidthThreshold(): number {
+		return this._popoutDescriptionMobileWidthThreshold;
+	}
+
+
+	/**
+	 * Setter popoutDescriptionMobileWidthThreshold
+	 */
+	set popoutDescriptionMobileWidthThreshold(popoutDescriptionMobileWidthThreshold: number) {
+		this._popoutDescriptionMobileWidthThreshold = popoutDescriptionMobileWidthThreshold;
+	}
+
+
+	/**
 	 * Getter frontendSorting
 	 */
 	 get frontendSorting(): boolean {
@@ -125,5 +164,53 @@ export class SettingsService {
 	 */
 	set frontendSorting(frontendSorting: boolean) {
 		this._frontendSorting = frontendSorting;
+	}
+
+
+	/**
+	 * Getter metadataAnnotationFormFlexLayout
+	 */
+	 get metadataAnnotationFormFlexLayout(): boolean {
+		return this._metadataAnnotationFormFlexLayout;
+	}
+
+
+	/**
+	 * Setter metadataAnnotationFormFlexLayout
+	 */
+	set metadataAnnotationFormFlexLayout(metadataAnnotationFormFlexLayout: boolean) {
+		this._metadataAnnotationFormFlexLayout = metadataAnnotationFormFlexLayout;
+	}
+
+
+	/**
+	 * Getter defaultUserResourceSortingField
+	 */
+	 get defaultUserResourceSortingField(): string {
+		return this._defaultUserResourceSortingField;
+	}
+
+
+	/**
+	 * Setter defaultUserResourceSortingField
+	 */
+	set defaultUserResourceSortingField(defaultUserResourceSortingField: string) {
+		this._defaultUserResourceSortingField = defaultUserResourceSortingField;
+	}
+
+
+	/**
+	 * Getter defaultUserResourceSortingMethod
+	 */
+	 get defaultUserResourceSortingMethod(): string {
+		return this._defaultUserResourceSortingMethod;
+	}
+
+
+	/**
+	 * Setter defaultUserResourceSortingMethod
+	 */
+	set defaultUserResourceSortingMethod(defaultUserResourceSortingMethod: string) {
+		this._defaultUserResourceSortingMethod = defaultUserResourceSortingMethod;
 	}
 }

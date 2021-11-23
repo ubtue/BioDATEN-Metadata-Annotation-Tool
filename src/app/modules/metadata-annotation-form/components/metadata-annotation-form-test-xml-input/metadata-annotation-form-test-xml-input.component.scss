@@ -15,13 +15,49 @@
 	display: flex;
 	flex: 1;
 
-	.metadata-annotation-form-menu-wrap {
+	flex-direction: column;
 
-		flex: 0 0 $menuWidth;
+	position: relative;
+
+	@include respond-above(lg) {
+		flex-direction: row;
+	}
+
+	.metadata-annotation-form-menu-wrap {
 
 		background: $menuBackground;
 
-		border-right: 1px solid $borderGrey;
+		// position: absolute;
+		// top: 0;
+
+		// bottom: 0;
+		// max-height: 100vh;
+
+		// right: 100%;
+
+		// z-index: 1;
+
+		@include respond-below(lg) {
+			border-bottom: 1px solid $borderGrey;
+		}
+
+		@include respond-above(lg) {
+			// position: relative;
+			// top: auto;
+			// right: auto;
+			// bottom: auto;
+
+			// max-height: auto;
+
+			// z-index: auto;
+
+			flex: 0 0 $menuWidth;
+
+			width: $menuWidth;
+
+			border-right: 1px solid $borderGrey;
+		}
+
 
 		.metadata-annotation-form-menu {
 
@@ -32,16 +68,31 @@
 
 			.metadata-annotation-form-menu-schemes {
 				display: flex;
-				flex-direction: column;
+				flex-direction: row;
+
+				@include respond-above(lg) {
+					flex-direction: column;
+				}
 
 				.tablink {
 					background: none;
 					border: none;
-					text-align: left;
+					text-align: center;
 
-					padding: 24px 20px;
+					padding: 10px 6px;
 
 					cursor: pointer;
+
+					flex: 1 1 0px;
+
+					@include respond-above(md) {
+						padding: 24px 20px;
+					}
+
+					@include respond-above(lg) {
+						flex: auto;
+						text-align: left;
+					}
 
 					&.active {
 						background: $navigationGrey;
@@ -60,15 +111,27 @@
 			}
 
 			.metadata-annotation-form-menu-buttons {
-				display: flex;
-				justify-content: space-evenly;
 
-				margin-top: 20px;
+				display: none;
+
+				@include respond-above(lg) {
+					display: flex;
+					justify-content: space-evenly;
+
+					margin-top: 20px;
+				}
+
 			}
 
 			.metadata-annotation-form-menu-settings {
-				margin-top: auto;
-				padding: 10px;
+
+				display: none;
+
+				@include respond-above(lg) {
+					display: block;
+					margin-top: auto;
+					padding: 10px;
+				}
 
 				> div {
 
@@ -124,6 +187,45 @@
 
 			.small-content-heading {
 				display: block;
+			}
+		}
+	}
+
+	.metadata-annotation-form-mobile-buttons-wrap {
+
+		@include contentPadding();
+		@include contentMargin();
+
+		margin-top: 0;
+
+		padding-left: 0;
+		padding-right: 0;
+		padding-bottom: 0;
+
+		position: relative;
+
+		text-align: right;
+
+		@include respond-above(lg) {
+			display: none;
+		}
+
+		&:before {
+			content: " ";
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 1px;
+			background: $borderGrey;
+		}
+
+		.menu-button {
+
+			margin-left: 10px;
+
+			&:first-of-type {
+				margin-left: 0;
 			}
 		}
 	}

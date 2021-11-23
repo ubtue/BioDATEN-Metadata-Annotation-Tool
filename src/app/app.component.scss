@@ -1,5 +1,16 @@
+@import "styles/shared_variables";
+@import "styles/mixins";
+
 .side-nav-wrap-container {
 	background: #fff;
+
+	.side-nav {
+		width: 100%;
+
+		@include respond-above(sm) {
+			width: auto;
+		}
+	}
 
 	.side-nav-content {
 		display: flex;

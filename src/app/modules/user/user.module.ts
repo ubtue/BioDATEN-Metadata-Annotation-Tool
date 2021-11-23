@@ -8,6 +8,8 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
 import { UserMetadataResourcesComponent } from './components/user-metadata-resources/user-metadata-resources.component';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 
 
 @NgModule({
@@ -20,7 +22,9 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 		UserRoutingModule,
 		MatTableModule,
 		MatSortModule,
-		MatPaginatorModule
+		MatPaginatorModule,
+		MatFormFieldModule,
+		MatSelectModule
 	]
 })
 export class UserModule { }

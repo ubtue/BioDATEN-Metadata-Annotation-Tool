@@ -3,9 +3,10 @@ import { EventHelperService } from './../../../shared/services/event-helper.serv
 import { UpdateNavigation } from './../../../shared/models/update-navigation.model';
 import { UpdateNavigationService } from './../../../core/services/update-navigation.service';
 import { Component, Input, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 import { KeycloakService } from '../../services/keycloak.service';
 import { SettingsService } from 'src/app/modules/shared/services/settings.service';
+import { takeUntil, startWith } from 'rxjs/operators';
 
 @Component({
 	selector: 'app-header',
@@ -16,6 +17,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
 	@ViewChild('headerUserIconWrap') headerUserIconWrap!: ElementRef;
 
+	private ngUnsubscribe = new Subject();
 	currentViewsubscription: Subscription = new Subscription;
 	currentViewLabel: string = "";
 	currentViewValue: string = "";
@@ -53,13 +55,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	 * ngOnInit
 	 */
 	ngOnInit(): void {
-		this.currentViewsubscription = this.updateNavigationService.currentView.subscribe((currentView: UpdateNavigation) => {
+		this.currentViewsubscription = this.updateNavigationService.currentView
+		.pipe(
+			startWith({label: '', value: ''}),
+			takeUntil(this.ngUnsubscribe)
+		)
+		.subscribe((currentView: UpdateNavigation) => {
 			this.currentViewLabel = currentView.label + " ";
 			this.currentViewValue = currentView.value;
 		});
 
 		// Listen to clicks from the document
 		this.eventHelperService.documentClickedTarget.subscribe(target => this.documentClickListener(target));
+	}
+
+
+	/**
+	 * ngOnDestroy
+	 */
+	 ngOnDestroy(): void {
+		this.ngUnsubscribe.next();
+		this.ngUnsubscribe.complete();
 	}
 
 
@@ -100,19 +116,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
 
 	/**
-	 * ngOnDestroy
-	 */
-	ngOnDestroy(): void {
-		this.currentViewsubscription.unsubscribe();
-	}
-
-
-	/**
 	 * openUserMenu
 	 *
 	 * Opens user menu
 	 */
-	 openUserMenu(): void {
+	openUserMenu(): void {
 		this.toggleUserMenu(true, false);
 	}
 

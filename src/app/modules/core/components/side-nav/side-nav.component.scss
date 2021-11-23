@@ -1,10 +1,63 @@
+@import '../../../../styles/shared_variables';
+@import '../../../../styles/mixins';
+
+
+$sideNavHeaderButtonFontSize: 18px;
+
 .side-nav-container {
+
+	width: 100%;
 
 	.side-nav-wrap {
 
-		padding: 4px 10px;
-
 		.side-nav-header {
+
+			padding: 14px;
+
+			background: $navigationGrey;
+
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+
+			.side-nav-header-text {
+				color: #fff;
+
+				font-size: 16px;
+				height: 16px;
+
+				@include respond-above(md) {
+					font-size: 18px;
+					height: 18px;
+				}
+			}
+
+			.side-nav-header-close-button {
+
+				background: none;
+				border: none;
+
+				padding: 0;
+				margin: 0;
+
+				height: $sideNavHeaderButtonFontSize;
+
+				font-size: $sideNavHeaderButtonFontSize;
+
+				&:hover {
+					cursor: pointer;
+				}
+
+				&:hover, &:active, .tab_focus &:focus {
+					outline: 1px solid #fff;
+				}
+
+				mat-icon {
+					color: #fff;
+				}
+			}
+
 
 		}
 

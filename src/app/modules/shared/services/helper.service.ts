@@ -198,7 +198,7 @@ export class HelperService {
 	 * @param array
 	 * @returns
 	 */
-	 sort(valuePath: string, array: any) {
+	sort(valuePath: string, array: any) {
 		let path = valuePath.split('.')
 
 		return array.sort((a: any, b: any) => {
@@ -206,6 +206,89 @@ export class HelperService {
 			if (aSort < bSort) //sort string ascending
 				return -1;
 			if (aSort > bSort)
+				return 1;
+			return 0; //default return value (no sorting)
+		});
+
+		function getValue(obj: any, path: any) {
+			path.forEach((path: any) => obj = obj[path])
+			return obj;
+		}
+	}
+
+
+	/**
+	 * sortDescending
+	 *
+	 * Sorting function (descending)
+	 *
+	 * @param valuePath
+	 * @param array
+	 * @returns
+	 */
+	sortDescending(valuePath: string, array: any) {
+		let path = valuePath.split('.')
+
+		return array.sort((a: any, b: any) => {
+			let aSort = getValue(a, path).toLowerCase(), bSort = getValue(b, path).toLowerCase();
+			if (aSort > bSort) //sort string descending
+				return -1;
+			if (aSort < bSort)
+				return 1;
+			return 0; //default return value (no sorting)
+		});
+
+		function getValue(obj: any, path: any) {
+			path.forEach((path: any) => obj = obj[path])
+			return obj;
+		}
+	}
+
+	/**
+	 * sortNumbers
+	 *
+	 * Sorting function for numbers
+	 *
+	 * @param valuePath
+	 * @param array
+	 * @returns
+	 */
+	sortNumbers(valuePath: string, array: any) {
+		let path = valuePath.split('.')
+
+		return array.sort((a: any, b: any) => {
+			let aSort = getValue(a, path), bSort = getValue(b, path);
+			if (aSort < bSort) //sort string descending
+				return -1;
+			if (aSort > bSort)
+				return 1;
+			return 0; //default return value (no sorting)
+		});
+
+		function getValue(obj: any, path: any) {
+			path.forEach((path: any) => obj = obj[path])
+			return obj;
+		}
+	}
+
+
+	/**
+	 * sortNumbersDescending
+	 *
+	 * Sorting function for numbers (descending)
+	 *
+	 * @param valuePath
+	 * @param array
+	 * @returns
+	 */
+	sortNumbersDescending(valuePath: string, array: any) {
+		let path = valuePath.split('.')
+
+		return array.sort((a: any, b: any) => {
+			let aSort = getValue(a, path), bSort = getValue(b, path);
+			if (aSort > bSort) //sort string descending
+				return -1;
+			if (aSort < bSort)
 				return 1;
 			return 0; //default return value (no sorting)
 		});

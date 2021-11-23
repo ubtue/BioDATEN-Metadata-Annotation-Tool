@@ -30,6 +30,12 @@
 			width: 100%;
 
 			font-weight: $fontWeightLegend;
+
+			word-break: break-word;
+
+			&.child-span-removed {
+				font-weight: normal;
+			}
 		}
 
 		section,
@@ -113,15 +119,26 @@
 	legend {
 		> button {
 			margin: 0;
+
+			word-break: normal;
 		}
 	}
 
 	input, select {
-		min-width: 340px;
+
+		@include respond-below(sm) {
+			width: 100%;
+		}
+
+		@include respond-above(sm) {
+			min-width: 340px;
+		}
 
 		&[type="radio"],
 		&[type="date"] {
 			min-width: auto;
+
+			width: auto;
 		}
 	}
 
@@ -177,30 +194,78 @@
 	}
 
 	/* FLEX */
-	// fieldset {
-	// 	display: flex;
-	// 	flex-wrap: wrap;
+	.metadata-form-flex-layout & {
 
-	// 	> legend {
-	// 		flex: 100%;
-	// 	}
+		@include respond-above(xxl) {
 
-	// 	> label {
-	// 		flex: 50%;
+			fieldset {
+				display: flex;
+				flex-wrap: wrap;
 
-	// 		&.stretch {
-	// 			flex: 100%;
-	// 		}
-	// 	}
+				&[data-input-section-even-odd="even"] {
 
-	// 	> section {
+					> section.input-section {
 
-	// 		flex: 100%;
+						&:last-child,
+						&:nth-last-child(2) {
+							margin-bottom: 0;
+						}
+					}
+				}
 
-	// 		&.input-section {
-	// 			flex: 50%;
-	// 		}
+				&[data-input-section-even-odd="odd"] {
 
-	// 	}
-	// }
+					> section.input-section {
+
+						&:last-child {
+							margin-bottom: 0;
+						}
+					}
+				}
+
+				> legend {
+					flex: 100%;
+				}
+
+				> label {
+					flex: 50%;
+
+					&.stretch {
+						flex: 100%;
+					}
+				}
+
+				> section {
+
+					flex: 100%;
+
+					&.input-section {
+						flex: 50%;
+
+						justify-content: flex-end;
+
+						&.odd {
+							padding-right: 26px;
+						}
+
+						&.even {
+
+							.autocomplete-popout-description-wrap {
+								width: 200px;
+
+								@include respond-above(xxxl) {
+									width: 260px;
+								}
+
+								@include respond-above(xxxxl) {
+									width: 300px;
+								}
+							}
+						}
+					}
+
+				}
+			}
+		}
+	}
 }

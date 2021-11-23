@@ -111,4 +111,17 @@
 
 		</div>
 	</div>
+
+	<div class="metadata-annotation-form-mobile-buttons-wrap">
+		<button hover [disabled]="!saveEnabled" class="biodaten-button menu-button save" (click)="onClickSave()">
+			Save
+		</button>
+		<button hover class="biodaten-button menu-button reset" (click)="onClickReset()">
+			Reset
+		</button>
+
+		<button hover class="biodaten-button menu-button" (click)="onClickTest()">
+			Test
+		</button>
+	</div>
 </div>

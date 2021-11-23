@@ -2,6 +2,7 @@
 @import "../../../../styles/mixins";
 
 
+$alertWidthMobile: 90%;
 $alertWidth: 400px;
 $alertHeight: 250px;
 
@@ -47,7 +48,12 @@ $alertBodyBackground: #fff;
 
 		z-index: 3;
 
-		width: $alertWidth;
+		width: $alertWidthMobile;
+
+		@include respond-above(sm) {
+			width: $alertWidth;
+		}
+
 		height: $alertHeight;
 
 		display: flex;

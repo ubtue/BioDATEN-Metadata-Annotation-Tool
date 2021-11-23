@@ -156,6 +156,14 @@ export class AutocompleteService {
 
 				this.cachedAutocompleteData[dataIndex] = autocompleteData;
 
+				if (this.settingsService.enableConsoleLogs) {
+					console.log('data for autocomplete:')
+					console.log(autocompleteData);
+				}
+
+				// Add the data-index to the input element and focus it
+				inputElement.setAttribute('data-autocomplete-index', dataIndex.toString());
+
 				inputElement.focus();
 
 				// Call the autocomplete function
@@ -225,16 +233,21 @@ export class AutocompleteService {
 			autocompleteDIV.classList.add('description-popout');
 		}
 
-		// Add the data-index to the input element
-		inputElement.setAttribute('data-autocomplete-index', dataIndex.toString());
-
 		// Append the DIV element as a child of the autocomplete container
 		if (inputElement !== null && inputElement.parentNode !== null) {
 			inputElement.parentNode.appendChild(autocompleteDIV);
 
-
 			// Create a DIV for the popout description if set up
 			if ( this.settingsService.descriptionMode === this.settingsService.DESCRIPTION_MODE_POPOUT ) {
+
+				// Description backdrop DIV
+				popoutDescriptionDIV = document.createElement('DIV');
+				popoutDescriptionDIV.setAttribute('id', dataIndex + '_autocomplete-popout-description-backdrop');
+				popoutDescriptionDIV.classList.add('autocomplete-popout-description-backdrop');
+
+				inputElement.parentNode.appendChild(popoutDescriptionDIV);
+
+				// Description DIV
 				popoutDescriptionDIV = document.createElement('DIV');
 				popoutDescriptionDIV.setAttribute('id', dataIndex + '_autocomplete-popout-description');
 				popoutDescriptionDIV.classList.add('autocomplete-popout-description-wrap');
@@ -775,6 +788,13 @@ export class AutocompleteService {
 
 		if ( popout ) {
 			popout.classList.remove('show');
+
+			// Mark the input that description is inactive
+			this.togglePopoutActiveOnInput(popout, false);
+
+			// Hide backdrop
+			// Display backdrop
+			this.togglePopoutBackdrop(popout, false);
 		}
 	}
 
@@ -801,9 +821,25 @@ export class AutocompleteService {
 
 				popouts.forEach(
 					(popout: Element) => {
+
+						// Mark the input that description is inactive
+						this.togglePopoutActiveOnInput(popout, false);
+
 						popout.remove();
 					}
 				)
+
+				// Remove all backdrops
+				let backdrops = document.querySelectorAll('div.autocomplete-popout-description-backdrop');
+
+				if ( backdrops ) {
+
+					backdrops.forEach(
+						(backdrop: Element) => {
+							backdrop.remove();
+						}
+					)
+				}
 			}
 		}
 	}
@@ -825,29 +861,107 @@ export class AutocompleteService {
 			// Get all the relevant positions and coords
 			let sourceElementRelativeTop = sourceElement.offsetTop,
 				sourceElementHeight = sourceElement.offsetHeight,
-				popoutHeight = popout.offsetHeight;
+				popoutHeight = popout.offsetHeight,
+				screenWidth = screen.width;
+
+			let topPosition: number = 0;
 
 			// Calculate the top position of the popout:
-			// Relative top of the source element + source element height - (parent input height + borders (3x))
-			// minus popout height / 2
-			// plus source element height / 2
-			let topPosition = 	Math.round((sourceElementRelativeTop + sourceElementHeight - 19)) -
+			if ( screenWidth < this.settingsService.popoutDescriptionMobileWidthThreshold ) {
+
+				// On small devices
+				// 0 top position
+				// minus the height of the popout
+				// minus 13 px for the arrow at the bottom of the popout
+				topPosition = 	0 - Math.round(popoutHeight) - 13;
+
+				popout.style.top = topPosition + 'px';
+				popout.classList.add('show');
+
+				// Mark the input that description is active
+				this.togglePopoutActiveOnInput(popout, true);
+
+				// Display backdrop
+				this.togglePopoutBackdrop(popout, true);
+
+
+			} else {
+
+				// On larger devices
+				// Relative top of the source element + source element height - (parent input height + borders (3x))
+				// minus popout height / 2
+				// plus source element height / 2
+				topPosition = 	Math.round((sourceElementRelativeTop + sourceElementHeight - 19)) -
 								Math.round((popoutHeight / 2)) +
 								Math.round((sourceElementHeight / 2 ));
 
-			// minus the scrolltop of the scrollable parent in a timeout
-			// because it takes the browser a few ms to scroll the parent
-			window.setTimeout(
-				() => {
-					topPosition -= Math.round(sourceElement.parentElement!.scrollTop);
+				// minus the scrolltop of the scrollable parent in a timeout
+				// because it takes the browser a few ms to scroll the parent
+				window.setTimeout(
+					() => {
+						topPosition -= Math.round(sourceElement.parentElement!.scrollTop);
 
-					// Set the top position and show the popout
-					popout.style.top = topPosition + 'px';
+						// Set the top position and show the popout
+						popout.style.top = topPosition + 'px';
 
-					popout.classList.add('show');
-				}, 10
-			);
+						popout.classList.add('show');
 
+					}, 10
+				);
+
+			}
+
+		}
+	}
+
+
+	/**
+	 * togglePopoutBackdrop
+	 *
+	 * Toggles the show class of a backdrop for a popout
+	 *
+	 * @param popout
+	 * @param show
+	 */
+	private togglePopoutBackdrop(popout: HTMLElement | Element, show: boolean): void {
+
+		// Find the backdrop and add/remove the class show
+		let backdrop = popout.parentElement?.querySelector('.autocomplete-popout-description-backdrop') as HTMLElement;
+
+		if ( backdrop ) {
+
+			// Add/remove?
+			if ( show ) {
+				backdrop.classList.add('show');
+			} else {
+				backdrop.classList.remove('show');
+			}
+
+		}
+	}
+
+
+	/**
+	 * togglePopoutActiveOnInput
+	 *
+	 * Toggles the class popout-description-active on the input element
+	 *
+	 * @param popout
+	 * @param addClass
+	 */
+	private togglePopoutActiveOnInput(popout: HTMLElement | Element, addClass: boolean): void {
+
+		// Find the input element
+		let popoutInputElement = popout.parentElement?.querySelector('[data-autocomplete-init]') as HTMLElement;
+
+		if ( popoutInputElement ) {
+
+			// Add or remove the class?
+			if ( addClass ) {
+				popoutInputElement.classList.add('popout-description-active');
+			} else {
+				popoutInputElement.classList.remove('popout-description-active');
+			}
 
 		}
 	}

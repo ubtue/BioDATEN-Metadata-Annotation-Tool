@@ -515,6 +515,12 @@ window['xsd2html2xml']["<<REPLACE>>"].setValue = function (element, value) {
 				element.querySelector("select option[value = '".concat(values[i]).concat("']")).setAttribute("selected", "selected");
 			}*/
 		} else {
+
+			console.log('element 2');
+			console.log(element);
+			console.log('magic');
+			console.log("select option[value = '".concat(value).concat("']"));
+
 			element
 				.querySelector(
 					"select option[value = '".concat(value).concat("']")
@@ -575,8 +581,29 @@ window['xsd2html2xml']["<<REPLACE>>"].parseNode = function (node, element) {
 		for (var i = 0; i < node.childNodes.length; i++) {
 			var childNode = node.childNodes[i];
 
+			console.log('node');
+			console.log(node);
+			console.log('node.childNodes');
+			console.log(node.childNodes);
+			console.log('childNode');
+			console.log(childNode);
+			console.log('element');
+			console.log(element);
+
 			if (childNode.nodeType === Node.ELEMENT_NODE) {
 				//find the corresponding element
+
+				console.log("[data-xsd2html2xml-xpath = '"
+				.concat(
+					element
+						.getAttribute("data-xsd2html2xml-xpath")
+						.concat(
+							"/".concat(childNode.nodeName)
+							//"/*[name() = \"".concat(childNode.nodeName).concat("\"]")
+						)
+				)
+				.concat("']"));
+
 				var childElement = element.querySelector(
 					"[data-xsd2html2xml-xpath = '"
 						.concat(

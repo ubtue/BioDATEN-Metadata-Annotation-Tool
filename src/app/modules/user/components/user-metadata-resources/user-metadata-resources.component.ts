@@ -1,3 +1,6 @@
+import { MetadataUserResourceBlockSortableField } from './../../../shared/models/metadata-user-resource-block-sortable-field.model';
+import { HelperService } from './../../../shared/services/helper.service';
+import { SettingsService } from 'src/app/modules/shared/services/settings.service';
 import { UpdateNavigationService } from 'src/app/modules/core/services/update-navigation.service';
 import { Router } from '@angular/router';
 import { MetadataUserResource } from './../../../shared/models/metadata-user-resource.model';
@@ -19,24 +22,107 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 	readonly RESOURCE_DATA_STATUS = {
 		new: {
 			label: "New",
-			key: "new"
+			key: "a_new"
 		},
 		progress: {
 			label: "In progress",
-			key: "progress"
+			key: "k_progress"
 		},
 		finished: {
 			label: "Finished",
-			key: "finished"
+			key: "z_finished"
+		}
+	};
+
+	readonly RESOURCE_FIELD_VALUES = {
+		position: 'position',
+		id: 'id',
+		title: 'title',
+		lastChange: 'lastChange',
+		status: 'status',
+		statusKey: 'statusKey'
+	};
+
+	readonly RESOURCE_FIELD_LABELS = {
+		position: 'Position',
+		id: 'ID',
+		title: 'Title',
+		lastChange: 'Last change',
+		status: 'Status',
+		statusKey: ''
+	};
+
+	readonly SORT_METHODS = {
+		asc: {
+			label: ' (Ascending)',
+			key: '_asc'
+		},
+		desc: {
+			label: ' (Descending)',
+			key: '_desc'
 		}
 	};
 
 	userResourceData: MetadataUserResource[] = [];
 
+	userResourceDataSortedForBlocks: MetadataUserResource[] = [];
+
 	sortableUserResourceData: any = [];
 
-	displayedColumns: string[] = ['position', 'id', 'title', 'lastChange', 'status'];
+	readonly displayedColumns: string[] = [
+		this.RESOURCE_FIELD_VALUES.position,
+		this.RESOURCE_FIELD_VALUES.id,
+		this.RESOURCE_FIELD_VALUES.title,
+		this.RESOURCE_FIELD_VALUES.lastChange,
+		this.RESOURCE_FIELD_VALUES.status
+	];
+
 	dataSource: any = [];
+
+	readonly blockSortableFields: MetadataUserResourceBlockSortableField[] = [
+		{
+			label: this.RESOURCE_FIELD_LABELS.position + this.SORT_METHODS.asc.label,
+			value: this.RESOURCE_FIELD_VALUES.position + this.SORT_METHODS.asc.key
+		},
+		{
+			label: this.RESOURCE_FIELD_LABELS.position + this.SORT_METHODS.desc.label,
+			value: this.RESOURCE_FIELD_VALUES.position + this.SORT_METHODS.desc.key
+		},
+		{
+			label: this.RESOURCE_FIELD_LABELS.id + this.SORT_METHODS.asc.label,
+			value: this.RESOURCE_FIELD_VALUES.id + this.SORT_METHODS.asc.key
+		},
+		{
+			label: this.RESOURCE_FIELD_LABELS.id + this.SORT_METHODS.desc.label,
+			value: this.RESOURCE_FIELD_VALUES.id + this.SORT_METHODS.desc.key
+		},
+		{
+			label: this.RESOURCE_FIELD_LABELS.title + this.SORT_METHODS.asc.label,
+			value: this.RESOURCE_FIELD_VALUES.title + this.SORT_METHODS.asc.key
+		},
+		{
+			label: this.RESOURCE_FIELD_LABELS.title + this.SORT_METHODS.desc.label,
+			value: this.RESOURCE_FIELD_VALUES.title + this.SORT_METHODS.desc.key
+		},
+		{
+			label: this.RESOURCE_FIELD_LABELS.lastChange + this.SORT_METHODS.asc.label,
+			value: this.RESOURCE_FIELD_VALUES.lastChange + this.SORT_METHODS.asc.key
+		},
+		{
+			label: this.RESOURCE_FIELD_LABELS.lastChange + this.SORT_METHODS.desc.label,
+			value: this.RESOURCE_FIELD_VALUES.lastChange + this.SORT_METHODS.desc.key
+		},
+		{
+			label: this.RESOURCE_FIELD_LABELS.status + this.SORT_METHODS.asc.label,
+			value: this.RESOURCE_FIELD_VALUES.statusKey + this.SORT_METHODS.asc.key
+		},
+		{
+			label: this.RESOURCE_FIELD_LABELS.status + this.SORT_METHODS.desc.label,
+			value: this.RESOURCE_FIELD_VALUES.statusKey  + this.SORT_METHODS.desc.key
+		}
+	];
+
+	selectedBlockSortableField: string = '';
 
 	@ViewChild(MatSort) sort!: MatSort;
 	@ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -47,7 +133,14 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 	constructor(private router: Router,
 				private cdRef: ChangeDetectorRef,
 				private updateNavigationService: UpdateNavigationService,
-				private keycloakService: KeycloakService) { }
+				private keycloakService: KeycloakService,
+				private settingsService: SettingsService,
+				private helperService: HelperService) {
+
+					// Get the default sorting field
+					this.selectedBlockSortableField =
+						this.settingsService.defaultUserResourceSortingField + '_' + this.settingsService.defaultUserResourceSortingMethod;
+				}
 
 
 	/**
@@ -84,16 +177,24 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 		this.dataSource = new MatTableDataSource(this.userResourceData);
 
 		// Activate the sorting
-		this.sort.sort(({ id: 'lastChange', start: 'desc'}) as MatSortable);
+		this.sort.sort((
+			{ id: this.settingsService.defaultUserResourceSortingField, start: this.settingsService.defaultUserResourceSortingMethod}
+		) as MatSortable);
 		this.dataSource.sort = this.sort;
 
 		this.dataSource.paginator = this.paginator;
+
+		// Sort the blocks (smaller devices)
+		this.userResourceDataSortedForBlocks = this.userResourceData;
+		this.sortBlocks()
 
 		// Detect the changes manually
 		// This needs to be done because Angular will throw an error if the data
 		// is manipulated within ngAfterViewInit. Sadly, mat-tables require
 		// the population of the sortable content within ngAfterViewInit.
 		this.cdRef.detectChanges();
+
+
 	}
 
 
@@ -109,6 +210,79 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 		// Redirects the user to the xml-input view with the selected resource ID as a
 		// GET param
 		this.router.navigate(["annotation/test-xml-input"], { queryParams: {id: row.id}});
+	}
+
+
+	onBlockSortSelectChange(): void {
+		this.sortBlocks();
+	}
+
+	/**
+	 * sortBlocks
+	 *
+	 * Sorts the block from the block view
+	 */
+	sortBlocks(): void {
+
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('Sorting by: ')
+			console.log(this.selectedBlockSortableField );
+		}
+
+		// Use different methods for different fields
+		switch ( this.selectedBlockSortableField ) {
+
+			// Position: Sort numbers ASC
+			case this.RESOURCE_FIELD_VALUES.position + this.SORT_METHODS.asc.key:
+				this.userResourceDataSortedForBlocks = this.helperService.sortNumbers(this.RESOURCE_FIELD_VALUES.position, this.userResourceData);
+				break;
+
+			// Position: Sort numbers DESC
+			case this.RESOURCE_FIELD_VALUES.position + this.SORT_METHODS.desc.key:
+				this.userResourceDataSortedForBlocks = this.helperService.sortNumbersDescending(this.RESOURCE_FIELD_VALUES.position, this.userResourceData);
+				break;
+
+			// ID: Sort string ASC
+			case this.RESOURCE_FIELD_VALUES.id + this.SORT_METHODS.asc.key:
+				this.userResourceDataSortedForBlocks = this.helperService.sort(this.RESOURCE_FIELD_VALUES.id, this.userResourceData);
+				break;
+
+			// ID: Sort string DESC
+			case this.RESOURCE_FIELD_VALUES.id + this.SORT_METHODS.desc.key:
+				this.userResourceDataSortedForBlocks = this.helperService.sortDescending(this.RESOURCE_FIELD_VALUES.id, this.userResourceData);
+				break;
+
+			// Title: Sort string ASC
+			case this.RESOURCE_FIELD_VALUES.title + this.SORT_METHODS.asc.key:
+				this.userResourceDataSortedForBlocks = this.helperService.sort(this.RESOURCE_FIELD_VALUES.title, this.userResourceData);
+				break;
+
+			// Title: Sort string DESC
+			case this.RESOURCE_FIELD_VALUES.title + this.SORT_METHODS.desc.key:
+				this.userResourceDataSortedForBlocks = this.helperService.sortDescending(this.RESOURCE_FIELD_VALUES.title, this.userResourceData);
+				break;
+
+			// Status (key): Sort string ASC
+			case this.RESOURCE_FIELD_VALUES.statusKey + this.SORT_METHODS.asc.key:
+				this.userResourceDataSortedForBlocks = this.helperService.sort(this.RESOURCE_FIELD_VALUES.statusKey, this.userResourceData);
+				break;
+
+			// Status (key): Sort string DESC
+			case this.RESOURCE_FIELD_VALUES.statusKey + this.SORT_METHODS.desc.key:
+				this.userResourceDataSortedForBlocks = this.helperService.sortDescending(this.RESOURCE_FIELD_VALUES.statusKey, this.userResourceData);
+				break;
+
+			// Last change: Sort string ASC
+			case this.RESOURCE_FIELD_VALUES.lastChange + this.SORT_METHODS.asc.key:
+				this.userResourceDataSortedForBlocks = this.helperService.sort(this.RESOURCE_FIELD_VALUES.lastChange, this.userResourceData);
+				break;
+
+			// Last change: Sort string DESC
+			case this.RESOURCE_FIELD_VALUES.lastChange + this.SORT_METHODS.desc.key:
+			default:
+				this.userResourceDataSortedForBlocks = this.helperService.sortDescending(this.RESOURCE_FIELD_VALUES.lastChange, this.userResourceData);
+				break;
+		}
 	}
 
 }

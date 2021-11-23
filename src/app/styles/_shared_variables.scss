@@ -15,8 +15,22 @@ $fontWeightBoldContent: 600;
 $fontWeightLegend: 600;
 
 
+/* BREAKPOINTS */
+$breakpoints: (
+	xs: 0,
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px,
+    xxl: 1400px,
+	xxxl: 1500px,
+	xxxxl: 1600px
+);
+
+
 /* OVERLAY */
-$backdropBackground: rgba(0,0,0,0.5);
+$backdropBackground: rgba(0, 0, 0, 0.5);
+$backdropBackgroundLight: rgba(0, 0, 0, 0.2);
 
 
 /* MENU */
@@ -25,6 +39,7 @@ $menuBackground: #f8f8f8;
 
 
 /* PADDING */
+$defaultContentPaddingMobile: 14px;
 $defaultContentPadding: 30px;
 $mediumContentPadding: 40px;
 $largeContentPadding: 50px;
@@ -36,9 +51,9 @@ $largeMarginBottomElements: 28px;
 
 /* BUTTONS */
 $buttonBackground: #ffffff; // #f1f1f1 bio hub
-$buttonBorder: #bbbbbb;		// ##d9d9d9 bio hub
-$buttonBackgroundHover: $navigationGrey;	// #222222 bio hub
-$buttonBorderHover: $navigationGrey;		// #222222 bio hub
+$buttonBorder: #bbbbbb; // ##d9d9d9 bio hub
+$buttonBackgroundHover: $navigationGrey; // #222222 bio hub
+$buttonBorderHover: $navigationGrey; // #222222 bio hub
 $buttonBackgroundDisabled: #ededed;
 $buttonBorderDisabled: #bbbbbb;
 $buttonColorDisabled: #717171;
