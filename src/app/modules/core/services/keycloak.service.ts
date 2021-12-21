@@ -9,12 +9,17 @@ import { KeycloakProfile } from 'keycloak-js';
 })
 export class KeycloakService extends AngularKeycloakService {
 
+	static readonly METADATA_ANNOTATION_ADMIN_ROLE: string = 'metadata-annotation-admin';
+
 	_authServerAddress: string = "https://portal.biodaten.info/auth";
 	_keycloakRealm:string = "biodaten";
 	_keycloakClientId: string = "annotation-biodaten";
 	_logoutAddress: string = "https://portal.biodaten.info/logout";
 
+	_userIsAdmin: boolean = false;
+
 	_userInformation: KeycloakProfile = null as any;
+	_userGroups: string[] = [];
 
 
 	/**
@@ -66,16 +71,108 @@ export class KeycloakService extends AngularKeycloakService {
 	 * Prints the login information to the console
 	 */
 	printLoginInformation(): void {
-		this.loadUserProfile().then(
-			(userData: any) => {
 
-				if ( this.settingsService.enableConsoleLogs ) {
-					console.log('userData:');
-					console.log(userData);
+		if ( this.userInformation === null ) {
+			this.loadUserProfile().then(
+				(userData: KeycloakProfile) => {
+
+					if ( this.settingsService.enableConsoleLogs ) {
+						console.log('userData:');
+						console.log(userData);
+					}
+				}
+			);
+		} else {
+
+			this.updateLoginInformation().then(
+				() => {
+
+					if ( this.settingsService.enableConsoleLogs ) {
+						console.log('userData:');
+						console.log(this.userInformation);
+					}
+
+					if ( this.userGroups !== null ) {
+						if ( this.settingsService.enableConsoleLogs ) {
+							console.log('userGroups:');
+							console.log(this.userGroups);
+						}
+					}
+				}
+			);
+		}
+	}
+
+
+	/**
+	 * updateLoginInformation
+	 *
+	 * Gets the current user information and saves it
+	 */
+	updateLoginInformation(): Promise<any> {
+
+		return this.isLoggedIn().then(
+			(isUserLoggedIn: boolean) => {
+
+				// After init, check if the user is logged in and safe the user profile
+				if (isUserLoggedIn) {
+
+					return this.loadUserProfile().then(
+						(userProfile: KeycloakProfile) => {
+							this.userInformation = userProfile;
+
+							// Check if user is admin
+							if ( this.getUserRoles().includes(KeycloakService.METADATA_ANNOTATION_ADMIN_ROLE) ) {
+								this.userIsAdmin = true;
+							}
+
+							// Get the usergroups
+							return this.getKeycloakInstance().loadUserInfo().then(
+								(userInfo: any) => {
+									if ( userInfo && userInfo.usergroups && userInfo.usergroups.length > 0 ) {
+										this.userGroups = this.parseUserGroups(userInfo.usergroups);
+										return;
+									}
+								}
+							)
+						}
+					)
+				} else {
+					this.userInformation = null as any;
+					this.userGroups = [];
+					return;
 				}
 			}
-		);
+		)
 	}
+
+
+	/**
+	 * parseUserGroups
+	 *
+	 * Pareses the usergroups strings
+	 *
+	 * @param userGroups
+	 * @returns
+	 */
+	parseUserGroups(userGroups: string[]): string[] {
+
+		if ( userGroups.length > 0 ) {
+
+			for ( let i = 0; i < userGroups.length; i++ ) {
+
+				if ( userGroups[i].indexOf('/', 0) !== -1 ) {
+					userGroups[i] = userGroups[i].replace('/', '');
+				}
+			}
+
+			return userGroups;
+
+		} else {
+			return [];
+		}
+	}
+
 
 	/******************************************************************
 							GETTERS AND SETTERS
@@ -138,6 +235,23 @@ export class KeycloakService extends AngularKeycloakService {
 		this._logoutAddress = logoutAddress;
 	}
 
+
+	/**
+	 * Getter userIsAdmin
+	 */
+	 get userIsAdmin(): boolean {
+		return this._userIsAdmin;
+	}
+
+
+	/**
+	 * Setter userIsAdmin
+	 */
+	set userIsAdmin(userIsAdmin: boolean) {
+		this._userIsAdmin = userIsAdmin;
+	}
+
+
 	/**
 	 * Getter userInformation
 	 */
@@ -151,6 +265,22 @@ export class KeycloakService extends AngularKeycloakService {
 	 */
 	set userInformation(userInformation: KeycloakProfile) {
 		this._userInformation = userInformation;
+	}
+
+
+	/**
+	 * Getter userGroups
+	 */
+	 get userGroups(): string[] {
+		return this._userGroups;
+	}
+
+
+	/**
+	 * Setter userGroups
+	 */
+	set userGroups(userGroups: string[]) {
+		this._userGroups = userGroups;
 	}
 
 
@@ -187,6 +317,20 @@ export class KeycloakService extends AngularKeycloakService {
 						keycloak.loadUserProfile().then(
 							(userProfile: KeycloakProfile) => {
 								keycloak.userInformation = userProfile;
+
+								// Check if user is admin
+								if ( keycloak.getUserRoles().includes(KeycloakService.METADATA_ANNOTATION_ADMIN_ROLE) ) {
+									keycloak.userIsAdmin = true;
+								}
+
+								// Get the usergroups
+								keycloak.getKeycloakInstance().loadUserInfo().then(
+									(userInfo: any) => {
+										if ( userInfo && userInfo.usergroups && userInfo.usergroups.length > 0 ) {
+											keycloak.userGroups = keycloak.parseUserGroups(userInfo.usergroups);
+										}
+									}
+								)
 							}
 						)
 					} else {

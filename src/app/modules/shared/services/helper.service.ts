@@ -180,12 +180,12 @@ export class HelperService {
 			.concat('?xml version="1.0"?')
 			.concat(String.fromCharCode(62))
 			.concat(String.fromCharCode(60))
-			.concat('schemes')
+			.concat('schemas')
 			.concat(String.fromCharCode(62))
 			.concat(xmlData)
 			.concat(String.fromCharCode(60))
 			.concat(String.fromCharCode(47))
-			.concat('schemes')
+			.concat('schemas')
 			.concat(String.fromCharCode(62))
 	}
 

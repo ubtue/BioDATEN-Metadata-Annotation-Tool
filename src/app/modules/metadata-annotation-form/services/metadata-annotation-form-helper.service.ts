@@ -112,16 +112,16 @@ export class MetadataAnnotationFormHelperService {
 
 				if ( createdTab.tabContent?.contentElement?.querySelector('form.xsd2html2xml') ) {
 
-					// Get the filename of the scheme
-					let schemeFilename = createdTab.tabContent?.contentElement?.querySelector('span[data-scheme-file]')?.getAttribute('data-scheme-file') as string;
+					// Get the filename of the schema
+					let schemaFilename = createdTab.tabContent?.contentElement?.querySelector('span[data-schema-file]')?.getAttribute('data-schema-file') as string;
 
-					if ( schemeFilename ) {
+					if ( schemaFilename ) {
 
 						// Get the XML data of the tab
-						xmlData += (window as any)['xsd2html2xml'][this.helperService.removeFileExtension(schemeFilename)].htmlToXML(
+						xmlData += (window as any)['xsd2html2xml'][this.helperService.removeFileExtension(schemaFilename)].htmlToXML(
 							createdTab.tabContent?.contentElement?.querySelector('form.xsd2html2xml'),
-							'newScheme scheme="' + this.helperService.removeFileExtension(schemeFilename) + '"',
-							'newScheme'
+							'newSchema schema="' + this.helperService.removeFileExtension(schemaFilename) + '"',
+							'newSchema'
 						)
 					}
 				}

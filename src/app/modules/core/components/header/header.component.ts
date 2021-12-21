@@ -7,6 +7,7 @@ import { Subscription, Subject } from 'rxjs';
 import { KeycloakService } from '../../services/keycloak.service';
 import { SettingsService } from 'src/app/modules/shared/services/settings.service';
 import { takeUntil, startWith } from 'rxjs/operators';
+import { KeycloakEventType } from 'keycloak-angular';
 
 @Component({
 	selector: 'app-header',
@@ -23,6 +24,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	currentViewValue: string = "";
 
 	userIsLoggedIn: boolean = false;
+	userIsAdmin: boolean = false;
 	userInformation: KeycloakProfile = null as any;
 
 	showUserMenu: boolean = false;
@@ -32,23 +34,40 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	 * constructor
 	 */
 	constructor(private updateNavigationService: UpdateNavigationService,
-				private keycloakService: KeycloakService,
-				private settingsService: SettingsService,
-				private eventHelperService: EventHelperService) {
+		private keycloakService: KeycloakService,
+		private settingsService: SettingsService,
+		private eventHelperService: EventHelperService) {
 
-					// Check if user is logged in
-					this.keycloakService.isLoggedIn().then(
-						(loginResult: boolean) => {
-							this.userIsLoggedIn = loginResult;
+		// Check if user is logged in
+		this.keycloakService.isLoggedIn().then(
+			(loginResult: boolean) => {
+				this.userIsLoggedIn = loginResult;
 
-							this.userInformation = this.keycloakService.userInformation;
+				// Check if user is admin
+				this.userIsAdmin = this.keycloakService.userIsAdmin;
 
-							if ( loginResult && this.settingsService.enableConsoleLogs ) {
-								this.keycloakService.printLoginInformation();
-							}
+				// Get user information
+				this.userInformation = this.keycloakService.userInformation;
+
+				this.keycloakService.keycloakEvents$
+				.pipe(
+					takeUntil(this.ngUnsubscribe)
+				)
+				.subscribe({
+					next: e => {
+						if (e.type == KeycloakEventType.OnTokenExpired) {
+							console.log('EXPIRE');
+							keycloakService.updateToken(360);
 						}
-					);
+					}
+				});
+
+				if (loginResult && this.settingsService.enableConsoleLogs) {
+					this.keycloakService.printLoginInformation();
 				}
+			}
+		);
+	}
 
 
 	/**
@@ -56,14 +75,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	 */
 	ngOnInit(): void {
 		this.currentViewsubscription = this.updateNavigationService.currentView
-		.pipe(
-			startWith({label: '', value: ''}),
-			takeUntil(this.ngUnsubscribe)
-		)
-		.subscribe((currentView: UpdateNavigation) => {
-			this.currentViewLabel = currentView.label + " ";
-			this.currentViewValue = currentView.value;
-		});
+			.pipe(
+				startWith({ label: '', value: '' }),
+				takeUntil(this.ngUnsubscribe)
+			)
+			.subscribe((currentView: UpdateNavigation) => {
+				this.currentViewLabel = currentView.label + " ";
+				this.currentViewValue = currentView.value;
+			});
 
 		// Listen to clicks from the document
 		this.eventHelperService.documentClickedTarget.subscribe(target => this.documentClickListener(target));
@@ -73,7 +92,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	/**
 	 * ngOnDestroy
 	 */
-	 ngOnDestroy(): void {
+	ngOnDestroy(): void {
 		this.ngUnsubscribe.next();
 		this.ngUnsubscribe.complete();
 	}
@@ -82,7 +101,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	/**
 	 * onClickToggleMenu
 	 */
-	onClickToggleMenu():void {
+	onClickToggleMenu(): void {
 		this.updateNavigationService.updateMenuToggle(true);
 	}
 
@@ -90,7 +109,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	/**
 	 * onClickUserIcon
 	 */
-	onClickUserIcon() : void {
+	onClickUserIcon(): void {
 		this.toggleUserMenu();
 	}
 
@@ -146,16 +165,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	private toggleUserMenu(forceShow?: boolean, forceClose?: boolean) {
 
 		// If the menu is forced open/close, open/close it
-		if ( forceShow ) {
+		if (forceShow) {
 			this.showUserMenu = true;
 
-		} else if ( forceClose ) {
+		} else if (forceClose) {
 			this.showUserMenu = false;
 
 		} else {
 
 			// Toggle the state of the menu
-			if ( this.showUserMenu ) {
+			if (this.showUserMenu) {
 				this.showUserMenu = false;
 			} else {
 				this.showUserMenu = true;
@@ -172,7 +191,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	 * @param target
 	 */
 	private documentClickListener(target: HTMLElement): void {
-		if (!this.headerUserIconWrap.nativeElement.contains(target) ) {
+		if (!this.headerUserIconWrap.nativeElement.contains(target)) {
 			this.closeUserMenu();
 		}
 	}

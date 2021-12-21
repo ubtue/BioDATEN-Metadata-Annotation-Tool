@@ -32,6 +32,9 @@ export class SettingsService {
 	public readonly DESCRIPTION_MODE_INLINE: number = 0;
 	public readonly DESCRIPTION_MODE_POPOUT: number = 1;
 
+	// Max amount of entries
+	private _maxAutocompleteEntriesCount: number = 150;
+
 	// Description mode
 	private _descriptionMode: number = this.DESCRIPTION_MODE_POPOUT;
 
@@ -41,13 +44,16 @@ export class SettingsService {
 	// Frontend sorting
 	private _frontendSorting: boolean = false;
 
+	// Server Address to the mappings of the autocomplete
+	private _autocompleteMappingServerAddress: string = 'http://localhost:8080/metadata/autocomplete-mapping/';
+
 
 	/******************************************************************
 							METADATA ANNOTATION FORM
 	*******************************************************************/
 
 	// Flex Layout (Wether to display inputs side by side on larger displays)
-	private _metadataAnnotationFormFlexLayout = false;
+	private _metadataAnnotationFormFlexLayout = true;
 
 
 	/******************************************************************
@@ -120,6 +126,22 @@ export class SettingsService {
 
 
 	/**
+	 * Getter maxAutocompleteEntriesCount
+	 */
+	 get maxAutocompleteEntriesCount(): number {
+		return this._maxAutocompleteEntriesCount;
+	}
+
+
+	/**
+	 * Setter maxAutocompleteEntriesCount
+	 */
+	set maxAutocompleteEntriesCount(maxAutocompleteEntriesCount: number) {
+		this._maxAutocompleteEntriesCount = maxAutocompleteEntriesCount;
+	}
+
+
+	/**
 	 * Getter descriptionMode
 	 */
 	 get descriptionMode(): number {
@@ -164,6 +186,22 @@ export class SettingsService {
 	 */
 	set frontendSorting(frontendSorting: boolean) {
 		this._frontendSorting = frontendSorting;
+	}
+
+
+	/**
+	 * Getter autocompleteMappingServerAddress
+	 */
+	 get autocompleteMappingServerAddress(): string {
+		return this._autocompleteMappingServerAddress;
+	}
+
+
+	/**
+	 * Setter autocompleteMappingServerAddress
+	 */
+	set autocompleteMappingServerAddress(autocompleteMappingServerAddress: string) {
+		this._autocompleteMappingServerAddress = autocompleteMappingServerAddress;
 	}
 
 

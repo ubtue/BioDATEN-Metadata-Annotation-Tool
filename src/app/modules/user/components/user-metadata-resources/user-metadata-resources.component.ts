@@ -186,7 +186,7 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 
 		// Sort the blocks (smaller devices)
 		this.userResourceDataSortedForBlocks = this.userResourceData;
-		this.sortBlocks()
+		this.sortBlocks();
 
 		// Detect the changes manually
 		// This needs to be done because Angular will throw an error if the data

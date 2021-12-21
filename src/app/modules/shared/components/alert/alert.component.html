@@ -7,8 +7,7 @@
 
 		<div class="alert-header">
 
-			<div class="alert-header-text">
-				{{ alertService.headerText$ | async }}
+			<div class="alert-header-text" [innerHTML]="alertService.headerText$ | async">
 			</div>
 
 			<div class="alert-header-close-wrap">
@@ -21,7 +20,7 @@
 		<div class="alert-body">
 
 			<div class="alert-body-text">
-				<p>{{ alertService.bodyText$ | async }}</p>
+				<p [innerHTML]="alertService.bodyText$ | async"></p>
 			</div>
 
 			<div class="alert-body-buttons-wrap">

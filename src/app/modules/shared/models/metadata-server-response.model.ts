@@ -1,4 +1,4 @@
 export interface MetadataServerResponse {
-	scheme: string;
+	schema: string;
 	html: string;
 }

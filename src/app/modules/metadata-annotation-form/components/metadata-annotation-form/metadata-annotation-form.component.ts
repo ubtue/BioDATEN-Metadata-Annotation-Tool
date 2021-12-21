@@ -59,11 +59,11 @@ export class MetadataAnnotationFormComponent implements OnInit {
 
 
 	/**
-	 * onClickLoadScheme
-	 * @param scheme
+	 * onClickLoadSchema
+	 * @param schema
 	 */
-	onClickLoadScheme(scheme: string): void {
-		this.loadSingleScheme(scheme);
+	onClickLoadSchema(schema: string): void {
+		this.loadSingleSchema(schema);
 	}
 
 
@@ -74,9 +74,9 @@ export class MetadataAnnotationFormComponent implements OnInit {
 
 		if ( document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml') ) {
 
-			let schemeFilename = document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] span[data-scheme-file]')?.getAttribute('data-scheme-file') as string;
+			let schemaFilename = document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] span[data-schema-file]')?.getAttribute('data-schema-file') as string;
 
-			console.log((window as any)['xsd2html2xml'][schemeFilename].htmlToXML(document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml')));
+			console.log((window as any)['xsd2html2xml'][schemaFilename].htmlToXML(document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml')));
 		}
 
 
@@ -108,7 +108,7 @@ export class MetadataAnnotationFormComponent implements OnInit {
 
 		let fileXML = this.inputFilesXML.nativeElement.files[0] as File;
 
-		this.loadSingleSchemeByFile(fileTemplate, fileXML);
+		this.loadSingleSchemaByFile(fileTemplate, fileXML);
 
 	}
 
@@ -123,7 +123,7 @@ export class MetadataAnnotationFormComponent implements OnInit {
 		let filesXML = this.inputFilesXML.nativeElement.files as FileList;
 
 		if ( filesTemplate.length > 0 ) {
-			this.loadMultipleSchemes(filesTemplate, filesXML);
+			this.loadMultipleSchemas(filesTemplate, filesXML);
 		} else {
 			alert('At least one template file (xsd) needs to be selected.');
 		}
@@ -265,25 +265,25 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	}
 
 	/**
-	 * loadSingleScheme
+	 * loadSingleSchema
 	 *
-	 * Loads a single predefined scheme
+	 * Loads a single predefined schema
 	 *
-	 * @param scheme
+	 * @param schema
 	 */
-	private loadSingleScheme(scheme: string): void {
+	private loadSingleSchema(schema: string): void {
 
-		// console.log('Getting form data from service for scheme ' + scheme + '...');
+		// console.log('Getting form data from service for schema ' + schema + '...');
 
-		// // get the selected scheme from the server
+		// // get the selected schema from the server
 		// this.dataTransferService
-		// 	.getData('http://localhost:8080/xsdnojs/' + scheme, 'json')
+		// 	.getData('http://localhost:8080/xsdnojs/' + schema, 'json')
 		// 	.then((result: any) => {
-		// 		console.log('Result from getting data for ' + scheme);
+		// 		console.log('Result from getting data for ' + schema);
 
 		// 		let resultElement;
 
-		// 		switch ( scheme ) {
+		// 		switch ( schema ) {
 
 		// 			case 'biodatenMinimal':
 		// 				resultElement = this.formResultBiodatenMinimal;
@@ -326,16 +326,16 @@ export class MetadataAnnotationFormComponent implements OnInit {
 
 
 	/**
-	 * loadMultipleSchemes
+	 * loadMultipleSchemas
 	 *
-	 * Loads multiple schemes to the page that are selected via file input
+	 * Loads multiple schemas to the page that are selected via file input
 	 *
 	 * @param filesTemplate
 	 * @param filesXML
 	 */
-	private loadMultipleSchemes(filesTemplate: FileList, filesXML: FileList): void {
+	private loadMultipleSchemas(filesTemplate: FileList, filesXML: FileList): void {
 
-		console.log('loading schemes:');
+		console.log('loading schemas:');
 		console.log(filesTemplate);
 
 		console.log('adding content from files:');
@@ -358,9 +358,9 @@ export class MetadataAnnotationFormComponent implements OnInit {
 				results.forEach((result: MetadataServerResponse) => {
 
 					let createdTab = this.addTab(
-						this.removeFileExtension(result.scheme),
+						this.removeFileExtension(result.schema),
 						this.mapTabNames(
-							this.removeFileExtension(result.scheme)
+							this.removeFileExtension(result.schema)
 						),
 						true
 					);
@@ -382,11 +382,11 @@ export class MetadataAnnotationFormComponent implements OnInit {
 
 						results.forEach((result: MetadataServerResponse) => {
 
-							let changedResultFile = resultFile.replaceAll('<<REPLACE>>', result.scheme);
+							let changedResultFile = resultFile.replaceAll('<<REPLACE>>', result.schema);
 							eval(changedResultFile);
 
 							// Dispatch the custom event to trigger the code
-							const event = new Event('load' + result.scheme);
+							const event = new Event('load' + result.schema);
 							window.dispatchEvent(event);
 						});
 
@@ -401,14 +401,14 @@ export class MetadataAnnotationFormComponent implements OnInit {
 
 
 	/**
-	 * loadSingleSchemeByFile
+	 * loadSingleSchemaByFile
 	 *
-	 * Loads a single scheme by file
+	 * Loads a single schema by file
 	 *
 	 * @param fileTemplate
 	 * @param fileXML
 	 */
-	private loadSingleSchemeByFile(fileTemplate: File, fileXML?: File): void {
+	private loadSingleSchemaByFile(fileTemplate: File, fileXML?: File): void {
 
 		if (fileTemplate) {
 			console.log(
@@ -667,7 +667,7 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	/**
 	 * mapTabNames
 	 *
-	 * Maps the tab names to the schemes
+	 * Maps the tab names to the schemas
 	 *
 	 * @param tabName
 	 * @returns

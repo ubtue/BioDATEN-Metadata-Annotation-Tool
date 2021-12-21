@@ -7,7 +7,7 @@
 
 	<div class="metadata-annotation-form-menu-wrap">
 		<div class="metadata-annotation-form-menu">
-			<div class="metadata-annotation-form-menu-schemes">
+			<div class="metadata-annotation-form-menu-schemas">
 				<button
 					data-tab="datacite"
 					class="tablink active"
@@ -57,7 +57,7 @@
 		<div data-tab="datacite" class="content-block tabcontent active">
 			<div #formResultDatacite>
 				<p>
-					<button hover class="biodaten-button" (click)="onClickLoadScheme('datacite')">
+					<button hover class="biodaten-button" (click)="onClickLoadSchema('datacite')">
 						Load datacite
 					</button>
 				</p>
@@ -67,7 +67,7 @@
 		<div data-tab="premis" class="content-block tabcontent">
 			<div #formResultPremis>
 				<p>
-					<button hover class="biodaten-button" (click)="onClickLoadScheme('premis')">
+					<button hover class="biodaten-button" (click)="onClickLoadSchema('premis')">
 						Load premis
 					</button>
 				</p>
@@ -77,7 +77,7 @@
 		<div data-tab="biodatenMinimal" class="content-block tabcontent">
 			<div #formResultBiodatenMinimal>
 				<p>
-					<button hover class="biodaten-button" (click)="onClickLoadScheme('biodatenMinimal')">
+					<button hover class="biodaten-button" (click)="onClickLoadSchema('biodatenMinimal')">
 						Load BioDATEN minimal
 					</button>
 				</p>
@@ -104,7 +104,7 @@
 					</div>
 
 					<div class="form-submit">
-						<input hover class="biodaten-button" type="submit" value="Load custom scheme" />
+						<input hover class="biodaten-button" type="submit" value="Load custom schema" />
 					</div>
 				</form>
 			</div>

@@ -32,6 +32,9 @@
 							<li *ngIf="userIsLoggedIn">
 								<a routerLink="user/metadata-resources" (click)="closeUserMenu()">Metadata resources</a>
 							</li>
+							<li *ngIf="userIsLoggedIn && userIsAdmin">
+								<a routerLink="administration" (click)="closeUserMenu()">Administration</a>
+							</li>
 							<li *ngIf="userIsLoggedIn">
 								<a href (click)="onClickLogout($event)">Logout</a>
 							</li>

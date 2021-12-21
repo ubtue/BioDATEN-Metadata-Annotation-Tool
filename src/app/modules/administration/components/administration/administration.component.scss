@@ -1,0 +1,14 @@
+@import "../../../../styles/shared_variables";
+@import "../../../../styles/mixins";
+
+.administration-outer-wrap {
+
+	@include contentPadding();
+
+	.administration-overview {
+
+		ul {
+			margin: 0;
+		}
+	}
+}

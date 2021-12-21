@@ -1,3 +1,5 @@
+import { AutocompleteMappingService } from './autocomplete-mapping.service';
+import { AutocompleteMapping } from './../models/autocomplete-mapping.model';
 import { HelperService } from './helper.service';
 import { AutocompleteData } from './../models/autocomplete-data.model';
 import { AutocompleteServerData } from '../models/autocomplete-server-data.model';
@@ -33,6 +35,8 @@ export class AutocompleteService {
 	dummyAutocompleteSourceArray: string =
 		'assets/dummy-data/dummy-autocomplete-array';
 
+	loadedMappings: AutocompleteMapping[] = [];
+
 	cachedAutocompleteData: any = [];
 
 
@@ -42,7 +46,8 @@ export class AutocompleteService {
 	constructor(private settingsService: SettingsService,
 		private dataTransferService: DataTransferService,
 		private helperService: HelperService,
-		private htmlHelperService: HtmlHelperService) {
+		private htmlHelperService: HtmlHelperService,
+		private autocompleteMappingService: AutocompleteMappingService) {
 
 		// If the document click event has not been initialized
 		// make sure that a click on the document closes all lists except the one clicked
@@ -54,6 +59,13 @@ export class AutocompleteService {
 
 			this.documentClickInit = true;
 		}
+
+		// Get current mappings
+		this.autocompleteMappingService.getAllMappings().then(
+			(mappings: AutocompleteMapping[]) => {
+				this.loadedMappings = mappings;
+			}
+		);
 	}
 
 
@@ -125,61 +137,84 @@ export class AutocompleteService {
 
 		let autocompleteSource: string = '';
 
-		// Check for the autocomplete source. If there is none, take the dummy source
+		// Check for the autocomplete source. If there is none, check the loaded Mappings
 		if (inputElement.getAttribute('data-autocomplete')) {
 			autocompleteSource = inputElement.getAttribute(
 				'data-autocomplete'
 			) as string;
 		} else {
-			autocompleteSource = this.dummyAutocompleteSource;
-			// autocompleteSource = this.dummyAutocompleteSourceArray;
+
+			// Get the xpath value from the parent element
+			let xpath = inputElement.closest('label')?.getAttribute('data-xsd2html2xml-xpath');
+
+			if ( xpath ) {
+
+				// If the xpath value is in one of the datasources -> use ontology
+				this.loadedMappings.some((e: AutocompleteMapping) => {
+					if ( e.xpath === xpath ) {
+						autocompleteSource = e.ontology;
+					}
+				});
+			}
 		}
 
-		// Get the data for the autocomplete
-		this.dataTransferService
-			.getData(autocompleteSource, "json", true)
-			.then((dataResult: any) => {
+		// Get the contents of the autocomplete source if available
+		if ( autocompleteSource !== '' ) {
 
-				let autocompleteData: AutocompleteData[] = [];
+			// Get the data for the autocomplete
+			this.dataTransferService
+				.getData(autocompleteSource, "json", true)
+				.then((dataResult: any) => {
 
-				// Check if result is a string, an array or not (it is asumed the result is an object then)
-				if (typeof dataResult === 'string') {
-					// autocompleteData = this.structureDataFromString(dataResult);
-				} else if (Array.isArray(dataResult)) {
-					// autocompleteData = this.structureDataFromArray(dataResult);
-				} else {
-					autocompleteData = this.structureDataFromObject(dataResult);
-				}
+					let autocompleteData: AutocompleteData[] = [];
 
-				// Cache the data using the length of the cache array as index
-				let dataIndex = this.cachedAutocompleteData.length;
+					// Check if result is a string, an array or not (it is asumed the result is an object then)
+					if (typeof dataResult === 'string') {
+						// autocompleteData = this.structureDataFromString(dataResult);
+					} else if (Array.isArray(dataResult)) {
+						// autocompleteData = this.structureDataFromArray(dataResult);
+					} else {
+						autocompleteData = this.structureDataFromObject(dataResult);
+					}
 
-				this.cachedAutocompleteData[dataIndex] = autocompleteData;
+					// Cache the data using the length of the cache array as index
+					let dataIndex = this.cachedAutocompleteData.length;
 
-				if (this.settingsService.enableConsoleLogs) {
-					console.log('data for autocomplete:')
-					console.log(autocompleteData);
-				}
+					this.cachedAutocompleteData[dataIndex] = autocompleteData;
 
-				// Add the data-index to the input element and focus it
-				inputElement.setAttribute('data-autocomplete-index', dataIndex.toString());
+					if (this.settingsService.enableConsoleLogs) {
+						console.log('data for autocomplete:')
+						console.log(autocompleteData);
+					}
 
-				inputElement.focus();
+					// Add the data-index to the input element and focus it
+					inputElement.setAttribute('data-autocomplete-index', dataIndex.toString());
 
-				// Call the autocomplete function
-				this.autocomplete(inputElement, dataIndex);
+					inputElement.focus();
 
-				// Activate the keydown handling
-				this.handleKeyDown(inputElement, dataIndex);
+					// Call the autocomplete function
+					this.autocomplete(inputElement, dataIndex);
 
-				// Set the state of the autocomplete-init to 'done'
-				this.setAutocompleteInitStatus(
-					inputElement,
-					this.INIT_STATUS.DONE
-				);
+					// Activate the keydown handling
+					this.handleKeyDown(inputElement, dataIndex);
 
+					// Set the state of the autocomplete-init to 'done'
+					this.setAutocompleteInitStatus(
+						inputElement,
+						this.INIT_STATUS.DONE
+					);
+				});
 
-			});
+		} else {
+
+			// Set the state of the autocomplete-init to 'done'
+			this.setAutocompleteInitStatus(
+				inputElement,
+				this.INIT_STATUS.DONE
+			);
+
+			inputElement.focus();
+		}
 	}
 
 
@@ -255,6 +290,9 @@ export class AutocompleteService {
 				inputElement.parentNode.appendChild(popoutDescriptionDIV);
 			}
 		}
+
+		// Count of displayed entries
+		let displayedEntries = 0;
 
 		// For each item in the array
 		for (let i = 0; i < data.length; i++) {
@@ -367,6 +405,14 @@ export class AutocompleteService {
 
 				// Add the complete construct to the parent DIV
 				autocompleteDIV.appendChild(matchingElementDIV);
+
+				// Increase the entry count
+				displayedEntries++;
+
+				// Check if the max amount of entries is reached
+				if ( displayedEntries >= this.settingsService.maxAutocompleteEntriesCount ) {
+					break;
+				}
 			}
 		}
 	}
@@ -490,10 +536,9 @@ export class AutocompleteService {
 			// Check if element has description and set the popout text and visibilty
 			let element = elements[this.currentFocus] as HTMLElement;
 
-			if ( typeof dataIndex !== 'undefined' ) {
+			if ( element.querySelector('[data-description]') && typeof dataIndex !== 'undefined' ) {
 				this.showElementDescriptionInPopout(element, dataIndex);
 			}
-
 		}
 
 		// Scroll the element into view
@@ -536,8 +581,6 @@ export class AutocompleteService {
 				allLists[i].parentNode!.removeChild(allLists[i]);
 			}
 		}
-
-
 	}
 
 
@@ -908,9 +951,7 @@ export class AutocompleteService {
 
 					}, 10
 				);
-
 			}
-
 		}
 	}
 
@@ -936,7 +977,6 @@ export class AutocompleteService {
 			} else {
 				backdrop.classList.remove('show');
 			}
-
 		}
 	}
 
@@ -962,7 +1002,6 @@ export class AutocompleteService {
 			} else {
 				popoutInputElement.classList.remove('popout-description-active');
 			}
-
 		}
 	}
 }

@@ -37,12 +37,12 @@ export class DataTransferService {
 
 		if ( !skipIntercept ) {
 			httpOpts = {
-				headers: new HttpHeaders().set('Accept', 'text/html').set('Content-Type', 'application/json'),
+				headers: new HttpHeaders().set('Accept', '*/*').set('Content-Type', 'application/json'),
 				responseType: requestResponseType
 			};
 		} else {
 			httpOpts = {
-				headers: new HttpHeaders().set('Accept', 'text/html').set('Content-Type', 'application/json').set('skipintercept', 'true'),
+				headers: new HttpHeaders().set('Accept', '*/*').set('Content-Type', 'application/json').set('skipintercept', 'true'),
 				responseType: requestResponseType
 			};
 		}
@@ -78,6 +78,7 @@ export class DataTransferService {
 	 *
 	 * @param url
 	 * @param body
+	 * @param httpOpts
 	 * @returns
 	 */
 	postData(url: string, body: any, httpOpts?: any): Promise<any> {
@@ -87,7 +88,6 @@ export class DataTransferService {
 		} else {
 			return this.httpClient.post(url, body).toPromise();
 		}
-
 	}
 
 
@@ -119,10 +119,16 @@ export class DataTransferService {
 	 *
 	 * @param url
 	 * @param body
+	 * @param httpOpts
 	 * @returns
 	 */
-	putData(url: string, body: any) {
-		return this.httpClient.put(url, body).toPromise();
+	putData(url: string, body: any, httpOpts?: any) {
+
+		if ( httpOpts ) {
+			return this.httpClient.put(url, body, httpOpts).toPromise();
+		} else {
+			return this.httpClient.put(url, body).toPromise();
+		}
 	}
 
 	/**

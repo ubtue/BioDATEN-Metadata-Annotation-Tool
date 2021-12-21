@@ -516,10 +516,10 @@ window['xsd2html2xml']["<<REPLACE>>"].setValue = function (element, value) {
 			}*/
 		} else {
 
-			console.log('element 2');
-			console.log(element);
-			console.log('magic');
-			console.log("select option[value = '".concat(value).concat("']"));
+			// console.log('element 2');
+			// console.log(element);
+			// console.log('magic');
+			// console.log("select option[value = '".concat(value).concat("']"));
 
 			element
 				.querySelector(
@@ -581,28 +581,28 @@ window['xsd2html2xml']["<<REPLACE>>"].parseNode = function (node, element) {
 		for (var i = 0; i < node.childNodes.length; i++) {
 			var childNode = node.childNodes[i];
 
-			console.log('node');
-			console.log(node);
-			console.log('node.childNodes');
-			console.log(node.childNodes);
-			console.log('childNode');
-			console.log(childNode);
-			console.log('element');
-			console.log(element);
+			// console.log('node');
+			// console.log(node);
+			// console.log('node.childNodes');
+			// console.log(node.childNodes);
+			// console.log('childNode');
+			// console.log(childNode);
+			// console.log('element');
+			// console.log(element);
 
 			if (childNode.nodeType === Node.ELEMENT_NODE) {
 				//find the corresponding element
 
-				console.log("[data-xsd2html2xml-xpath = '"
-				.concat(
-					element
-						.getAttribute("data-xsd2html2xml-xpath")
-						.concat(
-							"/".concat(childNode.nodeName)
-							//"/*[name() = \"".concat(childNode.nodeName).concat("\"]")
-						)
-				)
-				.concat("']"));
+				// console.log("[data-xsd2html2xml-xpath = '"
+				// .concat(
+				// 	element
+				// 		.getAttribute("data-xsd2html2xml-xpath")
+				// 		.concat(
+				// 			"/".concat(childNode.nodeName)
+				// 			//"/*[name() = \"".concat(childNode.nodeName).concat("\"]")
+				// 		)
+				// )
+				// .concat("']"));
 
 				var childElement = element.querySelector(
 					"[data-xsd2html2xml-xpath = '"
@@ -1018,7 +1018,7 @@ window['xsd2html2xml']["<<REPLACE>>"].globalValuesMap = [];
 
 window['xsd2html2xml']["<<REPLACE>>"].eventListenerLoad = function() {
 
-	window['xsd2html2xml']["<<REPLACE>>"]['selector'] = document.querySelector(window.TABCONTENT_SELECTOR_STRING + ' span[data-scheme-file="<<REPLACE_FULL>>"').closest(TABCONTENT_SELECTOR_STRING);
+	window['xsd2html2xml']["<<REPLACE>>"]['selector'] = document.querySelector(window.TABCONTENT_SELECTOR_STRING + ' span[data-schema-file="<<REPLACE_FULL>>"').closest(TABCONTENT_SELECTOR_STRING);
 
 	/* INITIAL CALLS */
 	window['xsd2html2xml']["<<REPLACE>>"].addHiddenFields();

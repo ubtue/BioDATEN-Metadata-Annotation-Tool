@@ -57,11 +57,11 @@ export class MetadataAnnotationFormTestComponent implements OnInit {
 
 
 	/**
-	 * onClickLoadScheme
-	 * @param scheme
+	 * onClickLoadSchema
+	 * @param schema
 	 */
-	onClickLoadScheme(scheme: string): void {
-		this.loadSingleScheme(scheme);
+	onClickLoadSchema(schema: string): void {
+		this.loadSingleSchema(schema);
 	}
 
 
@@ -104,7 +104,7 @@ export class MetadataAnnotationFormTestComponent implements OnInit {
 
 		let fileXML = this.inputFileSingleXML.nativeElement.files[0] as File;
 
-		this.loadSingleSchemeByFile(fileTemplate, fileXML);
+		this.loadSingleSchemaByFile(fileTemplate, fileXML);
 
 	}
 
@@ -167,25 +167,25 @@ export class MetadataAnnotationFormTestComponent implements OnInit {
 	}
 
 	/**
-	 * loadSingleScheme
+	 * loadSingleSchema
 	 *
-	 * loads a single predefined scheme
+	 * loads a single predefined schema
 	 *
-	 * @param scheme
+	 * @param schema
 	 */
-	private loadSingleScheme(scheme: string): void {
+	private loadSingleSchema(schema: string): void {
 
-		console.log('Getting form data from service for scheme ' + scheme + '...');
+		console.log('Getting form data from service for schema ' + schema + '...');
 
-		// get the selected scheme from the server
+		// get the selected schema from the server
 		this.dataTransferService
-			.getData('http://localhost:8080/xsdnojs/' + scheme, 'json')
+			.getData('http://localhost:8080/xsdnojs/' + schema, 'json')
 			.then((result: any) => {
-				console.log('Result from getting data for ' + scheme);
+				console.log('Result from getting data for ' + schema);
 
 				let resultElement;
 
-				switch ( scheme ) {
+				switch ( schema ) {
 
 					case 'biodatenMinimal':
 						resultElement = this.formResultBiodatenMinimal;
@@ -213,10 +213,10 @@ export class MetadataAnnotationFormTestComponent implements OnInit {
 				this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
 					((resultFile: any) => {
 
-						resultFile = resultFile.replaceAll('<<REPLACE_FULL>>', scheme).replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(scheme));
+						resultFile = resultFile.replaceAll('<<REPLACE_FULL>>', schema).replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(schema));
 						eval(resultFile);
 
-						const event = new Event('load' + this.helperService.removeFileExtension(scheme));
+						const event = new Event('load' + this.helperService.removeFileExtension(schema));
 						window.dispatchEvent(event);
 
 						// update the save button state
@@ -229,14 +229,14 @@ export class MetadataAnnotationFormTestComponent implements OnInit {
 
 
 	/**
-	 * loadSingleSchemeByFile
+	 * loadSingleSchemaByFile
 	 *
-	 * loads a single scheme by file
+	 * loads a single schema by file
 	 *
 	 * @param fileTemplate
 	 * @param fileXML
 	 */
-	private loadSingleSchemeByFile(fileTemplate: File, fileXML?: File): void {
+	private loadSingleSchemaByFile(fileTemplate: File, fileXML?: File): void {
 
 		if (fileTemplate) {
 			console.log(
