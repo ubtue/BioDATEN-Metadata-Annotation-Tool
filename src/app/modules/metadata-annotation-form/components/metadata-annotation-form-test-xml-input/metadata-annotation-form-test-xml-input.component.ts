@@ -645,6 +645,9 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				// Mark the parent sections of inputs
 				this.htmlHelperService.markParentInputSections(createdTabContent);
 
+				// Hide the unwanted sections
+				this.htmlHelperService.hideUnwantedSections(createdTabContent);
+
 				// In flex layout: Add a count of the input-sections to the parent fieldset
 				if ( this.settingsService.metadataAnnotationFormFlexLayout === true ) {
 					this.htmlHelperService.addDataCountToFieldset(createdTabContent);
@@ -741,6 +744,9 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
 
 		});
+
+		// Add the ontologies to the inputs
+		this.autocompleteService.addOntologiesToInputs();
 	}
 
 

@@ -44,6 +44,9 @@ export class SettingsService {
 	// Frontend sorting
 	private _frontendSorting: boolean = false;
 
+	// Server Address to the schemas of the autocomplete
+	private _autocompleteSchemasServerAddress: string = 'http://localhost:8080/metadata/autocomplete-schemas/';
+
 	// Server Address to the mappings of the autocomplete
 	private _autocompleteMappingServerAddress: string = 'http://localhost:8080/metadata/autocomplete-mapping/';
 
@@ -53,12 +56,15 @@ export class SettingsService {
 	*******************************************************************/
 
 	// Flex Layout (Wether to display inputs side by side on larger displays)
-	private _metadataAnnotationFormFlexLayout = true;
+	private _metadataAnnotationFormFlexLayout: boolean = true;
 
 
 	/******************************************************************
 								USER RESOURCES
 	*******************************************************************/
+
+	// Server Address to the user resouces
+	private _userResourceServerAddress: string = 'assets/dummy-data/user-data/dummy_user-data.json';
 
 	// Default Sorting field of user resouces
 	private _defaultUserResourceSortingField: string = 'lastChange';
@@ -190,9 +196,25 @@ export class SettingsService {
 
 
 	/**
+	 * Getter autocompleteSchemasServerAddress
+	 */
+	get autocompleteSchemasServerAddress(): string {
+		return this._autocompleteSchemasServerAddress;
+	}
+
+
+	/**
+	 * Setter autocompleteSchemasServerAddress
+	 */
+	set autocompleteSchemasServerAddress(autocompleteSchemasServerAddress: string) {
+		this._autocompleteSchemasServerAddress = autocompleteSchemasServerAddress;
+	}
+
+
+	/**
 	 * Getter autocompleteMappingServerAddress
 	 */
-	 get autocompleteMappingServerAddress(): string {
+	get autocompleteMappingServerAddress(): string {
 		return this._autocompleteMappingServerAddress;
 	}
 
@@ -218,6 +240,22 @@ export class SettingsService {
 	 */
 	set metadataAnnotationFormFlexLayout(metadataAnnotationFormFlexLayout: boolean) {
 		this._metadataAnnotationFormFlexLayout = metadataAnnotationFormFlexLayout;
+	}
+
+
+	/**
+	 * Getter userResourceServerAddress
+	 */
+	 get userResourceServerAddress(): string {
+		return this._userResourceServerAddress;
+	}
+
+
+	/**
+	 * Setter userResourceServerAddress
+	 */
+	set userResourceServerAddress(userResourceServerAddress: string) {
+		this._userResourceServerAddress = userResourceServerAddress;
 	}
 
 

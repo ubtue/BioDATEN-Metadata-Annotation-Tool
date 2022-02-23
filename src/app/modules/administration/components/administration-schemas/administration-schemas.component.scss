@@ -1,7 +1,7 @@
 @import "../../../../styles/shared_variables";
 @import "../../../../styles/mixins";
 
-.administration-autocomplete-outer-wrap {
+.administration-schemas-outer-wrap {
 
 	@include contentPadding();
 
@@ -11,19 +11,15 @@
 		width: 24px;
 	}
 
-	.administration-autocomplete-add-new-wrap {
+	.administration-schemas-add-new-wrap {
 
 		@include addMarginBottom(large);
 
-		.administration-autocomplete-add-new {
+		.administration-schemas-add-new {
 
 			select, input[type="text"] {
 				margin-right: 14px;
 				margin-bottom: 14px;
-			}
-
-			select {
-				min-width: 200px;
 			}
 
 			input[type="text"] {
@@ -32,54 +28,7 @@
 		}
 	}
 
-	.administration-autocomplete-tab-control-wrap {
-
-		.administration-autocomplete-tabs {
-
-			display: flex;
-			justify-content: flex-start;
-			flex-wrap: wrap;
-			align-items: flex-end;
-
-			.administration-autocomplete-tab {
-
-				cursor: pointer;
-
-				border: none;
-
-				border-top: 1px solid $navigationGrey;
-				border-left: 1px solid $navigationGrey;
-
-				background: transparent;
-
-				&:last-child {
-					border-right: 1px solid $navigationGrey;
-				}
-
-				&.active {
-
-					border-top: 1px solid $navigationGrey;
-					border-left: 1px solid $navigationGrey;
-					border-right: 1px solid $navigationGrey;
-
-					.administration-autocomplete-tab-text {
-						font-size: 16px;
-					}
-				}
-
-				&.active + .administration-autocomplete-tab {
-					border-left: none;
-				}
-
-				.administration-autocomplete-tab-text {
-					display: block;
-					padding: 3px;
-				}
-			}
-		}
-	}
-
-	.administration-autocomplete-wrap-blocks {
+	.administration-schemas-wrap-blocks {
 
 		display: block;
 
@@ -87,7 +36,7 @@
 			display: none;
 		}
 
-		.administration-autocomplete-blocks-sort-wrap {
+		.administration-schemas-blocks-sort-wrap {
 
 			.mat-form-field {
 				width: 100%;
@@ -108,11 +57,11 @@
 			}
 		}
 
-		.administration-autocomplete-block {
+		.administration-schemas-block {
 
 			@include addMarginBottom(medium);
 
-			.administration-autocomplete-block-content-wrap {
+			.administration-schemas-block-content-wrap {
 
 				position: relative;
 				border: 1px solid $borderGrey;
@@ -128,7 +77,7 @@
 					top: 0;
 				}
 
-				.administration-autocomplete-block-content {
+				.administration-schemas-block-content {
 
 					display: flex;
 					align-items: center;
@@ -141,19 +90,15 @@
 						background: #fff;
 					}
 
-					.administration-autocomplete-block-label {
+					.administration-schemas-block-label {
 						width: 120px;
-					}
-
-					.administration-autocomplete-block-value {
-						word-break: break-word;
 					}
 				}
 			}
 		}
 	}
 
-	.administration-autocomplete-wrap-table {
+	.administration-schemas-wrap-table {
 
 		display: none;
 
@@ -161,7 +106,7 @@
 			display: block;
 		}
 
-		.administration-autocomplete-table {
+		.administration-schemas-table {
 			width: 100%;
 
 			border: 1px solid $borderGrey;
@@ -251,5 +196,3 @@
 		}
 	}
 }
-
-

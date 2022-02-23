@@ -1,9 +1,11 @@
+import { AutocompleteSchema } from './../models/autocomplete-schema.model';
 import { HttpHeaders } from '@angular/common/http';
 import { AlertService } from './alert.service';
 import { DataTransferService } from './../../core/services/data-transfer.service';
 import { SettingsService } from './settings.service';
 import { AutocompleteMapping } from './../models/autocomplete-mapping.model';
 import { Injectable } from '@angular/core';
+import { ElementSchemaRegistry } from '@angular/compiler';
 
 @Injectable({
 	providedIn: 'root',
@@ -39,16 +41,17 @@ export class AutocompleteMappingService {
 	 *
 	 * Adds new mapping to the database
 	 */
-	 addNewMapping(xpath: string, ontology:string): Promise<any> {
+	 addNewMapping(schema: string, xpath: string, ontology:string): Promise<any> {
 
 		// Check if the xpath already has been added (only continue if not)
-		return this.xpathAlreadyExists(xpath).then(
+		return this.xpathAlreadyExists(schema, xpath).then(
 			(exists: boolean) => {
 
 				if (!exists) {
 
 					// Create params string
 					let params = {
+						'schema': schema,
 						'xpath': xpath,
 						'ontology': ontology
 					};
@@ -84,14 +87,16 @@ export class AutocompleteMappingService {
 	 * Updates the saved ontology in the database
 	 *
 	 * @param mapping
+	 * @param schema
 	 * @param xpath
 	 * @param ontology
 	 */
-	updateAutocompleteMapping(mapping: AutocompleteMapping, xpath: string, ontology: string): Promise<any> {
+	updateAutocompleteMapping(mapping: AutocompleteMapping, schema: string, xpath: string, ontology: string): Promise<any> {
 
 		// Create params string
 		let params = {
 			'id': mapping.id,
+			'schema': schema,
 			'xpath': xpath,
 			'ontology': ontology
 		};
@@ -112,7 +117,7 @@ export class AutocompleteMappingService {
 		} else {
 
 			// Check if the xpath already has been added (only continue if not)
-			return this.xpathAlreadyExists(xpath).then(
+			return this.xpathAlreadyExists(schema, xpath).then(
 				(exists: boolean) => {
 
 					if (!exists) {
@@ -145,7 +150,11 @@ export class AutocompleteMappingService {
 	 */
 	deleteAutocompleteMapping(mapping: AutocompleteMapping): Promise<any> {
 
-		return this.dataTransferService.deleteData(this.settingsService.autocompleteMappingServerAddress + mapping.id);
+		return this.dataTransferService.deleteData(this.settingsService.autocompleteMappingServerAddress + mapping.id).then(
+			(result: any) => {
+				console.log(result);
+			}
+		);
 	}
 
 
@@ -157,18 +166,77 @@ export class AutocompleteMappingService {
 	 * @param xpath
 	 * @returns
 	 */
-	xpathAlreadyExists(xpath: string): Promise<boolean> {
+	xpathAlreadyExists(schema: string, xpath: string): Promise<boolean> {
 
 		return this.getAllMappings().then(
 			(mappings: AutocompleteMapping[]) => {
 
 				// If the value is in one of the datasources -> return true
-				if (mappings.some((e: AutocompleteMapping) => e.xpath === xpath) ) {
+				if (mappings.some((e: AutocompleteMapping) => (e.xpath === xpath && e.schema === schema)) ) {
 					return true;
 				}
 
 				return false;
 			}
 		);
+	}
+
+
+	/**
+	 * parseSchemasToMappings
+	 *
+	 * Parses the name of the schema into the mapping instead of the id
+	 *
+	 * @param schemas
+	 * @param mappings
+	 */
+	parseSchemasToMappings(schemas: AutocompleteSchema[], mappings: AutocompleteMapping[]): AutocompleteMapping[] {
+
+		let parsedMappings: AutocompleteMapping[] = [];
+
+		// Loop through the mappings and replace the schema id with the schema name
+		for ( let i = 0; i < mappings.length; i++ ) {
+
+			let mapping = mappings[i];
+
+			for ( let j = 0; j < schemas.length; j++ ) {
+
+				let schema = schemas[j];
+
+				// If the mapping schema id and the id of the schema match replace the value
+				// and leave the inner loop
+				if ( mapping.schema === schema.id ) {
+					mapping.schema = schema.schema;
+
+					parsedMappings.push(mapping);
+
+					break;
+				}
+			}
+		}
+
+		return parsedMappings;
+	}
+
+
+	/**
+	 * addOntologiesToInputs
+	 *
+	 * Adds the ontologies to inputs as a data attribute
+	 *
+	 * @param mappings
+	 */
+	addOntologiesToInputs(mappings: AutocompleteMapping[]):void {
+
+		// Loop through all mappings and add
+		for ( let i = 0; i < mappings.length; i++ ) {
+
+			// Get input element
+			let inputElement = document.querySelector(
+				'div[data-tab="' + mappings[i].schema + '"] label[data-xsd2html2xml-xpath="' + mappings[i].xpath + '"] > input') as HTMLInputElement;
+
+			// Add ontology as data attribute
+			inputElement.setAttribute('data-ontology', mappings[i].ontology);
+		}
 	}
 }

@@ -1,0 +1,20 @@
+@import "../../../../styles/shared_variables";
+@import "../../../../styles/mixins";
+
+.back-link-wrap {
+
+	display: flex;
+	align-items: center;
+
+	&.top {
+		@include addMarginBottom(default, true);
+	}
+
+	&.bottom {
+
+	}
+
+	.back-link {
+
+	}
+}

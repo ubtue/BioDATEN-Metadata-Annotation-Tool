@@ -11,12 +11,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { AdministrationComponent } from './components/administration/administration.component';
 import { AdministrationAutocompleteComponent } from './components/administration-autocomplete/administration-autocomplete.component';
+import { AdministrationSchemasComponent } from './components/administration-schemas/administration-schemas.component';
+import { SharedModule } from '../shared/shared.module';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
 	declarations: [
 		AdministrationComponent,
- 		AdministrationAutocompleteComponent
+ 		AdministrationAutocompleteComponent,
+   		AdministrationSchemasComponent
   	],
 	imports: [
 		CommonModule,
@@ -26,7 +30,9 @@ import { AdministrationAutocompleteComponent } from './components/administration
 		MatPaginatorModule,
 		MatFormFieldModule,
 		MatSelectModule,
-		MatIconModule
+		MatIconModule,
+		SharedModule,
+		FormsModule
 	]
 })
 export class AdministrationModule { }

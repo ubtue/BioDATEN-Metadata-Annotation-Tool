@@ -1,3 +1,5 @@
+import { AutocompleteSchema } from './../models/autocomplete-schema.model';
+import { LoadingService } from './../../core/services/loading.service';
 import { AutocompleteMappingService } from './autocomplete-mapping.service';
 import { AutocompleteMapping } from './../models/autocomplete-mapping.model';
 import { HelperService } from './helper.service';
@@ -8,6 +10,7 @@ import { Injectable } from '@angular/core';
 import { DataTransferService } from '../../core/services/data-transfer.service';
 import { SettingsService } from './settings.service';
 import { devOnlyGuardedExpression } from '@angular/compiler';
+import { AutocompleteSchemaService } from './autocomplete-schema.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -35,6 +38,7 @@ export class AutocompleteService {
 	dummyAutocompleteSourceArray: string =
 		'assets/dummy-data/dummy-autocomplete-array';
 
+	loadedSchemas: AutocompleteSchema[] = [];
 	loadedMappings: AutocompleteMapping[] = [];
 
 	cachedAutocompleteData: any = [];
@@ -47,7 +51,8 @@ export class AutocompleteService {
 		private dataTransferService: DataTransferService,
 		private helperService: HelperService,
 		private htmlHelperService: HtmlHelperService,
-		private autocompleteMappingService: AutocompleteMappingService) {
+		private autocompleteMappingService: AutocompleteMappingService,
+		private autocompleteSchemaService: AutocompleteSchemaService) {
 
 		// If the document click event has not been initialized
 		// make sure that a click on the document closes all lists except the one clicked
@@ -60,12 +65,30 @@ export class AutocompleteService {
 			this.documentClickInit = true;
 		}
 
-		// Get current mappings
-		this.autocompleteMappingService.getAllMappings().then(
-			(mappings: AutocompleteMapping[]) => {
-				this.loadedMappings = mappings;
+		// Get current schemas/mappings
+		this.autocompleteSchemaService.getAllSchemas().then(
+			(schemas: AutocompleteSchema[]) => {
+
+				this.loadedSchemas = schemas;
+
+				// Get the mappings and parse the schema names into the mappings
+				this.autocompleteMappingService.getAllMappings().then(
+					(mappings: AutocompleteMapping[]) => {
+						this.loadedMappings = this.autocompleteMappingService.parseSchemasToMappings(this.loadedSchemas, mappings);
+					}
+				);
 			}
 		);
+	}
+
+
+	/**
+	 * addOntologiesToInputs
+	 *
+	 * Adds the loaded ontology to a input as a data attribute
+	 */
+	addOntologiesToInputs(): void {
+		this.autocompleteMappingService.addOntologiesToInputs(this.loadedMappings);
 	}
 
 
@@ -144,14 +167,17 @@ export class AutocompleteService {
 			) as string;
 		} else {
 
+			// Get the data-tab value (schema) of the current schema div
+			let schema = inputElement.closest('div[data-tab]')?.getAttribute('data-tab');
+
 			// Get the xpath value from the parent element
 			let xpath = inputElement.closest('label')?.getAttribute('data-xsd2html2xml-xpath');
 
-			if ( xpath ) {
+			if ( schema && xpath ) {
 
 				// If the xpath value is in one of the datasources -> use ontology
 				this.loadedMappings.some((e: AutocompleteMapping) => {
-					if ( e.xpath === xpath ) {
+					if ( e.schema === schema && e.xpath === xpath ) {
 						autocompleteSource = e.ontology;
 					}
 				});

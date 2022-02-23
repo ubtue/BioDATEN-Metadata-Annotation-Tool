@@ -92,7 +92,7 @@ export class KeycloakService extends AngularKeycloakService {
 						console.log(this.userInformation);
 					}
 
-					if ( this.userGroups !== null ) {
+					if ( this.userGroups !== null && this.userGroups.length > 0 ) {
 						if ( this.settingsService.enableConsoleLogs ) {
 							console.log('userGroups:');
 							console.log(this.userGroups);

@@ -174,6 +174,10 @@ export class HtmlHelperService {
 				// If the input is of type radio add the class "stretch"
 				if ( input.getAttribute('type') === 'radio' ) {
 					input.closest('label')?.classList.add('stretch');
+
+					/* TODO: REMOVE?! */
+					let closestSectionRadio = input.closest('section') as HTMLElement;
+					closestSectionRadio.style.display = 'none';
 				}
 
 			});
@@ -289,5 +293,55 @@ export class HtmlHelperService {
 		parent!.insertBefore(wrapper, nextSibling);
 
 		return wrapper;
+	}
+
+
+	/**
+	 * selectOptionWithTimeout
+	 *
+	 * Selects an option of an select element with a timeout
+	 *
+	 * @param selectElement
+	 */
+	 selectOptionWithTimeout(selectElement: HTMLSelectElement, option: number, timeout: number): void {
+
+		// Set timeout for selection
+		window.setTimeout(
+			() => {
+				selectElement.selectedIndex = option;
+			},
+			timeout
+		);
+	}
+
+
+	/**
+	 * hideNotRevelevantSections
+	 *
+	 * Hides unwanted sections in the html form
+	 *
+	 * @param rootElement
+	 */
+	hideUnwantedSections(rootElement: HTMLElement) : void {
+
+		// All unwanted section xpaths
+		/*TODO: Get the data from the database*/
+		let unwantedSectionsXpath = [
+			'/premis/object',
+			'/premis/event',
+			'/premis/agent',
+			'/premis/rights/rightsExtension'
+		];
+
+		// Loop through the xpaths
+		for ( let i = 0; i < unwantedSectionsXpath.length; i++ ) {
+
+			// Hide the parent section of the xpath
+			let section  = rootElement.querySelector('[data-xsd2html2xml-xpath="' + unwantedSectionsXpath[i] + '"]')?.closest('section') as HTMLElement;
+
+			if ( typeof section !== 'undefined' && section !== null ) {
+				section.style.display = 'none';
+			}
+		}
 	}
 }

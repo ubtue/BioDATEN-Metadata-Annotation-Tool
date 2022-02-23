@@ -135,16 +135,23 @@ export class MetadataAnnotationFormHelperService {
 	}
 
 
+	/**
+	 * replaceOntologyIdentifiers
+	 *
+	 * Replaces all input values (identifier -> value) and keeps the identifier as a data attribute
+	 */
 	replaceOntologyIdentifiers(): void {
 
-		// Get all input elements that have a ontolofgy identifier as value
+		// Get all input elements that have a ontology identifier as value
 		let inputElementsWithOntologyIdentifiers = this.getAllInputsWithOntologyIdentifiers();
 
 		inputElementsWithOntologyIdentifiers.forEach(
 			(inputElement: HTMLInputElement) => {
 
+				let ontology = inputElement.getAttribute('data-ontology');
+
 				// Find the corresponding label
-				this.getOntologyLabelByIdentifier(inputElement.value, 'assets/dummy-data/ontologies/vocabulary_from_tissueOntology.json').then(
+				this.getOntologyLabelByIdentifier(inputElement.value, ontology).then(
 					(result: any) => {
 
 						// Set the current value as identifier
@@ -156,10 +163,16 @@ export class MetadataAnnotationFormHelperService {
 				)
 			}
 		);
-
 	}
 
 
+	/**
+	 * getAllInputsWithOntologyIdentifiers
+	 *
+	 * Gets all inputs that have an ontology identifier as value
+	 *
+	 * @returns
+	 */
 	getAllInputsWithOntologyIdentifiers(): HTMLInputElement[] {
 
 		let resultInputs: HTMLInputElement[] = [];
@@ -184,10 +197,19 @@ export class MetadataAnnotationFormHelperService {
 		);
 
 		return resultInputs;
-
 	}
 
 
+	/**
+	 * getOntologyLabelByIdentifier
+	 *
+	 * Looks through an ontology and searches for a label that matches the
+	 * given identifier
+	 *
+	 * @param identifier
+	 * @param ontology
+	 * @returns
+	 */
 	getOntologyLabelByIdentifier(identifier: string, ontology: any): Promise<string> {
 
 		return this.dataTransferService
@@ -206,6 +228,7 @@ export class MetadataAnnotationFormHelperService {
 
 						const bindingsData = bindings[key];
 
+						// If the identifier value matches and it has a corresponding value -> exit loop
 						if ( bindingsData.identifier && bindingsData.identifier.value === identifier
 							&& bindingsData.label && bindingsData.label.value ) {
 
@@ -217,7 +240,6 @@ export class MetadataAnnotationFormHelperService {
 				}
 
 				return result;
-
 			});
 	}
 }

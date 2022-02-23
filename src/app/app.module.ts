@@ -51,7 +51,6 @@ import { PlatformModule } from '@angular/cdk/platform';
  */
 function initializeKeycloakDev(keycloak: KeycloakService, loadingService: LoadingService): () => Promise<void> {
 	return KeycloakService.initializeKeycloak(keycloak, loadingService, true);
-
 }
 
 @NgModule({

@@ -55,9 +55,28 @@ export class HeaderComponent implements OnInit, OnDestroy {
 				)
 				.subscribe({
 					next: e => {
+
+						// Check if the event type is an expired token
 						if (e.type == KeycloakEventType.OnTokenExpired) {
-							console.log('EXPIRE');
-							keycloakService.updateToken(360);
+
+							if ( this.settingsService.enableConsoleLogs ) {
+								console.log('Keycloak token expired. Renewing...')
+								console.log(e);
+							}
+
+							// Renew the keycloak token
+							keycloakService.updateToken(60).then(
+								(result: boolean) => {
+
+									// Token has been renewed
+									if ( result ) {
+
+										if ( this.settingsService.enableConsoleLogs ) {
+											console.log('Keycloak token has been renewed.');
+										}
+									}
+								}
+							);
 						}
 					}
 				});
