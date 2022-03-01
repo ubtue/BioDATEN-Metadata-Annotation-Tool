@@ -306,7 +306,7 @@ export class KeycloakService extends AngularKeycloakService {
 				initOptions: {
 					onLoad: 'check-sso',
 					silentCheckSsoRedirectUri:
-						window.location.origin + '/assets/auth/silent-check-sso.html',
+						window.location.origin + '/metadata-annotation/assets/auth/silent-check-sso.html',
 				},
 			}).then(
 				(isUserLoggedIn: boolean) => {

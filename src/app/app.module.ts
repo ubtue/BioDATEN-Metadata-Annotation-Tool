@@ -23,6 +23,7 @@ import { FormsModule } from '@angular/forms';
 import { DirectivesModule } from './modules/shared/directives/directives.module';
 import { KeycloakAngularModule } from 'keycloak-angular';
 import { PlatformModule } from '@angular/cdk/platform';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 
 
@@ -86,10 +87,14 @@ function initializeKeycloakDev(keycloak: KeycloakService, loadingService: Loadin
 		},
 		{
 			provide: APP_INITIALIZER,
-			useFactory: initializeKeycloakDev,
+			useFactory: initializeKeycloak,
 			multi: true,
 			deps: [KeycloakService],
 		},
+		{
+			provide: LocationStrategy,
+			useClass: HashLocationStrategy
+		}
 	],
 	bootstrap: [AppComponent],
 })
