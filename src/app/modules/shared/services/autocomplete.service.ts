@@ -43,6 +43,8 @@ export class AutocompleteService {
 
 	cachedAutocompleteData: any = [];
 
+	validityCheckTimeout: any = null;
+
 
 	/**
 	 * constructor
@@ -603,10 +605,80 @@ export class AutocompleteService {
 		let allLists = document.getElementsByClassName("autocomplete-items");
 
 		for (let i = 0; i < allLists.length; i++) {
+
+			// Get the matching input element and check if the input is valid
+			let matchingInputElement = allLists[i].parentNode!.querySelector('input[data-ontology]') as HTMLInputElement;
+
+			// Set the validity flag
+			this.setValidInputFlag(matchingInputElement);
+
 			if (clickedElement != allLists[i] && clickedElement != inputElement) {
 				allLists[i].parentNode!.removeChild(allLists[i]);
 			}
 		}
+	}
+
+
+	/**
+	 * setValidInputFlag
+	 *
+	 * Checks if the input of an input element is valid and sets flags
+	 *
+	 * @param inputElement
+	 */
+	public setValidInputFlag(inputElement: HTMLInputElement): void {
+
+		// If a timeout is already set, remove it
+		if ( this.validityCheckTimeout !== null ) {
+
+			window.clearTimeout(this.validityCheckTimeout);
+			this.validityCheckTimeout = null;
+		}
+
+		// Check the validity after a 100ms timeout so the data is correct
+		this.validityCheckTimeout = window.setTimeout(
+			() => {
+
+				// Get the data-index of the input element
+				let dataIndex = inputElement.getAttribute('data-autocomplete-index');
+
+				if ( dataIndex ) {
+
+					let found = false;
+					let identifier = '';
+
+					// If the xpath value is in one of the datasources -> use ontology
+					this.cachedAutocompleteData[parseInt(dataIndex)].some((e: AutocompleteData) => {
+						if ( e.label === inputElement.value ) {
+							found = true;
+							identifier = e.identifier;
+						}
+					});
+
+					// If the value was found it is valid
+					if ( found ) {
+
+						// Set the flag to 1
+						inputElement.setAttribute('data-autocomplete-valid', '1');
+
+						// Set the identifier
+						inputElement.setAttribute('data-identifier', identifier);
+
+					} else {
+
+						// Set the flag to 0
+						inputElement.setAttribute('data-autocomplete-valid', '0');
+
+						// Remove the data-identifier
+						inputElement.removeAttribute('data-identifier');
+					}
+				}
+			},
+			100
+		);
+
+
+
 	}
 
 

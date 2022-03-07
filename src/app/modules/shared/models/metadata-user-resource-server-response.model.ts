@@ -1,7 +1,9 @@
 export interface MetadataUserResourceServerResponse {
-	position: number;
-	id: string;
-	title: string;
-	lastChange: number;
-	status: number;
+	metsId: string;
+	userId: string;
+	hpc_job_id: string;
+	metadata_status: string;
+	mets_xml: string;
+	created: number;
+	lastmodified: number;
 }

@@ -1,3 +1,4 @@
+import { UserResourceService } from './../../../shared/services/user-data.service';
 import { MetadataAnnotationFormHelperService } from './../../services/metadata-annotation-form-helper.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
@@ -28,6 +29,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	serverAdressXMLInput: string = 'http://localhost:8080/metadata/xsd/xml-input';
 
 	serverAdressXMLAddress: string = 'http://localhost:8080/metadata/xsd/xml-system';
+	serverAdressXMLAddressWithMetsId: string = 'http://localhost:8080/metadata/xsd/xml/';
 
 	currentTab: string = '';
 	saveEnabled: boolean = false;
@@ -56,7 +58,8 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				private autocompleteService: AutocompleteService,
 				private keycloakService: KeycloakService,
 				private router: Router,
-				private route: ActivatedRoute) {
+				private route: ActivatedRoute,
+				private userResourceService: UserResourceService) {
 
 					// Get the server address
 					this.serverAddress = this.settingsService.backendServerAddress;
@@ -166,6 +169,11 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 		}
 	}
 
+
+	/**
+	 * onClickResourceLink
+	 * @param event
+	 */
 	onClickResourceLink(event: Event): void {
 
 		event.preventDefault();
@@ -310,6 +318,33 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
 
 	/**
+	 * scrollToInput
+	 *
+	 * Scrolls to an specific input field
+	 *
+	 * @param inputElement
+	 */
+	private scrollToInput(inputElement: HTMLElement): void {
+
+		// Get the tab name
+		let tabName = inputElement.closest('div[data-tab]')?.getAttribute('data-tab') as string;
+
+		// Activate the tab
+		this.activateTab(tabName);
+
+		// Scroll to the inputElement
+		// Check if the function 'scrollIntoViewIfNeeded' is available
+		// @ts-ignore: Browser specific (Not all browsers support the function scrollIntoViewIfNeeded)
+		if ( typeof inputElement.scrollIntoViewIfNeeded !== 'undefined' && typeof inputElement.scrollIntoViewIfNeeded === 'function' ) {
+			// @ts-ignore: Browser specific (Not all browsers support the function scrollIntoViewIfNeeded)
+			inputElement.scrollIntoViewIfNeeded();
+		} else {
+			inputElement.scrollIntoView();
+		}
+	}
+
+
+	/**
 	 * updateSaveButton
 	 *
 	 * Checks if the save button should be enabled
@@ -321,7 +356,6 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 		} else {
 			this.saveEnabled = false;
 		}
-
 	}
 
 
@@ -580,7 +614,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 */
 	private getDataByResourceId(resourceId: string): void {
 
-		this.dataTransferService.getData(this.serverAdressXMLAddress).then(
+		this.dataTransferService.getData(this.serverAdressXMLAddressWithMetsId + resourceId).then(
 			(results: MetadataServerResponse[]) => {
 
 				// Create the tabs for all schemas
@@ -803,17 +837,41 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 */
 	private saveXMLData(): void {
 
-		// Create the XML Data
-		let xmlData = this.metadataAnnotationFormHelperService.createXMLData(this.createdTabs);
+		let invalidElement = this.metadataAnnotationFormHelperService.checkIfFormIsValid();
 
-		if ( xmlData ) {
+		// Check if the form is valid
+		if ( invalidElement === null ) {
 
-			// Add the XML structure to it
-			xmlData = this.helperService.addXMLStructure(xmlData);
+			// Create the XML Data
+			let xmlData = this.metadataAnnotationFormHelperService.createXMLData(this.createdTabs);
 
-			if ( this.settingsService.enableConsoleLogs ) {
-				console.log(xmlData);
+			if ( xmlData ) {
+
+				// Add the XML structure to it
+				xmlData = this.helperService.addXMLStructure(xmlData);
+
+				if ( this.settingsService.enableConsoleLogs ) {
+					console.log(xmlData);
+				}
+
+				// Save the changes to the database
+				// Get resource id
+				let resourceId = this.route.snapshot.queryParamMap.get("id") as string;
+				if ( typeof resourceId !== 'undefined' && resourceId !== '' ) {
+
+					// Get User ID (only continue if user is logged in)
+					if ( typeof this.keycloakService.userInformation.id !== 'undefined' && this.keycloakService.userInformation.id !== '' ) {
+						let userId = this.keycloakService.userInformation.id as string;
+
+						this.userResourceService.updateUserResource(resourceId, userId, xmlData);
+					}
+				}
 			}
+
+		} else {
+
+			// Scroll to the invalid input element
+			this.scrollToInput(invalidElement);
 		}
 	}
 

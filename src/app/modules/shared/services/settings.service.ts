@@ -64,7 +64,8 @@ export class SettingsService {
 	*******************************************************************/
 
 	// Server Address to the user resouces
-	private _userResourceServerAddress: string = 'assets/dummy-data/user-data/dummy_user-data.json';
+	// private _userResourceServerAddress: string = 'assets/dummy-data/user-data/dummy_user-data.json';
+	private _userResourceServerAddress: string = 'http://localhost:8080/metadata/metadata';
 
 	// Default Sorting field of user resouces
 	private _defaultUserResourceSortingField: string = 'lastChange';

@@ -1,3 +1,4 @@
+import { AlertService } from './../../shared/services/alert.service';
 import { SettingsService } from 'src/app/modules/shared/services/settings.service';
 import { HelperService } from './../../shared/services/helper.service';
 import { MetadataCreatedTab } from './../../shared/models/metadata-created-tab.model';
@@ -14,12 +15,53 @@ export class MetadataAnnotationFormHelperService {
 	 */
 	constructor(private helperService: HelperService,
 				private dataTransferService: DataTransferService,
-				private settingsService: SettingsService) {
+				private settingsService: SettingsService,
+				private alertService: AlertService) {
 
 					if ( this.settingsService.metadataAnnotationFormFlexLayout === true ) {
 						document.body.classList.add('metadata-form-flex-layout');
 					}
 				}
+
+
+
+	/**
+	 * checkIfFormIsValid
+	 *
+	 * Checks if the form is valid for submission
+	 *
+	 * @returns
+	 */
+	checkIfFormIsValid(): HTMLElement | null {
+
+		// Get all inputs that have an identifier
+		let inputs = document.querySelectorAll('input[data-autocomplete-flag="true"]');
+
+		// Loop through all inputs
+		for ( let i = 0; i < inputs.length; i++ ) {
+
+			// Check if the valid flag is 0 -> return false
+			if ( inputs[i].getAttribute('data-autocomplete-valid') === '0' ) {
+
+				let input = inputs[i] as HTMLElement;
+
+				// Show an alert telling the user that there is an invalid input
+				this.alertService.showAlert(
+					'Invalid Input',
+					'There was at least one invalid input.<br>Please check your inputs.'
+				);
+
+				input.classList.add('invalid-input');
+
+				// Return the invalid input
+				return input;
+			}
+		}
+
+		// If there is no problem -> valid
+		return null;
+	}
+
 
 
 	/**

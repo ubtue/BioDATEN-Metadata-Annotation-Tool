@@ -5,6 +5,10 @@
 
 	@include contentPadding();
 
+	.new-resource-button {
+		@include addMarginBottom();
+	}
+
 	.user-metadata-resource-wrap-blocks {
 
 		display: block;
@@ -67,9 +71,15 @@
 					}
 				}
 
-				&.z_finished {
+				&.t_finished {
 					&:after {
 						background: #c3e6cb;
+					}
+				}
+
+				&.z_pub {
+					&:after {
+						background: #ff9101;
 					}
 				}
 
@@ -175,9 +185,15 @@
 							}
 						}
 
-						&.z_finished {
+						&.t_finished {
 							&:after {
 								background: #c3e6cb;
+							}
+						}
+
+						&.z_pub {
+							&:after {
+								background: #ff9101;
 							}
 						}
 

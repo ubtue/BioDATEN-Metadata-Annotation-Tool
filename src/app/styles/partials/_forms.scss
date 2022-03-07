@@ -23,6 +23,10 @@ form {
 		display: block;
 		margin-bottom: 2px;
 	}
+
+	.invalid-input {
+		border: 2px solid #ff0000;
+	}
 }
 
 

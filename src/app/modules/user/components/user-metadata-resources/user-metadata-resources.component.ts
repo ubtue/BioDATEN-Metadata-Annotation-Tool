@@ -21,6 +21,8 @@ import { UserResourceService } from 'src/app/modules/shared/services/user-data.s
 })
 export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 
+	userId: string = '';
+
 	readonly RESOURCE_DATA_STATUS = {
 		new: {
 			label: "New",
@@ -32,7 +34,11 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 		},
 		finished: {
 			label: "Finished",
-			key: "z_finished"
+			key: "t_finished"
+		},
+		pub: {
+			label: "Published",
+			key: "z_pub"
 		}
 	};
 
@@ -143,6 +149,11 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 					// Get the default sorting field
 					this.selectedBlockSortableField =
 						this.settingsService.defaultUserResourceSortingField + '_' + this.settingsService.defaultUserResourceSortingMethod;
+
+					// Get User ID
+					if ( typeof this.keycloakService.userInformation.id !== 'undefined' && this.keycloakService.userInformation.id !== '' ) {
+						this.userId = this.keycloakService.userInformation.id as string;
+					}
 				}
 
 
@@ -176,8 +187,9 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 		// 	{ position: 13, id: "34221-563225-74243", title: "Research 13", lastChange: "2021-06-19", status: this.RESOURCE_DATA_STATUS.finished.label, statusKey: this.RESOURCE_DATA_STATUS.finished.key},
 		// ];
 
+
 		// Get the data that is used for the table from the server
-		this.userResourceService.getAllUserResourcesFromServer().then(
+		this.userResourceService.getAllUserResourcesFromServer(this.userId).then(
 			(userResourceDataFromServer: MetadataUserResourceServerResponse[]) => {
 
 				// Parse the data for the view
@@ -233,8 +245,23 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 	}
 
 
+	/**
+	 * onBlockSortSelectChange
+	 *
+	 * Fires when the block sort select changes
+	 */
 	onBlockSortSelectChange(): void {
 		this.sortBlocks();
+	}
+
+
+	/**
+	 * onClickAddNewResource
+	 *
+	 * Onclick handler for the new resource button
+	 */
+	onClickAddNewResource(): void {
+		this.addNewResource();
 	}
 
 	/**
@@ -303,6 +330,24 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 				this.userResourceDataSortedForBlocks = this.helperService.sortDescending(this.RESOURCE_FIELD_VALUES.lastChange, this.userResourceData);
 				break;
 		}
+	}
+
+
+	/**
+	 * addNewResource
+	 *
+	 * Handles adding a new resource
+	 */
+	addNewResource(): void {
+
+		this.userResourceService.createDummyData(this.userId).then(
+			(result: any) => {
+				console.log('Added new resource:');
+				console.log(result);
+
+				location.reload();
+			}
+		)
 	}
 
 }
