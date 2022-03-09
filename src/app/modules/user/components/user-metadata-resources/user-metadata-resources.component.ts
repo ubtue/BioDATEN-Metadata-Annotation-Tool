@@ -342,8 +342,11 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 
 		this.userResourceService.createDummyData(this.userId).then(
 			(result: any) => {
-				console.log('Added new resource:');
-				console.log(result);
+
+				if ( this.settingsService.enableConsoleLogs ) {
+					console.log('Added new resource:');
+					console.log(result);
+				}
 
 				location.reload();
 			}

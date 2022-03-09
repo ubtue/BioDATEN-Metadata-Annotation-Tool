@@ -13,7 +13,7 @@ export class SettingsService {
 	private _backendServerAddress: string = 'http://localhost:8080/metadata/xsd';
 
 	// Enable console logs
-	private _enableConsoleLogs: boolean = true;
+	private _enableConsoleLogs: boolean = false;
 
 
 	/******************************************************************

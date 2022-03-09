@@ -3,7 +3,8 @@
 		<div class="header-upper">
 			<div class="header-upper-left">
 				<div class="header-logo-wrap">
-					<a class="header-logo-link" routerLink="annotation">
+					<!-- TODO: routerLink? -->
+					<a class="header-logo-link" routerLink="user/metadata-resources">
 						<img class="header-logo" src="assets/logo/BioDATEN_logo.png" alt="" />
 						<span class="header-text">Metadata Annotation</span>
 					</a>
@@ -26,7 +27,7 @@
 							<li *ngIf="!userIsLoggedIn">
 								<a href (click)="onClickLogin($event)">Login</a>
 							</li>
-							<li *ngIf="userIsLoggedIn">
+							<li *ngIf="userIsLoggedIn" [hidden]="true">
 								<a routerLink="user/profile" (click)="closeUserMenu()">Profile</a>
 							</li>
 							<li *ngIf="userIsLoggedIn">

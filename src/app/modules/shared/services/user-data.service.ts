@@ -139,7 +139,7 @@ export class UserResourceService {
 				let metadataUserResource = new MetadataUserResource(
 					position,
 					currentServerResource.metsId,
-					'Dummy Title ' + position,
+					'Example resource ' + position,
 					lastChange,
 					status,
 					statusKey

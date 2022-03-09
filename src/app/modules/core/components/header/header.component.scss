@@ -163,6 +163,9 @@ $headerHeight: calc(#{$upperHeaderHeight} + #{$lowerHeaderHeight});
 
 			.header-menu-toggle-wrap {
 
+				/* TODO */
+				display: none;
+
 				.header-menu-toggle {
 
 					height: $upperHeaderMenuIconSize;

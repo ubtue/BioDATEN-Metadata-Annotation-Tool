@@ -127,11 +127,11 @@
 
 				display: none;
 
-				@include respond-above(lg) {
-					display: block;
-					margin-top: auto;
-					padding: 10px;
-				}
+				// @include respond-above(lg) {
+				// 	display: block;
+				// 	margin-top: auto;
+				// 	padding: 10px;
+				// }
 
 				> div {
 

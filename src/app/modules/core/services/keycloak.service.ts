@@ -46,7 +46,12 @@ export class KeycloakService extends AngularKeycloakService {
 	 * Custom login function
 	 */
 	customLogin(): void {
-		this.login();
+		this.login(
+			{
+				/*TODO: CORRECT REDIRECT? */
+				redirectUri: window.location.origin + '/metadata-annotation/#/user/metadata-resources'
+			}
+		);
 	}
 
 
@@ -61,7 +66,12 @@ export class KeycloakService extends AngularKeycloakService {
 		this.userInformation = null as any;
 
 		// Create the logout url and redirect to it
-		window.location.href = this.getKeycloakInstance().createLogoutUrl();
+		window.location.href = this.getKeycloakInstance().createLogoutUrl(
+			{
+				/*TODO: CORRECT REDIRECT? */
+				redirectUri: window.location.origin + '/metadata-annotation/'
+			}
+		);
 	}
 
 

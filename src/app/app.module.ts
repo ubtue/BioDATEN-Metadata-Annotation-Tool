@@ -87,7 +87,7 @@ function initializeKeycloakDev(keycloak: KeycloakService, loadingService: Loadin
 		},
 		{
 			provide: APP_INITIALIZER,
-			useFactory: initializeKeycloakDev,
+			useFactory: initializeKeycloak,
 			multi: true,
 			deps: [KeycloakService],
 		},

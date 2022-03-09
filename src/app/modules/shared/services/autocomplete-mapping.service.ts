@@ -152,7 +152,9 @@ export class AutocompleteMappingService {
 
 		return this.dataTransferService.deleteData(this.settingsService.autocompleteMappingServerAddress + mapping.id).then(
 			(result: any) => {
-				console.log(result);
+				if ( this.settingsService.enableConsoleLogs ) {
+					console.log(result);
+				}
 			}
 		);
 	}

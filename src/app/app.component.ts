@@ -1,3 +1,4 @@
+import { KeycloakService } from './modules/core/services/keycloak.service';
 import { AlertService } from './modules/shared/services/alert.service';
 import { Platform } from '@angular/cdk/platform';
 import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
@@ -20,6 +21,8 @@ export class AppComponent implements OnInit, OnDestroy {
 	private ngUnsubscribe = new Subject();
 	currentMenuTogglesubscription: Subscription = new Subscription;
 
+	userLoggedIn: boolean = false;
+
 	/**
 	 * constructor
 	 */
@@ -27,7 +30,8 @@ export class AppComponent implements OnInit, OnDestroy {
 				private eventHelperService: EventHelperService,
 				private platform: Platform,
 				private alertService: AlertService,
-				private settingsService: SettingsService) {}
+				private settingsService: SettingsService,
+				private keycloakService: KeycloakService) {}
 
 
 	/**
@@ -88,6 +92,13 @@ export class AppComponent implements OnInit, OnDestroy {
 		if ( this.platform.BLINK || this.platform.WEBKIT ) {
 			document.body.classList.add('css_property_support');
 		}
+
+		// Check if user is logged in
+		this.keycloakService.isLoggedIn().then(
+			(isLoggedIn: boolean) => {
+				this.userLoggedIn = isLoggedIn;
+			}
+		);
 	}
 
 
