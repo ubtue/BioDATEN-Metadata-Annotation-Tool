@@ -26,10 +26,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
 	serverAddress: string = '';
-	serverAdressXMLInput: string = 'http://localhost:8080/metadata/xsd/xml-input';
+	serverAdressXMLInput: string = 'http://193.196.20.98/metadata/xsd/xml-input';
 
-	serverAdressXMLAddress: string = 'http://localhost:8080/metadata/xsd/xml-system';
-	serverAdressXMLAddressWithMetsId: string = 'http://localhost:8080/metadata/xsd/xml/';
+	serverAdressXMLAddress: string = 'http://193.196.20.98/metadata/xsd/xml-system';
+	serverAdressXMLAddressWithMetsId: string = 'http://193.196.20.98/metadata/xsd/xml/';
 
 	currentTab: string = '';
 	saveEnabled: boolean = false;
@@ -91,7 +91,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 * onClickTest
 	 */
 	onClickTest(): void {
-		this.dataTransferService.getData('http://localhost:8080/autocomplete-mapping/').then(
+		this.dataTransferService.getData('http://193.196.20.98/autocomplete-mapping/').then(
 			(result: any) => {
 				console.log(result);
 			}
@@ -124,11 +124,13 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 * onClickReset
 	 */
 	onClickReset(): void {
-		this.router.navigate(["annotation/test-xml-input"]).then(
-			() => {
-				window.location.reload();
-			}
-		);
+		// this.router.navigate(["annotation/test-xml-input"]).then(
+		// 	() => {
+		// 		window.location.reload();
+		// 	}
+		// );
+
+		window.location.reload();
 	}
 
 
@@ -535,7 +537,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
 			// Send the files to the server for parsing
 			this.dataTransferService
-				.postData('http://localhost:8080/xsdnojs', formData)
+				.postData('http://193.196.20.98/xsdnojs', formData)
 				.then((result: any) => {
 
 					if ( this.settingsService.enableConsoleLogs ) {

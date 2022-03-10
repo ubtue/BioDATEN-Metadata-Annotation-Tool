@@ -10,7 +10,7 @@ export class SettingsService {
 	*******************************************************************/
 
 	// Backend server address
-	private _backendServerAddress: string = 'http://localhost:8080/metadata/xsd';
+	private _backendServerAddress: string = 'http://193.196.20.98/metadata/xsd';
 
 	// Enable console logs
 	private _enableConsoleLogs: boolean = false;
@@ -45,10 +45,10 @@ export class SettingsService {
 	private _frontendSorting: boolean = false;
 
 	// Server Address to the schemas of the autocomplete
-	private _autocompleteSchemasServerAddress: string = 'http://localhost:8080/metadata/autocomplete-schemas/';
+	private _autocompleteSchemasServerAddress: string = 'http://193.196.20.98/metadata/autocomplete-schemas/';
 
 	// Server Address to the mappings of the autocomplete
-	private _autocompleteMappingServerAddress: string = 'http://localhost:8080/metadata/autocomplete-mapping/';
+	private _autocompleteMappingServerAddress: string = 'http://193.196.20.98/metadata/autocomplete-mapping/';
 
 
 	/******************************************************************
@@ -65,7 +65,7 @@ export class SettingsService {
 
 	// Server Address to the user resouces
 	// private _userResourceServerAddress: string = 'assets/dummy-data/user-data/dummy_user-data.json';
-	private _userResourceServerAddress: string = 'http://localhost:8080/metadata/metadata';
+	private _userResourceServerAddress: string = 'http://193.196.20.98/metadata/metadata';
 
 	// Default Sorting field of user resouces
 	private _defaultUserResourceSortingField: string = 'lastChange';
