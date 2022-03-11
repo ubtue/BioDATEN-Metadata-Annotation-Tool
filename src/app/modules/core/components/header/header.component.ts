@@ -24,7 +24,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	currentViewValue: string = "";
 
 	userIsLoggedIn: boolean = false;
-	userIsAdmin: boolean = false;
+
 	userInformation: KeycloakProfile = null as any;
 
 	showUserMenu: boolean = false;
@@ -34,7 +34,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	 * constructor
 	 */
 	constructor(private updateNavigationService: UpdateNavigationService,
-		private keycloakService: KeycloakService,
+		public keycloakService: KeycloakService,
 		private settingsService: SettingsService,
 		private eventHelperService: EventHelperService) {
 
@@ -42,9 +42,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 		this.keycloakService.isLoggedIn().then(
 			(loginResult: boolean) => {
 				this.userIsLoggedIn = loginResult;
-
-				// Check if user is admin
-				this.userIsAdmin = this.keycloakService.userIsAdmin;
 
 				// Get user information
 				this.userInformation = this.keycloakService.userInformation;

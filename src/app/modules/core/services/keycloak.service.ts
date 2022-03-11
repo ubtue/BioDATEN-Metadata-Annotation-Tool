@@ -1,3 +1,4 @@
+import { BehaviorSubject } from 'rxjs';
 import { SettingsService } from 'src/app/modules/shared/services/settings.service';
 import { LoadingService } from 'src/app/modules/core/services/loading.service';
 import { KeycloakService as AngularKeycloakService} from 'keycloak-angular';
@@ -20,6 +21,9 @@ export class KeycloakService extends AngularKeycloakService {
 
 	_userInformation: KeycloakProfile = null as any;
 	_userGroups: string[] = [];
+
+	private isUserAdmin$$ = new BehaviorSubject<boolean>(false);
+	isUserAdmin$ = this.isUserAdmin$$.asObservable();
 
 
 	/**
@@ -134,6 +138,10 @@ export class KeycloakService extends AngularKeycloakService {
 							// Check if user is admin
 							if ( this.getUserRoles().includes(KeycloakService.METADATA_ANNOTATION_ADMIN_ROLE) ) {
 								this.userIsAdmin = true;
+								this.isUserAdmin$$.next(true);
+							} else {
+								this.userIsAdmin = false;
+								this.isUserAdmin$$.next(false);
 							}
 
 							// Get the usergroups
@@ -353,7 +361,5 @@ export class KeycloakService extends AngularKeycloakService {
 					console.warn(reason);
 				}
 			);
-
 	}
-
 }

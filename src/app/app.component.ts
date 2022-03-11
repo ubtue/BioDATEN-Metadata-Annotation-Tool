@@ -93,6 +93,9 @@ export class AppComponent implements OnInit, OnDestroy {
 			document.body.classList.add('css_property_support');
 		}
 
+		// Update User Information
+		this.keycloakService.updateLoginInformation();
+
 		// Check if user is logged in
 		this.keycloakService.isLoggedIn().then(
 			(isLoggedIn: boolean) => {

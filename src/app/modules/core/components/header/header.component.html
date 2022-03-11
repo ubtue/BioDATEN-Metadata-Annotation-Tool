@@ -33,7 +33,7 @@
 							<li *ngIf="userIsLoggedIn">
 								<a routerLink="user/metadata-resources" (click)="closeUserMenu()">Metadata resources</a>
 							</li>
-							<li *ngIf="userIsLoggedIn && userIsAdmin">
+							<li *ngIf="userIsLoggedIn && ( keycloakService.isUserAdmin$ | async )">
 								<a routerLink="administration" (click)="closeUserMenu()">Administration</a>
 							</li>
 							<li *ngIf="userIsLoggedIn">
