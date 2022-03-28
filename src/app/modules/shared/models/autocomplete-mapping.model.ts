@@ -4,4 +4,5 @@ export interface AutocompleteMapping {
 	xpath: string;
 	ontology: string;
 	schema: string;
+	active: boolean;
 }

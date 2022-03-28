@@ -41,7 +41,7 @@ export class AutocompleteMappingService {
 	 *
 	 * Adds new mapping to the database
 	 */
-	 addNewMapping(schema: string, xpath: string, ontology:string): Promise<any> {
+	 addNewMapping(schema: string, xpath: string, ontology:string, active: boolean): Promise<any> {
 
 		// Check if the xpath already has been added (only continue if not)
 		return this.xpathAlreadyExists(schema, xpath).then(
@@ -53,7 +53,8 @@ export class AutocompleteMappingService {
 					let params = {
 						'schema': schema,
 						'xpath': xpath,
-						'ontology': ontology
+						'ontology': ontology,
+						'active': active
 					};
 
 					let paramsString = JSON.stringify(params);
@@ -90,15 +91,17 @@ export class AutocompleteMappingService {
 	 * @param schema
 	 * @param xpath
 	 * @param ontology
+	 * @param active
 	 */
-	updateAutocompleteMapping(mapping: AutocompleteMapping, schema: string, xpath: string, ontology: string): Promise<any> {
+	updateAutocompleteMapping(mapping: AutocompleteMapping, schema: string, xpath: string, ontology: string, active: boolean): Promise<any> {
 
 		// Create params string
 		let params = {
 			'id': mapping.id,
 			'schema': schema,
 			'xpath': xpath,
-			'ontology': ontology
+			'ontology': ontology,
+			'active': active
 		};
 
 		let paramsString = JSON.stringify(params);
@@ -237,8 +240,13 @@ export class AutocompleteMappingService {
 			let inputElement = document.querySelector(
 				'div[data-tab="' + mappings[i].schema + '"] label[data-xsd2html2xml-xpath="' + mappings[i].xpath + '"] > input') as HTMLInputElement;
 
-			// Add ontology as data attribute
-			inputElement.setAttribute('data-ontology', mappings[i].ontology);
+			// Add ontology as data attribute if the element exists
+			if ( inputElement ) {
+				inputElement.setAttribute('data-ontology', mappings[i].ontology);
+			}
+
+
+
 		}
 	}
 }

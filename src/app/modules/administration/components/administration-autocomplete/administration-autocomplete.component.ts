@@ -26,6 +26,7 @@ export class AdministrationAutocompleteComponent implements OnInit, AfterViewIni
 		schema: 'input-schema-',
 		xpath: 'input-xpath-',
 		ontology: 'input-ontology-',
+		active: 'input-active-'
 	}
 
 	activeTabSchema: string = '';
@@ -46,6 +47,7 @@ export class AdministrationAutocompleteComponent implements OnInit, AfterViewIni
 		schema: 'schema',
 		xpath: 'xpath',
 		ontology: 'ontology',
+		active: 'active',
 		save: 'save',
 		delete: 'delete'
 	};
@@ -55,6 +57,7 @@ export class AdministrationAutocompleteComponent implements OnInit, AfterViewIni
 		this.MAPPING_FIELD_VALUE.schema,
 		this.MAPPING_FIELD_VALUE.xpath,
 		this.MAPPING_FIELD_VALUE.ontology,
+		this.MAPPING_FIELD_VALUE.active,
 		this.MAPPING_FIELD_VALUE.save,
 		this.MAPPING_FIELD_VALUE.delete,
 	];
@@ -66,6 +69,7 @@ export class AdministrationAutocompleteComponent implements OnInit, AfterViewIni
 	@ViewChild('addNewInputSchema') addNewInputSchema!: ElementRef;
 	@ViewChild('addNewInputXpath') addNewInputXpath!: ElementRef;
 	@ViewChild('addNewInputOntology') addNewInputOntology!: ElementRef;
+	@ViewChild('addNewInputActive') addNewInputActive!: ElementRef;
 
 	@ViewChild('tabControl') tabControl!: ElementRef;
 	@ViewChild('tabButtonAll') tabButtonAll!: ElementRef;
@@ -137,8 +141,12 @@ export class AdministrationAutocompleteComponent implements OnInit, AfterViewIni
 		let ontologyInput = document.getElementById(this.INPUT_PREFIX.ontology + element.id) as HTMLInputElement;
 		let ontologyValue = ontologyInput.value;
 
+		// Active
+		let activeInput = document.getElementById(this.INPUT_PREFIX.active + element.id) as HTMLInputElement;
+		let activeValue = activeInput.checked;
+
 		// Update the mapping in the database
-		this.updateAutocompleteMapping(element, schemaValue, xpathValue, ontologyValue);
+		this.updateAutocompleteMapping(element, schemaValue, xpathValue, ontologyValue, activeValue);
 	}
 
 
@@ -219,12 +227,13 @@ export class AdministrationAutocompleteComponent implements OnInit, AfterViewIni
 		let schema = this.addNewInputSchema.nativeElement.value;
 		let xpath = this.addNewInputXpath.nativeElement.value;
 		let ontology = this.addNewInputOntology.nativeElement.value;
+		let active = this.addNewInputActive.nativeElement.checked;
 
 		// Check if input is valid
 		if ( this.isInputValid(xpath, ontology) ) {
 
 			// Add new mapping to the database
-			this.autocompleteMappingService.addNewMapping(schema, xpath, ontology).then(
+			this.autocompleteMappingService.addNewMapping(schema, xpath, ontology, active).then(
 				(response: any) => {
 
 					// Update the List if the response is not null
@@ -246,14 +255,15 @@ export class AdministrationAutocompleteComponent implements OnInit, AfterViewIni
 	 * @param schema
 	 * @param xpath
 	 * @param ontology
+	 * @param active
 	 */
-	private updateAutocompleteMapping(mapping: AutocompleteMapping, schema: string, xpath: string, ontology: string): void {
+	private updateAutocompleteMapping(mapping: AutocompleteMapping, schema: string, xpath: string, ontology: string, active: boolean): void {
 
 		// Check if input is valid
 		if ( this.isInputValid(xpath, ontology) ) {
 
 			// Update Mapping in the database
-			this.autocompleteMappingService.updateAutocompleteMapping(mapping, schema, xpath, ontology).then(
+			this.autocompleteMappingService.updateAutocompleteMapping(mapping, schema, xpath, ontology, active).then(
 				(response: any) => {
 
 					// Update the List if the response is not null

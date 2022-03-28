@@ -14,13 +14,15 @@ import { AdministrationAutocompleteComponent } from './components/administration
 import { AdministrationSchemasComponent } from './components/administration-schemas/administration-schemas.component';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
+import { AdministrationRenderOptionsComponent } from './components/administration-render-options/administration-render-options.component';
 
 
 @NgModule({
 	declarations: [
 		AdministrationComponent,
  		AdministrationAutocompleteComponent,
-   		AdministrationSchemasComponent
+   		AdministrationSchemasComponent,
+     AdministrationRenderOptionsComponent
   	],
 	imports: [
 		CommonModule,

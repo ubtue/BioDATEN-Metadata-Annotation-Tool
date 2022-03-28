@@ -26,10 +26,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
 	serverAddress: string = '';
-	serverAdressXMLInput: string = 'http://193.196.20.98/metadata/xsd/xml-input';
+	serverAdressXMLInput: string = this.settingsService.metadataAnnotationFormServerAddress + 'xml-input/';
 
-	serverAdressXMLAddress: string = 'http://193.196.20.98/metadata/xsd/xml-system';
-	serverAdressXMLAddressWithMetsId: string = 'http://193.196.20.98/metadata/xsd/xml/';
+	serverAdressXMLAddress: string = this.settingsService.metadataAnnotationFormServerAddress + 'xml-system/';
+	serverAdressXMLAddressWithMetsId: string = this.settingsService.metadataAnnotationFormServerAddress + 'xml/';
 
 	currentTab: string = '';
 	saveEnabled: boolean = false;
@@ -91,7 +91,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 * onClickTest
 	 */
 	onClickTest(): void {
-		this.dataTransferService.getData('http://193.196.20.98/autocomplete-mapping/').then(
+		this.dataTransferService.getData(this.settingsService.autocompleteSchemasServerAddress).then(
 			(result: any) => {
 				console.log(result);
 			}

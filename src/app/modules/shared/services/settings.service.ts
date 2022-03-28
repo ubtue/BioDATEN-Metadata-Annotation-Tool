@@ -10,10 +10,11 @@ export class SettingsService {
 	*******************************************************************/
 
 	// Backend server address
-	private _backendServerAddress: string = 'http://193.196.20.98/metadata/xsd';
+	// private _backendServerAddress: string = 'http://193.196.20.98/metadata/';
+	private _backendServerAddress: string = 'http://localhost:8080/metadata/';
 
 	// Enable console logs
-	private _enableConsoleLogs: boolean = false;
+	private _enableConsoleLogs: boolean = true;
 
 
 	/******************************************************************
@@ -45,15 +46,17 @@ export class SettingsService {
 	private _frontendSorting: boolean = false;
 
 	// Server Address to the schemas of the autocomplete
-	private _autocompleteSchemasServerAddress: string = 'http://193.196.20.98/metadata/autocomplete-schemas/';
+	private _autocompleteSchemasServerAddress: string = this.backendServerAddress + 'autocomplete-schemas/';
 
 	// Server Address to the mappings of the autocomplete
-	private _autocompleteMappingServerAddress: string = 'http://193.196.20.98/metadata/autocomplete-mapping/';
+	private _autocompleteMappingServerAddress: string = this.backendServerAddress + 'autocomplete-mapping/';
 
 
 	/******************************************************************
 							METADATA ANNOTATION FORM
 	*******************************************************************/
+
+	private _metadataAnnotationFormServerAddress: string = this.backendServerAddress + 'xsd/'
 
 	// Flex Layout (Wether to display inputs side by side on larger displays)
 	private _metadataAnnotationFormFlexLayout: boolean = true;
@@ -65,7 +68,7 @@ export class SettingsService {
 
 	// Server Address to the user resouces
 	// private _userResourceServerAddress: string = 'assets/dummy-data/user-data/dummy_user-data.json';
-	private _userResourceServerAddress: string = 'http://193.196.20.98/metadata/metadata';
+	private _userResourceServerAddress: string = this.backendServerAddress + 'metadata/';
 
 	// Default Sorting field of user resouces
 	private _defaultUserResourceSortingField: string = 'lastChange';
@@ -225,6 +228,22 @@ export class SettingsService {
 	 */
 	set autocompleteMappingServerAddress(autocompleteMappingServerAddress: string) {
 		this._autocompleteMappingServerAddress = autocompleteMappingServerAddress;
+	}
+
+
+	/**
+	 * Getter metadataAnnotationFormServerAddress
+	 */
+	 get metadataAnnotationFormServerAddress(): string {
+		return this._metadataAnnotationFormServerAddress;
+	}
+
+
+	/**
+	 * Setter metadataAnnotationFormServerAddress
+	 */
+	set metadataAnnotationFormServerAddress(metadataAnnotationFormServerAddress: string) {
+		this._metadataAnnotationFormServerAddress = metadataAnnotationFormServerAddress;
 	}
 
 
