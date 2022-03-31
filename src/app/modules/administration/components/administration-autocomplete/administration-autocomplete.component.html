@@ -35,6 +35,11 @@
 		</fieldset>
 	</div>
 
+	<div class="administration-autocomplete-show-id-wrap">
+		<input #checkBoxShowId id="administration-autocomplete-show-id-input" type="checkbox" [(ngModel)]="showId"/>
+		<label for="administration-autocomplete-show-id-input">Show ID column</label>
+	</div>
+
 	<div class="administration-autocomplete-tab-control-wrap">
 		<div #tabControl class="administration-autocomplete-tabs">
 			<button #tabButtonAll class="administration-autocomplete-tab active" data-tab="all" (click)="onClickTabButtonAll()">
@@ -63,7 +68,7 @@
 			<div class="administration-autocomplete-block-content-wrap">
 
 				<!-- ID -->
-				<div class="administration-autocomplete-block-content administration-autocomplete-block-content-id">
+				<div class="administration-autocomplete-block-content administration-autocomplete-block-content-id" [ngClass]="{'show': showId}">
 					<div class="administration-autocomplete-block-label administration-autocomplete-block-label-id">
 						ID
 					</div>
@@ -149,14 +154,14 @@
 
 			<!-- ID Column -->
 			<ng-container matColumnDef="id">
-				<th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-				<td mat-cell *matCellDef="let element">{{element.id}}</td>
+				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'show': showId}">ID</th>
+				<td mat-cell *matCellDef="let element" [ngClass]="{'show': showId}">{{element.id}}</td>
 			</ng-container>
 
 			<!-- Schema Column -->
 			<ng-container matColumnDef="schema">
-				<th mat-header-cell *matHeaderCellDef mat-sort-header>Schema</th>
-				<td mat-cell *matCellDef="let element">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'id-hidden': !showId}">Schema</th>
+				<td mat-cell *matCellDef="let element" [ngClass]="{'id-hidden': !showId}">
 					<select id="input-schema-{{element.id}}">
 						<option *ngFor="let schema of schemasData" [selected]="element.schema === schema.id" [value]="schema.id">{{ schema.schema }}</option>
 					</select>

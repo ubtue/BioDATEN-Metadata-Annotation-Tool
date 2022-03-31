@@ -16,6 +16,8 @@ import { MatPaginator } from '@angular/material/paginator';
 })
 export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 
+	showId: boolean = false;
+
 	readonly INPUT_PREFIX: any = {
 		schema: 'input-schema-'
 	}
@@ -66,7 +68,7 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 	/**
 	 * ngAfterViewInit
 	 */
-	 ngAfterViewInit(): void {
+	ngAfterViewInit(): void {
 
 		// Refresh the data source
 		this.refreshDataSource(true);
@@ -90,7 +92,7 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 	 *
 	 * @param element
 	 */
-	 onClickRowSave(element: AutocompleteSchema): void {
+	onClickRowSave(element: AutocompleteSchema): void {
 
 		// Schema
 		let schemaInput = document.getElementById(this.INPUT_PREFIX.schema + element.id) as HTMLInputElement;
@@ -135,7 +137,7 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 
 		// Show alert
 		this.alertService.showAlert(
-			'Delete mapping',
+			'Delete schema',
 			'Are you sure you want to delete the entry for schema "' + element.schema + '"?',
 			buttons
 		);
@@ -155,7 +157,7 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 		// Check if input is valid
 		if ( this.isInputValid(schema) ) {
 
-			// Add new mapping to the database
+			// Add new schema to the database
 			this.autocompleteSchemaService.addNewSchema(schema).then(
 				(response: any) => {
 
@@ -199,9 +201,9 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 	/**
 	 * deleteAutocompleteSchema
 	 *
-	 * Deletes the selected mapping in the database
+	 * Deletes the selected schema in the database
 	 *
-	 * @param mapping
+	 * @param schemaObj
 	 */
 	private deleteAutocompleteSchema(schemaObj: AutocompleteSchema): void {
 
@@ -220,14 +222,14 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 	 */
 	private refreshDataSource(isFirst?: boolean): Promise<void> {
 
-		// Get all the mappings from the database
+		// Get all the schemas from the database
 		return this.autocompleteSchemaService.getAllSchemas().then(
-			(autocompleteMappings: AutocompleteSchema[]) => {
+			(autocompleteSchemas: AutocompleteSchema[]) => {
 
-				if ( autocompleteMappings.length > 0 ) {
+				if ( autocompleteSchemas.length > 0 ) {
 
-					this.autocompleteSchemaData = autocompleteMappings;
-					this.autocompleteSchemaDataSortedForBlocks = autocompleteMappings;
+					this.autocompleteSchemaData = autocompleteSchemas;
+					this.autocompleteSchemaDataSortedForBlocks = autocompleteSchemas;
 
 					// Put the data in an MatTableDataSource, so it can be sorted
 					this.dataSource = new MatTableDataSource(this.autocompleteSchemaData);
@@ -275,14 +277,14 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 	 * @param schema
 	 * @returns
 	 */
-	 private isInputValid(schema: string): boolean {
+	private isInputValid(schema: string): boolean {
 
 		// Check if all inputs have a value
 		if ( schema === '' ) {
 
 			this.alertService.showAlert(
 				'Inputs cannot be empty',
-				'The values are not valid. Please check if both xpath and ontology input have a value.'
+				'The values are not valid. Please check if the schema input has a value.'
 			);
 
 			return false;

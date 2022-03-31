@@ -56,6 +56,15 @@ export class SettingsService {
 							METADATA ANNOTATION FORM
 	*******************************************************************/
 
+	// Server address to the render options
+	private _renderOptionsServerAddress: string = this.backendServerAddress + 'render-option/';
+
+
+	/******************************************************************
+							METADATA ANNOTATION FORM
+	*******************************************************************/
+
+	// Server address to the xsd processor
 	private _metadataAnnotationFormServerAddress: string = this.backendServerAddress + 'xsd/'
 
 	// Flex Layout (Wether to display inputs side by side on larger displays)
@@ -228,6 +237,22 @@ export class SettingsService {
 	 */
 	set autocompleteMappingServerAddress(autocompleteMappingServerAddress: string) {
 		this._autocompleteMappingServerAddress = autocompleteMappingServerAddress;
+	}
+
+
+	/**
+	 * Getter renderOptionsServerAddress
+	 */
+	 get renderOptionsServerAddress(): string {
+		return this._renderOptionsServerAddress;
+	}
+
+
+	/**
+	 * Setter renderOptionsServerAddress
+	 */
+	set renderOptionsServerAddress(renderOptionsServerAddress: string) {
+		this._renderOptionsServerAddress = renderOptionsServerAddress;
 	}
 
 

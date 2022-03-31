@@ -22,6 +22,8 @@ import { HttpHeaders } from '@angular/common/http';
 })
 export class AdministrationAutocompleteComponent implements OnInit, AfterViewInit {
 
+	showId: boolean = false;
+
 	readonly INPUT_PREFIX: any = {
 		schema: 'input-schema-',
 		xpath: 'input-xpath-',
@@ -392,6 +394,10 @@ export class AdministrationAutocompleteComponent implements OnInit, AfterViewIni
 
 					// Handle display
 					this.displayData(autocompleteMappings, isFirst);
+				} else {
+
+					// If there is no data (e.g. if only item was deleted) -> empty table
+					this.displayData([]);
 				}
 			}
 		);

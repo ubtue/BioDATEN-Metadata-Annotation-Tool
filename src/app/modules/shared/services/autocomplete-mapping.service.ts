@@ -41,7 +41,7 @@ export class AutocompleteMappingService {
 	 *
 	 * Adds new mapping to the database
 	 */
-	 addNewMapping(schema: string, xpath: string, ontology:string, active: boolean): Promise<any> {
+	addNewMapping(schema: string, xpath: string, ontology:string, active: boolean): Promise<any> {
 
 		// Check if the xpath already has been added (only continue if not)
 		return this.xpathAlreadyExists(schema, xpath).then(
@@ -244,9 +244,6 @@ export class AutocompleteMappingService {
 			if ( inputElement ) {
 				inputElement.setAttribute('data-ontology', mappings[i].ontology);
 			}
-
-
-
 		}
 	}
 }

@@ -36,6 +36,13 @@
 		}
 	}
 
+	.administration-autocomplete-show-id-wrap {
+
+		@include addMarginBottom(large);
+
+		display: flex;
+	}
+
 	.administration-autocomplete-tab-control-wrap {
 
 		.administration-autocomplete-tabs {
@@ -226,6 +233,20 @@
 							width: 300px;
 						}
 					}
+				}
+			}
+
+			.cdk-column-id {
+				display: none;
+
+				&.show {
+					display: table-cell;
+				}
+			}
+
+			.cdk-column-schema {
+				&.id-hidden {
+					padding-left: 24px;
 				}
 			}
 		}

@@ -2,5 +2,264 @@
 
 	<app-back-link></app-back-link>
 
-	Render options
+	<!-- Form to add new render options -->
+	<div class="administration-render-options-add-new-wrap">
+
+		<fieldset class="administration-render-options-add-new-fieldset">
+			<legend>Add new render option</legend>
+
+			<div class="administration-render-options-add-new">
+
+				<select #addNewInputSchema>
+					<option *ngFor="let schema of schemasData" [value]="schema.id">{{ schema.schema }}</option>
+				</select>
+
+				<input #addNewInputXpath id="administration-render-options-add-new-input-xpath" type="text" placeholder="xpath" />
+
+				<br />
+
+				<input #addNewInputPlaceholder id="administration-render-options-add-new-input-placeholder" type="text" placeholder="placeholder" />
+
+				<br />
+
+				<input #addNewInputPrefilled id="administration-render-options-add-new-input-prefilled" type="text" placeholder="prefilled value" />
+
+				<br />
+
+				<div class="administration-render-options-add-new-input-readonly-wrap">
+					<input #addNewInputReadonly id="administration-render-options-add-new-input-readonly" type="checkbox" />
+					<label for="administration-render-options-add-new-input-readonly">Readonly</label>
+				</div>
+
+				<br />
+
+				<div class="administration-render-options-add-new-input-hide-wrap">
+					<input #addNewInputHide id="administration-render-options-add-new-input-hide" type="checkbox" />
+					<label for="administration-render-options-add-new-input-hide">Hide</label>
+				</div>
+
+				<br />
+
+				<div class="administration-render-options-add-new-input-active-wrap">
+					<input #addNewInputActive id="administration-render-options-add-new-input-active" type="checkbox" />
+					<label for="administration-render-options-add-new-input-active">Active</label>
+				</div>
+
+				<br />
+
+				<button (click)="onClickAddRenderOptionButton()" class="biodaten-button">Add</button>
+			</div>
+
+		</fieldset>
+	</div>
+
+	<div class="administration-render-options-show-id-wrap">
+		<input #checkBoxShowId id="administration-render-options-show-id-input" type="checkbox" [(ngModel)]="showId"/>
+		<label for="administration-render-options-show-id-input">Show ID column</label>
+	</div>
+
+	<div class="administration-render-options-tab-control-wrap">
+		<div #tabControl class="administration-render-options-tabs">
+			<button #tabButtonAll class="administration-render-options-tab active" data-tab="all" (click)="onClickTabButtonAll()">
+				<span class="administration-render-options-tab-text">All</span>
+			</button>
+		</div>
+	</div>
+
+	<!-- For small devices list the content in blocks -->
+	<div class="administration-render-options-wrap-blocks">
+
+		<div class="administration-render-options-sort-wrap">
+
+			<!-- <mat-form-field appearance="fill">
+				<mat-label>Sort by</mat-label>
+				<mat-select [(value)]="selectedBlockSortableField" (valueChange)="onBlockSortSelectChange()">
+					<mat-option *ngFor="let sortableField of blockSortableFields" [value]="sortableField.value">
+						{{sortableField.label}}
+					</mat-option>
+				</mat-select>
+			</mat-form-field> -->
+		</div>
+
+		<div class="administration-render-options-block" *ngFor="let resource of renderOptionsDataSortedForBlocks">
+
+			<div class="administration-render-options-block-content-wrap">
+
+				<!-- ID -->
+				<div class="administration-render-options-block-content administration-render-options-block-content-id" [ngClass]="{'show': showId}">
+					<div class="administration-render-options-block-label administration-render-options-block-label-id">
+						ID
+					</div>
+					<div class="administration-render-options-block-value administration-render-options-block-value-id">
+						{{ resource.id }}
+					</div>
+				</div>
+
+				<!-- Schema -->
+				<div class="administration-render-options-block-content administration-render-options-block-content-schema">
+					<div class="administration-render-options-block-label administration-render-options-block-label-schema">
+						Schema
+					</div>
+					<div class="administration-render-options-block-value administration-render-options-block-value-schema">
+						<select>
+							<option *ngFor="let schema of schemasData" [selected]="resource.schema === schema.id" [value]="schema.id">{{ schema.schema }}</option>
+						</select>
+					</div>
+				</div>
+
+				<!-- Xpath -->
+				<div class="administration-render-options-block-content administration-render-options-block-content-xpath">
+					<div class="administration-render-options-block-label administration-render-options-block-label-xpath">
+						Xpath
+					</div>
+					<div class="administration-render-options-block-value administration-render-options-block-value-xpath">
+						{{ resource.xpath }}
+					</div>
+				</div>
+
+				<!-- Placeholder -->
+				<div class="administration-render-options-block-content administration-render-options-block-content-placeholder">
+					<div class="administration-render-options-block-label administration-render-options-block-label-placeholder">
+						Placeholder
+					</div>
+					<div class="administration-render-options-block-value administration-render-options-block-value-placeholder">
+						{{ resource.placeholder }}
+					</div>
+				</div>
+
+				<!-- Prefilled -->
+				<div class="administration-render-options-block-content administration-render-options-block-content-prefilled">
+					<div class="administration-render-options-block-label administration-render-options-block-label-prefilled">
+						Prefilled value
+					</div>
+					<div class="administration-render-options-block-value administration-render-options-block-value-prefilled">
+						{{ resource.prefilled }}
+					</div>
+				</div>
+
+				<!-- Save -->
+				<div class="administration-render-options-block-content administration-render-options-block-content-save">
+					<div class="administration-render-options-block-label administration-render-options-block-label-save">
+						Save
+					</div>
+					<div class="administration-render-options-block-value administration-render-options-block-value-save">
+						<button (click)="onClickRowSave(resource)" class="clear icon-wrap">
+							<mat-icon>save</mat-icon>
+						</button>
+					</div>
+				</div>
+
+				<!-- Delete -->
+				<div class="administration-render-options-block-content administration-render-options-block-content-delete">
+					<div class="administration-render-options-block-label administration-render-options-block-label-delete">
+						Delete
+					</div>
+					<div class="administration-render-options-block-value administration-render-options-block-value-delete">
+						<button (click)="onClickRowDelete(resource)" class="clear icon-wrap">
+							<mat-icon>delete</mat-icon>
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- For larger devices list the content in a table -->
+	<div class="administration-render-options-wrap-table">
+
+		<table mat-table matSort [dataSource]="dataSource" class="administration-render-options-table">
+
+			<!-- ID Column -->
+			<ng-container matColumnDef="id">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'show': showId}">ID</th>
+				<td mat-cell *matCellDef="let element" [ngClass]="{'show': showId}">{{element.id}}</td>
+			</ng-container>
+
+			<!-- Schema Column -->
+			<ng-container matColumnDef="schema">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'id-hidden': !showId}">Schema</th>
+				<td mat-cell *matCellDef="let element" [ngClass]="{'id-hidden': !showId}">
+					<select id="input-schema-{{element.id}}">
+						<option *ngFor="let schema of schemasData" [selected]="element.schema === schema.id" [value]="schema.id">{{ schema.schema }}</option>
+					</select>
+				</td>
+			</ng-container>
+
+			<!-- Xpath Column -->
+			<ng-container matColumnDef="xpath">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>Xpath</th>
+				<td mat-cell *matCellDef="let element">
+					<input id="input-xpath-{{element.id}}" type="text" value="{{element.xpath}}" placeholder="xpath" />
+				</td>
+			</ng-container>
+
+			<!-- Placeholder Column -->
+			<ng-container matColumnDef="placeholder">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>Placeholder</th>
+				<td mat-cell *matCellDef="let element">
+					<input id="input-placeholder-{{element.id}}" type="text" value="{{element.placeholder}}" placeholder="placeholder" />
+				</td>
+			</ng-container>
+
+			<!-- Prefilled Column -->
+			<ng-container matColumnDef="prefilled">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>Prefilled</th>
+				<td mat-cell *matCellDef="let element">
+					<input id="input-prefilled-{{element.id}}" type="text" value="{{element.prefilled}}" placeholder="prefilled" />
+				</td>
+			</ng-container>
+
+			<!-- Readonly Column -->
+			<ng-container matColumnDef="readonly">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>Readonly</th>
+				<td mat-cell *matCellDef="let element">
+					<input id="input-readonly-{{element.id}}" type="checkbox" [checked]="element.readonly === true" />
+				</td>
+			</ng-container>
+
+			<!-- hide Column -->
+			<ng-container matColumnDef="hide">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>Hide</th>
+				<td mat-cell *matCellDef="let element">
+					<input id="input-hide-{{element.id}}" type="checkbox" [checked]="element.hide === true" />
+				</td>
+			</ng-container>
+
+			<!-- Active Column -->
+			<ng-container matColumnDef="active">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>Active</th>
+				<td mat-cell *matCellDef="let element">
+					<input id="input-active-{{element.id}}" type="checkbox" [checked]="element.active === true" />
+				</td>
+			</ng-container>
+
+			<!-- Save Column -->
+			<ng-container matColumnDef="save">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+				<td mat-cell *matCellDef="let element">
+					<button (click)="onClickRowSave(element)" class="clear icon-wrap">
+						<mat-icon>save</mat-icon>
+					</button>
+				</td>
+			</ng-container>
+
+			<!-- Delete Column -->
+			<ng-container matColumnDef="delete">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+				<td mat-cell *matCellDef="let element">
+					<button (click)="onClickRowDelete(element)" class="clear icon-wrap">
+						<mat-icon>delete</mat-icon>
+					</button>
+				</td>
+			</ng-container>
+
+
+			<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+			<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+		</table>
+
+		<mat-paginator [pageSizeOptions]="[10,20]" showFirstLastButtons aria-label="Select page of periodic elements">
+		</mat-paginator>
+	</div>
 </div>
