@@ -14,6 +14,10 @@ export class BackLinkComponent implements OnInit {
 
 	@Input() position: String = this.POSITIONS.top;
 
+	@Input() level: number = 1;
+
+	route: string = './..';
+
 	/**
 	 * constructor
 	 */
@@ -24,6 +28,18 @@ export class BackLinkComponent implements OnInit {
 	 * ngOnInit
 	 */
 	ngOnInit(): void {
+
+		// If level is > 1 change the route
+		if ( this.level > 1 ) {
+
+			this.route = './';
+
+			// Add as many levels as required
+			for ( let i = 0; i < this.level; i++ ) {
+				this.route += '../';
+			}
+		}
+
 	}
 
 }

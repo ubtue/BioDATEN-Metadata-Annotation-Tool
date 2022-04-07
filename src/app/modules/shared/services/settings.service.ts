@@ -53,11 +53,14 @@ export class SettingsService {
 
 
 	/******************************************************************
-							METADATA ANNOTATION FORM
+							RENDER OPTIONS
 	*******************************************************************/
 
 	// Server address to the render options
 	private _renderOptionsServerAddress: string = this.backendServerAddress + 'render-option/';
+
+	// Show render options with detail view
+	private _renderOptionsDetailView: boolean = true;
 
 
 	/******************************************************************
@@ -253,6 +256,22 @@ export class SettingsService {
 	 */
 	set renderOptionsServerAddress(renderOptionsServerAddress: string) {
 		this._renderOptionsServerAddress = renderOptionsServerAddress;
+	}
+
+
+	/**
+	 * Getter renderOptionsDetailView
+	 */
+	 get renderOptionsDetailView(): boolean {
+		return this._renderOptionsDetailView;
+	}
+
+
+	/**
+	 * Setter renderOptionsDetailView
+	 */
+	set renderOptionsDetailView(renderOptionsDetailView: boolean) {
+		this._renderOptionsDetailView = renderOptionsDetailView;
 	}
 
 

@@ -5,7 +5,14 @@
 	<!-- Form to add new render options -->
 	<div class="administration-render-options-add-new-wrap">
 
-		<fieldset class="administration-render-options-add-new-fieldset">
+		<div class="administration-render-options-add-new-toggle-wrap">
+			<button class="administration-render-options-add-new-toggle-button" (click)="onClickToggleAddNewFieldset()" [ngClass]="{'show-fieldset': !hideAddNewFieldset}">
+				<span *ngIf="hideAddNewFieldset" class="administration-render-options-add-new-toggle-text">Show add new render option</span>
+				<span *ngIf="!hideAddNewFieldset" class="administration-render-options-add-new-toggle-text">Hide add new render option</span>
+			</button>
+		</div>
+
+		<fieldset class="administration-render-options-add-new-fieldset" [hidden]="hideAddNewFieldset">
 			<legend>Add new render option</legend>
 
 			<div class="administration-render-options-add-new">
@@ -15,6 +22,10 @@
 				</select>
 
 				<input #addNewInputXpath id="administration-render-options-add-new-input-xpath" type="text" placeholder="xpath" />
+
+				<br />
+
+				<input #addNewInputLabel id="administration-render-options-add-new-input-label" type="text" placeholder="label" />
 
 				<br />
 
@@ -117,6 +128,16 @@
 					</div>
 				</div>
 
+				<!-- Label -->
+				<div class="administration-render-options-block-content administration-render-options-block-content-label">
+					<div class="administration-render-options-block-label administration-render-options-block-label-label">
+						Label
+					</div>
+					<div class="administration-render-options-block-value administration-render-options-block-value-label">
+						{{ resource.label }}
+					</div>
+				</div>
+
 				<!-- Placeholder -->
 				<div class="administration-render-options-block-content administration-render-options-block-content-placeholder">
 					<div class="administration-render-options-block-label administration-render-options-block-label-placeholder">
@@ -180,17 +201,39 @@
 			<ng-container matColumnDef="schema">
 				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'id-hidden': !showId}">Schema</th>
 				<td mat-cell *matCellDef="let element" [ngClass]="{'id-hidden': !showId}">
-					<select id="input-schema-{{element.id}}">
+
+					<!-- Non detail mode-->
+					<select *ngIf="!detailViewMode" id="input-schema-{{element.id}}">
 						<option *ngFor="let schema of schemasData" [selected]="element.schema === schema.id" [value]="schema.id">{{ schema.schema }}</option>
 					</select>
+
+					<!-- Detail mode -->
+					<ng-template *ngIf="detailViewMode" ngFor let-schema [ngForOf]="schemasData">
+						<span *ngIf="element.schema === schema.id">
+							{{schema.schema}}
+						</span>
+					</ng-template>
 				</td>
 			</ng-container>
 
 			<!-- Xpath Column -->
 			<ng-container matColumnDef="xpath">
-				<th mat-header-cell *matHeaderCellDef mat-sort-header>Xpath</th>
+				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'detail-view-mode': detailViewMode}">Xpath</th>
+				<td mat-cell *matCellDef="let element" [ngClass]="{'detail-view-mode': detailViewMode}">
+
+					<!-- Non detail mode-->
+					<input *ngIf="!detailViewMode" id="input-xpath-{{element.id}}" type="text" value="{{element.xpath}}" placeholder="xpath" />
+
+					<!-- Detail mode -->
+					<span *ngIf="detailViewMode">{{element.xpath}}</span>
+				</td>
+			</ng-container>
+
+			<!-- Label Column -->
+			<ng-container matColumnDef="label">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header>Label</th>
 				<td mat-cell *matCellDef="let element">
-					<input id="input-xpath-{{element.id}}" type="text" value="{{element.xpath}}" placeholder="xpath" />
+					<input id="input-label-{{element.id}}" type="text" value="{{element.label}}" placeholder="label" />
 				</td>
 			</ng-container>
 
@@ -250,6 +293,16 @@
 				<td mat-cell *matCellDef="let element">
 					<button (click)="onClickRowDelete(element)" class="clear icon-wrap">
 						<mat-icon>delete</mat-icon>
+					</button>
+				</td>
+			</ng-container>
+
+			<!-- Edit Column -->
+			<ng-container matColumnDef="edit">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+				<td mat-cell *matCellDef="let element">
+					<button (click)="onClickRowEdit(element)" class="clear icon-wrap">
+						<mat-icon>edit</mat-icon>
 					</button>
 				</td>
 			</ng-container>

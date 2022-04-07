@@ -1,3 +1,5 @@
+import { Router, ActivatedRoute } from '@angular/router';
+import { SettingsService } from 'src/app/modules/shared/services/settings.service';
 import { AlertButton } from './../../../shared/models/alert-button.model';
 import { AutocompleteSchemaService } from './../../../shared/services/autocomplete-schema.service';
 import { AutocompleteSchema } from './../../../shared/models/autocomplete-schema.model';
@@ -28,6 +30,7 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 	readonly INPUT_PREFIX: any = {
 		schema: 'input-schema-',
 		xpath: 'input-xpath-',
+		label: 'input-label-',
 		placeholder: 'input-placeholder-',
 		prefilled: 'input-prefilled-',
 		readonly: 'input-readonly-',
@@ -48,19 +51,22 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 		id: 'id',
 		schema: 'schema',
 		xpath: 'xpath',
+		label: 'label',
 		placeholder: 'placeholder',
 		prefilled: 'prefilled',
 		readonly: 'readonly',
 		hide: 'hide',
 		active: 'active',
 		save: 'save',
-		delete: 'delete'
+		delete: 'delete',
+		edit: 'edit'
 	};
 
-	readonly displayedColumns: string[] = [
+	readonly displayedColumnsStandardView: string[] = [
 		this.MAPPING_FIELD_VALUE.id,
 		this.MAPPING_FIELD_VALUE.schema,
 		this.MAPPING_FIELD_VALUE.xpath,
+		this.MAPPING_FIELD_VALUE.label,
 		this.MAPPING_FIELD_VALUE.placeholder,
 		this.MAPPING_FIELD_VALUE.prefilled,
 		this.MAPPING_FIELD_VALUE.readonly,
@@ -70,11 +76,25 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 		this.MAPPING_FIELD_VALUE.delete,
 	];
 
+	readonly displayedColumnsDetailView: string[] = [
+		this.MAPPING_FIELD_VALUE.id,
+		this.MAPPING_FIELD_VALUE.schema,
+		this.MAPPING_FIELD_VALUE.xpath,
+		this.MAPPING_FIELD_VALUE.edit,
+	];
+
+	displayedColumns: string[] = this.displayedColumnsStandardView;
+
+	detailViewMode: boolean = false;
+
+	hideAddNewFieldset: boolean = true;
+
 	@ViewChild(MatSort) sort!: MatSort;
 	@ViewChild(MatPaginator) paginator!: MatPaginator;
 
 	@ViewChild('addNewInputSchema') addNewInputSchema!: ElementRef;
 	@ViewChild('addNewInputXpath') addNewInputXpath!: ElementRef;
+	@ViewChild('addNewInputLabel') addNewInputLabel!: ElementRef;
 	@ViewChild('addNewInputPlaceholder') addNewInputPlaceholder!: ElementRef;
 	@ViewChild('addNewInputPrefilled') addNewInputPrefilled!: ElementRef;
 	@ViewChild('addNewInputReadonly') addNewInputReadonly!: ElementRef;
@@ -92,7 +112,10 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 				private alertService: AlertService,
 				private cdRef: ChangeDetectorRef,
 				private autocompleteSchemaService: AutocompleteSchemaService,
-				private htmlHelperService: HtmlHelperService) { }
+				private htmlHelperService: HtmlHelperService,
+				private settingsService: SettingsService,
+				private router: Router,
+				private activatedRoute: ActivatedRoute) { }
 
 
 	/**
@@ -100,6 +123,16 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 	 */
 	ngOnInit(): void {
 		this.updateNavigationService.updateCurrentView("Administration:", "Render Options");
+
+		// Displayed columns in detail view mode?
+		if ( this.settingsService.renderOptionsDetailView ) {
+
+			// Set flag
+			this.detailViewMode = true;
+
+			// Set the displayed columns
+			this.displayedColumns = this.displayedColumnsDetailView;
+		}
 	}
 
 
@@ -155,11 +188,15 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 		let xpathInput = document.getElementById(this.INPUT_PREFIX.xpath + renderOption.id) as HTMLInputElement;
 		let xpathValue = xpathInput.value;
 
+		// Label
+		let labelInput = document.getElementById(this.INPUT_PREFIX.label + renderOption.id) as HTMLInputElement;
+		let labelValue = labelInput.value;
+
 		// Placeholder
 		let placeholderInput = document.getElementById(this.INPUT_PREFIX.placeholder + renderOption.id) as HTMLInputElement;
 		let placeholderValue = placeholderInput.value;
 
-		// Placeholder
+		// Prefilled
 		let prefilledInput = document.getElementById(this.INPUT_PREFIX.prefilled + renderOption.id) as HTMLInputElement;
 		let prefilledValue = prefilledInput.value;
 
@@ -176,7 +213,7 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 		let activeValue = activeInput.checked;
 
 		// Update the render option in the database
-		this.updateRenderOption(renderOption, schemaValue, xpathValue, placeholderValue, prefilledValue, readonlyValue, hideValue, activeValue);
+		this.updateRenderOption(renderOption, schemaValue, xpathValue, labelValue, placeholderValue, prefilledValue, readonlyValue, hideValue, activeValue);
 	}
 
 
@@ -222,17 +259,41 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 
 
 	/**
+	 * onClickRowEdit
+	 *
+	 * On click handler for edit row button
+	 *
+	 * @param renderOption
+	 */
+	onClickRowEdit(renderOption: RenderOption): void {
+
+		// Redirect to the detail view
+		this.router.navigate(['./details', renderOption.id], {relativeTo: this.activatedRoute});
+	}
+
+
+	/**
 	 * onClickTabButtonAll
 	 *
 	 * Onclick handler for the tab button 'all'
 	 */
-	 onClickTabButtonAll(): void {
+	onClickTabButtonAll(): void {
 
 		// Display the full data
 		this.displayData(this.renderOptionsDataAll);
 
 		// Activate the all button
 		this.setActiveTab(this.tabButtonAll.nativeElement)
+	}
+
+
+	/**
+	 * onClickToggleAddNewFieldset
+	 *
+	 * Onclick handler for the button to toggle the fieldset for adding a new render option
+	 */
+	onClickToggleAddNewFieldset(): void {
+		this.hideAddNewFieldset = !this.hideAddNewFieldset;
 	}
 
 
@@ -246,6 +307,7 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 		// Get the values
 		let schema = this.addNewInputSchema.nativeElement.value;
 		let xpath = this.addNewInputXpath.nativeElement.value;
+		let label = this.addNewInputLabel.nativeElement.value;
 		let placeholder = this.addNewInputPlaceholder.nativeElement.value;
 		let prefilled = this.addNewInputPrefilled.nativeElement.value;
 		let readonly = this.addNewInputReadonly.nativeElement.checked;
@@ -256,7 +318,7 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 		if ( this.isInputValid(xpath) ) {
 
 			// Add new render option to the database
-			this.renderOptionsService.addNewRenderOption(schema, xpath, placeholder, prefilled, readonly, hide, active).then(
+			this.renderOptionsService.addNewRenderOption(schema, xpath, label, placeholder, prefilled, readonly, hide, active).then(
 				(response: any) => {
 
 					// Update the List if the response is not null
@@ -277,19 +339,20 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 	 * @param renderOption
 	 * @param schema
 	 * @param xpath
+	 * @param label
 	 * @param placeholder
 	 * @param prefilled
 	 * @param readonly
 	 * @param hide
 	 * @param active
 	 */
-	private updateRenderOption(renderOption: RenderOption, schema: string, xpath: string, placeholder: string, prefilled: string, readonly: boolean, hide: boolean, active: boolean): void {
+	private updateRenderOption(renderOption: RenderOption, schema: string, xpath: string, label: string, placeholder: string, prefilled: string, readonly: boolean, hide: boolean, active: boolean): void {
 
 		// Check if input is valid
 		if ( this.isInputValid(xpath) ) {
 
 			// Update render option in the database
-			this.renderOptionsService.updateRenderOption(renderOption, schema, xpath, placeholder, prefilled, readonly, hide, active).then(
+			this.renderOptionsService.updateRenderOption(renderOption, schema, xpath, label, placeholder, prefilled, readonly, hide, active).then(
 				(response: any) => {
 
 					// Update the List if the response is not null

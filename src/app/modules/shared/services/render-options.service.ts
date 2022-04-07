@@ -36,11 +36,36 @@ export class RenderOptionsService {
 
 
 	/**
+	 * getSingleRenderOption
+	 *
+	 * Gets a specific render option from the database
+	 *
+	 * @param id
+	 * @returns
+	 */
+	getSingleRenderOption(id: string): Promise<RenderOption> {
+
+		return this.dataTransferService.getData(this.settingsService.renderOptionsServerAddress + id).then(
+			(result: RenderOption) => {
+				return result;
+			}
+		)
+	}
+
+
+	/**
 	 * addNewRenderOption
 	 *
 	 * Adds new render option to the database
+	 * @param schema
+	 * @param xpath
+	 * @param placeholder
+	 * @param prefilled
+	 * @param readonly
+	 * @param hide
+	 * @param active
 	 */
-	 addNewRenderOption(schema: string, xpath: string, placeholder: string, prefilled: string, readonly: boolean, hide: boolean, active: boolean): Promise<any> {
+	 addNewRenderOption(schema: string, xpath: string, label: string, placeholder: string, prefilled: string, readonly: boolean, hide: boolean, active: boolean): Promise<any> {
 
 		// Check if the xpath already has been added (only continue if not)
 		return this.xpathAlreadyExists(schema, xpath).then(
@@ -52,6 +77,7 @@ export class RenderOptionsService {
 					let params = {
 						'schema': schema,
 						'xpath': xpath,
+						'label': label,
 						'placeholder': placeholder,
 						'prefilled': prefilled,
 						'readonly': readonly,
@@ -92,16 +118,20 @@ export class RenderOptionsService {
 	 * @param renderOption
 	 * @param schema
 	 * @param xpath
-	 * @param ontology
+	 * @param placeholder
+	 * @param prefilled
+	 * @param readonly
+	 * @param hide
 	 * @param active
 	 */
-	updateRenderOption(renderOption: RenderOption, schema: string, xpath: string, placeholder: string, prefilled: string, readonly: boolean, hide: boolean, active: boolean): Promise<any> {
+	updateRenderOption(renderOption: RenderOption, schema: string, xpath: string, label: string, placeholder: string, prefilled: string, readonly: boolean, hide: boolean, active: boolean): Promise<any> {
 
 		// Create params string
 		let params = {
 			'id': renderOption.id,
 			'schema': schema,
 			'xpath': xpath,
+			'label': label,
 			'placeholder': placeholder,
 			'prefilled': prefilled,
 			'readonly': readonly,

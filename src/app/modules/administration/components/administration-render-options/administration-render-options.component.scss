@@ -15,6 +15,32 @@
 
 		@include addMarginBottom(large);
 
+		.administration-render-options-add-new-toggle-button {
+			display: flex;
+
+			background: transparent;
+    		border: 1px solid $navigationGrey;
+
+   			margin-top: 10px;
+			padding: 6px 10px;
+
+    		text-align: left;
+
+			cursor: pointer;
+
+			&:hover, .tab_focus &:focus {
+				background: lighten($navigationGrey, 10%);
+
+				* {
+					color: #fff;
+				}
+			}
+
+			&.show-fieldset {
+				margin-bottom: $addMarginBottomElements;
+			}
+		}
+
 		.administration-render-options-add-new {
 
 			select, input[type="text"] {
@@ -221,7 +247,8 @@
 					// }
 
 					&.cdk-column-save,
-					&.cdk-column-delete {
+					&.cdk-column-delete,
+					&.cdk-column-edit {
 						width: 40px;
 
 						button {
@@ -236,10 +263,14 @@
 						}
 					}
 
+					input[type="text"] {
+						width: 100%;
+					}
+
 					@include respond-above(xxl) {
 
 						input[type="text"] {
-							width: 300px;
+							max-width: 300px;
 						}
 					}
 				}
@@ -256,6 +287,14 @@
 			.cdk-column-schema {
 				&.id-hidden {
 					padding-left: 24px;
+				}
+			}
+
+			.cdk-column-xpath {
+
+				&.detail-view-mode {
+					width: 100%;
+					padding-left: 20px;
 				}
 			}
 		}

@@ -15,6 +15,7 @@ import { AdministrationSchemasComponent } from './components/administration-sche
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { AdministrationRenderOptionsComponent } from './components/administration-render-options/administration-render-options.component';
+import { AdministrationRenderOptionsDetailsComponent } from './components/administration-render-options/administration-render-options-details/administration-render-options-details.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { AdministrationRenderOptionsComponent } from './components/administratio
 		AdministrationComponent,
  		AdministrationAutocompleteComponent,
    		AdministrationSchemasComponent,
-     AdministrationRenderOptionsComponent
+     AdministrationRenderOptionsComponent,
+     AdministrationRenderOptionsDetailsComponent
   	],
 	imports: [
 		CommonModule,

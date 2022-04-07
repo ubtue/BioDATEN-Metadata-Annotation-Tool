@@ -1,0 +1,13 @@
+@import "../../../../../styles/shared_variables";
+@import "../../../../../styles/mixins";
+
+.administration-render-options-details-outer-wrap {
+
+	@include contentPadding();
+
+	.icon-wrap {
+		display: block;
+		height: 24px;
+		width: 24px;
+	}
+}
