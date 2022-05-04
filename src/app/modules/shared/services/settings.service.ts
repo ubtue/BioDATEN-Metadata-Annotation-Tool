@@ -33,11 +33,11 @@ export class SettingsService {
 	public readonly DESCRIPTION_MODE_INLINE: number = 0;
 	public readonly DESCRIPTION_MODE_POPOUT: number = 1;
 
-	// Max amount of entries
-	private _maxAutocompleteEntriesCount: number = 150;
-
 	// Description mode
 	private _descriptionMode: number = this.DESCRIPTION_MODE_POPOUT;
+
+	// Max amount of entries
+	private _maxAutocompleteEntriesCount: number = 150;
 
 	// Pixel threshold for mobile display of popout
 	private _popoutDescriptionMobileWidthThreshold:number = 768;

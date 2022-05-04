@@ -213,6 +213,23 @@ export class HtmlHelperService {
 					// Save the children to an array
 					let fieldsetChildrenArray = Array.from(fieldsetChildren);
 
+					// REMOVE: Old version:
+					// It is important that the first element AFTER the last element with the attribute 'data-created' is found.
+					// The data-created attribute is added to elements that are xs:attribute within the xsd.
+					// After the last xs:attribute the even/odd has to be set back to odd and an empty element to
+					// force a new line has to be added.
+					// The xs:attribute elements are always found clustered at the beginning of a fieldset so this only needs to be done
+					// once during handling a single fieldset.
+					// let dataCreatedHandled = false;
+
+					// It is important that the last element with 'data-xsd2html2xml-type=attribute' is found
+					// data-xsd2html2xml-type=attribute is added to elements that are xs:attribute within the xsd.
+					// After the last xs:attribute the even/odd has to be set back to odd and an empty element to
+					// force a new line has to be added.
+					// The xs:attribute elements are always found clustered at the beginning of a fieldset so this only needs to be done
+					// once during handling a single fieldset.
+					let lastAttributeElementHandled = false;
+
 					// Loop through the array and add a class 'even' or 'odd' to the
 					// child element if it's an section.input-section.
 					// This needs to be resetted if another element is present
@@ -233,11 +250,52 @@ export class HtmlHelperService {
 							fieldsetChild.classList.add('even');
 
 							currentClass = 'odd';
+
 						} else {
 
 							// If neither of the conditions is true, set the current class back to odd
 							currentClass = 'odd';
 						}
+
+						// If the last xs:attribute element has not been handled
+						if ( !lastAttributeElementHandled ) {
+
+							// Check if the following section has no data-xsd2html2xml-type=attribute as a direct child
+							let nextSibling = fieldsetChild.nextElementSibling;
+
+							if ( nextSibling ) {
+
+								if ( !nextSibling.querySelector(':scope > [data-xsd2html2xml-type="attribute"]') ) {
+
+									// Add a new element before the nextSibling with the class break and reset the currentClass to odd
+									this.insertBreakDivBeforeElement(nextSibling);
+
+									currentClass = 'odd';
+
+									// Set handled flag to true
+									lastAttributeElementHandled = true;
+								}
+							}
+						}
+
+						// REMOVE: Old version:
+						// Check if the element has a data-created and it was not yet handled
+						/*if ( !dataCreatedHandled && fieldsetChild.hasAttribute('data-created') ) {
+
+							// Check if the next sibling does NOT have the attribute 'data-created'
+							let nextSibling = fieldsetChild.nextElementSibling;
+
+							if ( nextSibling && !nextSibling?.hasAttribute('data-created') ) {
+
+								// Add a new element before the nextSibling with the class break and reset the currentClass to odd
+								this.insertBreakDivBeforeElement(nextSibling);
+
+								currentClass = 'odd';
+
+								// Set handled flag to true
+								dataCreatedHandled = true;
+							}
+						}*/
 					}
 
 					// Loop through the reveresed array and check how many section.input-section
@@ -343,5 +401,23 @@ export class HtmlHelperService {
 				section.style.display = 'none';
 			}
 		}
+	}
+
+
+	/**
+	 * insertBreakDivBeforeElement
+	 *
+	 * Inserts a break DIV before a given element
+	 *
+	 * @param element
+	 */
+	insertBreakDivBeforeElement(element: Element): void {
+
+		// Create a new empty div with the class break
+		let newDiv = document.createElement('div');
+		newDiv.classList.add('break');
+
+		// Add the new div before the element
+		element.parentNode?.insertBefore(newDiv, element);
 	}
 }

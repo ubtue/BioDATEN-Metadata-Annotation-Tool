@@ -420,7 +420,7 @@ export class AdministrationAutocompleteComponent implements OnInit, AfterViewIni
 
 			this.alertService.showAlert(
 				'Inputs cannot be empty',
-				'The values are not valid. Please check if both xpath and ontology input have a value.'
+				'The values are not valid. Please check if both xpath and vocabulary input have a value.'
 			);
 
 			return false;

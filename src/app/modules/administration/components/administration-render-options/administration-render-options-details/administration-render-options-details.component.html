@@ -5,86 +5,105 @@
 
 	<div class="administration-render-options-details-render-option-outer-wrap">
 
-		<!-- ID -->
-		<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-id">
-			<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-id">
-				ID
-			</div>
-			<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-id">
-				{{ currentRenderOption.id}}
-			</div>
-		</div>
+		<fieldset class="administration-render-options-details-render-option-fieldet">
 
-		<!-- Xpath -->
-		<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-xpath">
-			<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-xpath">
-				Xpath
-			</div>
-			<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-xpath">
-				<input id="input-xpath-{{currentRenderOption.id}}" type="text" value="{{currentRenderOption.xpath}}" placeholder="xpath" />
-			</div>
-		</div>
+			<legend>Update render option</legend>
 
-		<!-- Label -->
-		<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-label">
-			<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-label">
-				Label
+			<!-- ID -->
+			<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-id">
+				<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-id">
+					ID:
+				</div>
+				<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-id">
+					{{ currentRenderOption.id}}
+				</div>
 			</div>
-			<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-label">
-				<input id="input-label-{{currentRenderOption.id}}" type="text" value="{{currentRenderOption.label}}" placeholder="label" />
-			</div>
-		</div>
 
-		<!-- Placeholder -->
-		<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-placeholder">
-			<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-placeholder">
-				Placeholder
+			<!-- Schema -->
+			<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-schema">
+				<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-schema">
+					Schema:
+				</div>
+				<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-schema">
+					<select id="input-schema-{{currentRenderOption.id}}">
+						<option *ngFor="let schema of schemasData" [selected]="currentRenderOption.schema === schema.id" [value]="schema.id">{{ schema.schema }}</option>
+					</select>
+				</div>
 			</div>
-			<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-placeholder">
-				<input id="input-placeholder-{{currentRenderOption.id}}" type="text" value="{{currentRenderOption.placeholder}}" placeholder="placeholder" />
-			</div>
-		</div>
 
-		<!-- Prefilled -->
-		<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-prefilled">
-			<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-prefilled">
-				Prefilled
+			<!-- Xpath -->
+			<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-xpath">
+				<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-xpath">
+					Xpath:
+				</div>
+				<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-xpath">
+					<input id="input-xpath-{{currentRenderOption.id}}" type="text" value="{{currentRenderOption.xpath}}" placeholder="xpath" />
+				</div>
 			</div>
-			<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-prefilled">
-				<input id="input-prefilled-{{currentRenderOption.id}}" type="text" value="{{currentRenderOption.prefilled}}" placeholder="prefilled" />
-			</div>
-		</div>
 
+			<!-- Label -->
+			<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-label">
+				<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-label">
+					Label:
+				</div>
+				<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-label">
+					<input id="input-label-{{currentRenderOption.id}}" type="text" value="{{currentRenderOption.label}}" placeholder="label" />
+				</div>
+			</div>
 
-		<!-- Readonly -->
-		<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-readonly">
-			<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-readonly">
-				Readonly
+			<!-- Placeholder -->
+			<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-placeholder">
+				<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-placeholder">
+					Placeholder:
+				</div>
+				<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-placeholder">
+					<input id="input-placeholder-{{currentRenderOption.id}}" type="text" value="{{currentRenderOption.placeholder}}" placeholder="placeholder" />
+				</div>
 			</div>
-			<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-readonly">
-				<input id="input-readonly-{{currentRenderOption.id}}" type="checkbox" [checked]="currentRenderOption.readonly === true" />
-			</div>
-		</div>
 
-		<!-- Hide -->
-		<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-hide">
-			<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-hide">
-				Hide
+			<!-- Prefilled -->
+			<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-prefilled">
+				<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-prefilled">
+					Prefilled:
+				</div>
+				<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-prefilled">
+					<input id="input-prefilled-{{currentRenderOption.id}}" type="text" value="{{currentRenderOption.prefilled}}" placeholder="prefilled" />
+				</div>
 			</div>
-			<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-hide">
-				<input id="input-hide-{{currentRenderOption.id}}" type="checkbox" [checked]="currentRenderOption.hide === true" />
-			</div>
-		</div>
 
-		<!-- Active -->
-		<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-active">
-			<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-active">
-				Active
+			<!-- Readonly -->
+			<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-readonly">
+				<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-readonly">
+					Readonly:
+				</div>
+				<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-readonly">
+					<input id="input-readonly-{{currentRenderOption.id}}" type="checkbox" [checked]="currentRenderOption.readonly === true" />
+				</div>
 			</div>
-			<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-active">
-				<input id="input-active-{{currentRenderOption.id}}" type="checkbox" [checked]="currentRenderOption.active === true" />
-			</div>
-		</div>
 
+			<!-- Hide -->
+			<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-hide">
+				<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-hide">
+					Hide:
+				</div>
+				<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-hide">
+					<input id="input-hide-{{currentRenderOption.id}}" type="checkbox" [checked]="currentRenderOption.hide === true" />
+				</div>
+			</div>
+
+			<!-- Active -->
+			<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-active">
+				<div class="administration-render-options-details-render-option-label administration-render-options-details-render-option-label-active">
+					Active:
+				</div>
+				<div class="administration-render-options-details-render-option-value administration-render-options-details-render-option-value-active">
+					<input id="input-active-{{currentRenderOption.id}}" type="checkbox" [checked]="currentRenderOption.active === true" />
+				</div>
+			</div>
+
+			<div class="administration-render-options-details-render-option-wrap administration-render-options-details-render-option-wrap-save">
+				<button class="biodaten-button administration-render-options-details-render-option-save-button" (click)="onClickSave(currentRenderOption)">Save</button>
+			</div>
+		</fieldset>
 	</div>
 </div>

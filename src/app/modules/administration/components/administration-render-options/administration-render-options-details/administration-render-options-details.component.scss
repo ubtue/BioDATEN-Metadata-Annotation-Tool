@@ -10,4 +10,33 @@
 		height: 24px;
 		width: 24px;
 	}
+
+	.administration-render-options-details-render-option-outer-wrap {
+
+		.administration-render-options-details-render-option-wrap {
+
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+
+			@include addMarginBottom(10px);
+
+			.administration-render-options-details-render-option-label {
+				// TODO: Needed?
+				// text-decoration: underline;
+			}
+
+			.administration-render-options-details-render-option-value {
+				width: 100%;
+
+				input[type="text"] {
+					width: 100%;
+				}
+			}
+
+			.administration-render-options-details-render-option-button {
+				width: auto;
+			}
+		}
+	}
 }

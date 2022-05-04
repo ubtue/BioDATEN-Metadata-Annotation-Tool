@@ -131,6 +131,15 @@ window['xsd2html2xml']["<<REPLACE>>"].clickAddButton = function (button) {
 		0
 	)
 	window['xsd2html2xml']["<<REPLACE>>"].updateIdentifiers(button);
+
+	/* CHANGE JK: Remove the flag for added dependency from the elements */
+	newNode.querySelectorAll('[data-dependency-init="1"]').forEach(function (o) {
+		o.removeAttribute('data-dependency-init');
+	});
+
+	/* CHANGE JK: Fire an event after the new element was created */
+	const addEvent = new Event('xsd2html2xml-add-button');
+	window.dispatchEvent(addEvent);
 };
 
 window['xsd2html2xml']["<<REPLACE>>"].clickRemoveButton = function (button) {

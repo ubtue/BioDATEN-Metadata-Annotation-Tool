@@ -39,6 +39,14 @@
 			&.show-fieldset {
 				margin-bottom: $addMarginBottomElements;
 			}
+
+			.administration-render-options-add-new-toggle-text {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: nowrap;
+				align-content: center;
+				align-items: center;
+			}
 		}
 
 		.administration-render-options-add-new {

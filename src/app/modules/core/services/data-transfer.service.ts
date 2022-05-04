@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
@@ -35,15 +35,31 @@ export class DataTransferService {
 
 		let httpOpts;
 
+
+		// Current timestamp as a param
+		let timeStampParam: HttpParams = new HttpParams().set('t', Date.now());
+
 		if ( !skipIntercept ) {
 			httpOpts = {
-				headers: new HttpHeaders().set('Accept', '*/*').set('Content-Type', 'application/json'),
-				responseType: requestResponseType
+				headers: new HttpHeaders()
+					.set('Accept', '*/*')
+					.set('Content-Type', 'application/json')
+					.set('Cache-Control', 'no-cache')
+					.set('Pragma', 'no-cache')
+					.set('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT'),
+				responseType: requestResponseType,
+				params: timeStampParam
 			};
 		} else {
 			httpOpts = {
-				headers: new HttpHeaders().set('Accept', '*/*').set('Content-Type', 'application/json').set('skipintercept', 'true'),
-				responseType: requestResponseType
+				headers: new HttpHeaders().set('Accept', '*/*')
+					.set('Content-Type', 'application/json')
+					.set('Cache-Control', 'no-cache')
+					.set('Pragma', 'no-cache')
+					.set('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT')
+					.set('skipintercept', 'true'),
+				responseType: requestResponseType,
+				params: timeStampParam
 			};
 		}
 

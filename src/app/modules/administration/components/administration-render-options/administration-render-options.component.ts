@@ -80,6 +80,7 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 		this.MAPPING_FIELD_VALUE.id,
 		this.MAPPING_FIELD_VALUE.schema,
 		this.MAPPING_FIELD_VALUE.xpath,
+		this.MAPPING_FIELD_VALUE.active,
 		this.MAPPING_FIELD_VALUE.edit,
 	];
 
@@ -168,6 +169,34 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 	 */
 	onClickAddRenderOptionButton(): void {
 		this.addNewRenderOption();
+	}
+
+
+	/**
+	 * onChangeActive
+	 *
+	 * Handles the change of the active checkbox
+	 *
+	 * @param renderOption
+	 */
+	onChangeActive(renderOption: RenderOption): void {
+
+		// Get the active value
+		let activeInput = document.getElementById(this.INPUT_PREFIX.active + renderOption.id) as HTMLInputElement;
+		let activeValue = activeInput.checked;
+
+		// Update the option
+		this.updateRenderOption(
+			renderOption,
+			renderOption.schema,
+			renderOption.xpath,
+			renderOption.label,
+			renderOption.placeholder,
+			renderOption.prefilled,
+			renderOption.readonly,
+			renderOption.hide,
+			activeValue
+		);
 	}
 
 

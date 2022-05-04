@@ -1,3 +1,4 @@
+import { RenderHelperService } from './../../../shared/services/render-helper.service';
 import { UserResourceService } from './../../../shared/services/user-data.service';
 import { MetadataAnnotationFormHelperService } from './../../services/metadata-annotation-form-helper.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
@@ -15,6 +16,7 @@ import { AutocompleteService } from '../../../shared/services/autocomplete.servi
 import { SettingsService } from 'src/app/modules/shared/services/settings.service';
 import { KeycloakService } from 'src/app/modules/core/services/keycloak.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DependencyService } from 'src/app/modules/shared/services/dependency.service';
 
 
 @Component({
@@ -48,6 +50,10 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	@ViewChild('inputFilesTemplate') inputFilesTemplate!: ElementRef;
 	@ViewChild('inputFilesXML') inputFilesXML!: ElementRef;
 
+
+	/**
+	 * constructor
+	 */
 	constructor(private settingsService: SettingsService,
 				private dataTransferService: DataTransferService,
 				private updateNavigationService: UpdateNavigationService,
@@ -59,12 +65,18 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				private keycloakService: KeycloakService,
 				private router: Router,
 				private route: ActivatedRoute,
-				private userResourceService: UserResourceService) {
+				private userResourceService: UserResourceService,
+				private renderHelperService: RenderHelperService,
+				private dependencyService: DependencyService) {
 
 					// Get the server address
 					this.serverAddress = this.settingsService.backendServerAddress;
 				}
 
+
+	/**
+	 * ngOnInit
+	 */
 	ngOnInit(): void {
 		this.currentTab = 'settings';
 
@@ -625,9 +637,23 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				// Load the JS for all schemas
 				this.loadJSForAllSchemas(results).then(
 					() => {
+
+						// Add autocomplete functionality
 						this.activateAutocomplete(this.createdTabs);
+
+						// Replaces the ontology identifiers with the human readable value
 						this.metadataAnnotationFormHelperService.replaceOntologyIdentifiers();
+
+						// Apply the custom render options
+						this.renderHelperService.applyRenderOptions();
+
+						// Apply the dependencies
+						this.dependencyService.applyDependencies();
+
+						// Update the navigation
 						this.updateNavigationService.updateCurrentView("Metadata for resource:", resourceId);
+
+						// Select the first tab
 						this.selectFirstTab();
 					}
 				);
@@ -681,8 +707,9 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				// Mark the parent sections of inputs
 				this.htmlHelperService.markParentInputSections(createdTabContent);
 
+				// REMOVE: This is now handled in the administration
 				// Hide the unwanted sections
-				this.htmlHelperService.hideUnwantedSections(createdTabContent);
+				// this.htmlHelperService.hideUnwantedSections(createdTabContent);
 
 				// In flex layout: Add a count of the input-sections to the parent fieldset
 				if ( this.settingsService.metadataAnnotationFormFlexLayout === true ) {
