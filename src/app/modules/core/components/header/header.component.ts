@@ -58,6 +58,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
 							if ( this.settingsService.enableConsoleLogs ) {
 								console.log('Keycloak token expired. Renewing...')
+								console.log(Date.now());
 								console.log(e);
 							}
 

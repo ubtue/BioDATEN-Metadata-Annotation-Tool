@@ -170,7 +170,7 @@ export class RenderHelperService {
 	applyPlaceholder(parentElement: HTMLElement, renderOption: RenderOption): void {
 
 		// Get the input element
-		let inputElement = parentElement.querySelector(':scope > input[type="text"]') as HTMLInputElement;
+		let inputElement = parentElement.querySelector(':scope > input[type="text"], :scope > input[type="url"]') as HTMLInputElement;
 
 		// Set the placeholder
 		inputElement.setAttribute('placeholder', renderOption.placeholder);
@@ -188,7 +188,7 @@ export class RenderHelperService {
 	applyPrefilledValue(parentElement: HTMLElement, renderOption: RenderOption): void {
 
 		// Get the input element
-		let inputElement = parentElement.querySelector(':scope > input[type="text"]') as HTMLInputElement;
+		let inputElement = parentElement.querySelector(':scope > input[type="text"], :scope > input[type="url"]') as HTMLInputElement;
 
 		// Set the value if no other value is set yet
 		if ( inputElement.value.trim().length === 0 ) {
@@ -209,7 +209,7 @@ export class RenderHelperService {
 	applyReadonly(parentElement: HTMLElement, renderOption: RenderOption, isFieldset?: boolean): void {
 
 		// Get the input element
-		let inputElement = parentElement.querySelector(':scope > input[type="text"]') as HTMLInputElement;
+		let inputElement = parentElement.querySelector(':scope > input[type="text"], :scope > input[type="url"]') as HTMLInputElement;
 
 		// Set the readonly value
 		inputElement.readOnly = renderOption.readonly;

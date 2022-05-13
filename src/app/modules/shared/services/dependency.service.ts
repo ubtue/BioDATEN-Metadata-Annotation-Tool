@@ -42,7 +42,9 @@ export class DependencyService {
 			let dependency = this.cachedDependencies[i];
 
 			// Get all target elements
-			let targetElements = document.querySelectorAll('[data-xsd2html2xml-name="cmdp:' + dependency.targetElementName + '"]:not([data-dependency-init="1"])');
+			let targetElements = document.querySelectorAll(
+				'[data-xsd2html2xml-name="' + dependency.targetElementName + '"]:not([data-dependency-init="1"]), [data-xsd2html2xml-name="cmdp:' + dependency.targetElementName + '"]:not([data-dependency-init="1"])'
+			);
 
 			// Loop through all the target elements
 			for ( let j = 0; j < targetElements.length; j++ ) {
@@ -136,7 +138,7 @@ export class DependencyService {
 				};
 
 				// Split the dependencyString at the separators to get the information
-				let splittedForSourceArray = dependencyString.split(this.dependencySeparatorSource);
+				let splittedForSourceArray = splittedDependenciesArray[i].split(this.dependencySeparatorSource);
 
 				if ( splittedForSourceArray.length > 1 ) {
 
@@ -160,6 +162,8 @@ export class DependencyService {
 				dependencies.push(dependency);
 			}
 		}
+
+		console.log(dependencies);
 
 		return dependencies;
 	}
@@ -226,7 +230,7 @@ export class DependencyService {
 	/**
 	 * handleSourceElement
 	 *
-	 * Handles the change event of the source and the visibility of the target section
+	 * Handles the change and input event of the source and the visibility of the target section
 	 *
 	 * @param sourceElementName
 	 * @param sourceOption
@@ -244,17 +248,43 @@ export class DependencyService {
 			// Set a data attribute as a flag that the element has been initialized
 			sourceElement.setAttribute('data-dependency-init', '1');
 
+			// For select elements use the change event:
 			// Set an event handler for the change event of the source elements child input:
 			// If the source element value equals the source option -> remove hidden from the target section
-			let childInput = sourceElement.querySelector('input, select');
+			let childInputSelect = sourceElement.querySelector('select');
+
+			if ( childInputSelect ) {
+
+				// Add event listener on change
+				childInputSelect.addEventListener('change', (e) => {
+
+					// Get the source input from the events target
+					let sourceInput = e.target as HTMLSelectElement;
+
+					// If the source input equals the dependency value show the target section
+					if ( sourceInput.value === sourceOption ) {
+
+						targetSection.removeAttribute('hidden');
+					} else {
+
+						// Hide the section above if the source input does not equal the dependency value
+						targetSection.setAttribute('hidden', '');
+					}
+				});
+			}
+
+			// For input elements use the input event:
+			// Set an event handler for the input event of the source elements child input:
+			// If the source element value equals the source option -> remove hidden from the target section
+			let childInput = sourceElement.querySelector('input');
 
 			if ( childInput ) {
 
-				// Add event listener on change
-				childInput.addEventListener('change', (e) => {
+				// Add event listener on input
+				childInput.addEventListener('input', (e) => {
 
 					// Get the source input from the events target
-					let sourceInput = e.target as HTMLInputElement | HTMLSelectElement;
+					let sourceInput = e.target as HTMLInputElement;
 
 					// If the source input equals the dependency value show the target section
 					if ( sourceInput.value === sourceOption ) {

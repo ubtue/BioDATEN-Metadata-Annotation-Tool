@@ -475,6 +475,11 @@ window['xsd2html2xml']["<<REPLACE>>"].setValue = function (element, value) {
 		window['xsd2html2xml']["<<REPLACE>>"].globalValuesMap[containerIdentifier] = [];
 	}
 
+	// console.log('element');
+	// console.log(element);
+	// console.log('value');
+	// console.log(value);
+
 	element
 		.querySelector("input, textarea, select")
 		.setAttribute("data-xsd2html2xml-filled", "true");
@@ -530,11 +535,20 @@ window['xsd2html2xml']["<<REPLACE>>"].setValue = function (element, value) {
 			// console.log('magic');
 			// console.log("select option[value = '".concat(value).concat("']"));
 
+			// console.log('VALUE');
+			// console.log(value);
+
+			/* CHANGE JK: Check if the select element even has the option */
+			if ( element.querySelector("select option[value = '".concat(value).concat("']")) ) {
+
+			}
+
 			element
 				.querySelector(
 					"select option[value = '".concat(value).concat("']")
 				)
 				.setAttribute("selected", "selected");
+
 		}
 	}
 };
@@ -553,6 +567,21 @@ window['xsd2html2xml']["<<REPLACE>>"].parseNode = function (node, element) {
 				)
 				.concat("']")
 		);
+
+		// CHANGE JK: If the attribute is still null, check if the |content suffix is missing
+		if ( attribute === null ) {
+			var attribute = element.querySelector(
+				"[data-xsd2html2xml-xpath = '"
+					.concat(
+						element.getAttribute("data-xsd2html2xml-xpath").concat(
+							"/@".concat(node.attributes[i].nodeName)
+							//"/@*[name() = \"".concat(node.attributes[i].nodeName).concat("\"]")
+						)
+					)
+					.concat("|content")
+					.concat("']")
+			);
+		}
 
 		if (attribute !== null) {
 			window['xsd2html2xml']["<<REPLACE>>"].setValue(attribute, node.attributes[i].nodeValue);
@@ -580,6 +609,28 @@ window['xsd2html2xml']["<<REPLACE>>"].parseNode = function (node, element) {
 				),
 				node.childNodes[0].nodeValue
 			);
+
+		} else if (
+
+			// CHANGE JK: If the element is still null, check if the |content suffix is missing
+			element.querySelectorAll(
+				"[data-xsd2html2xml-xpath='"
+					.concat(element.getAttribute("data-xsd2html2xml-xpath"))
+					.concat("|content")
+					.concat("']")
+			).length > 0
+		) {
+
+			window['xsd2html2xml']["<<REPLACE>>"].setValue(
+				element.querySelector(
+					"[data-xsd2html2xml-xpath='"
+						.concat(element.getAttribute("data-xsd2html2xml-xpath"))
+						.concat("|content")
+						.concat("']")
+				),
+				node.childNodes[0].nodeValue
+			);
+
 		} else {
 			window['xsd2html2xml']["<<REPLACE>>"].setValue(element, node.childNodes[0].nodeValue);
 		}
@@ -625,6 +676,24 @@ window['xsd2html2xml']["<<REPLACE>>"].parseNode = function (node, element) {
 						)
 						.concat("']")
 				);
+
+				// CHANGE JK: If the childElement is still null, check if the |content suffix is missing
+				if ( childElement === null ) {
+
+					var childElement = element.querySelector(
+						"[data-xsd2html2xml-xpath = '"
+							.concat(
+								element
+									.getAttribute("data-xsd2html2xml-xpath")
+									.concat(
+										"/".concat(childNode.nodeName)
+										//"/*[name() = \"".concat(childNode.nodeName).concat("\"]")
+									)
+							)
+							.concat("|content")
+							.concat("']")
+					);
+				}
 
 				//if there is an add-button (and it is not the first child node being parsed), add an element
 				var button;

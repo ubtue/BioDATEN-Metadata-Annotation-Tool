@@ -236,13 +236,22 @@ export class AutocompleteMappingService {
 		// Loop through all mappings and add
 		for ( let i = 0; i < mappings.length; i++ ) {
 
-			// Get input element
-			let inputElement = document.querySelector(
-				'div[data-tab="' + mappings[i].schema + '"] label[data-xsd2html2xml-xpath="' + mappings[i].xpath + '"] > input') as HTMLInputElement;
+			// Get input elements
+			let inputElements = document.querySelectorAll(
+				'div[data-tab="' + mappings[i].schema + '"] label[data-xsd2html2xml-xpath="' + mappings[i].xpath + '"] > input');
 
-			// Add ontology as data attribute if the element exists
-			if ( inputElement ) {
-				inputElement.setAttribute('data-ontology', mappings[i].ontology);
+			// Loop through all elements
+			for ( let j = 0; j < inputElements.length; j++ ) {
+
+				let inputElement = inputElements[j] as HTMLInputElement;
+
+				// Add ontology as data attribute if the element exists
+				if ( inputElement ) {
+					inputElement.setAttribute('data-ontology', mappings[i].ontology);
+
+					// Disable the browser autocomplete for these inputs
+					inputElement.setAttribute('autocomplete', 'off');
+				}
 			}
 		}
 	}

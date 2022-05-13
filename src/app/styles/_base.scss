@@ -16,7 +16,11 @@ body {
 	height: 100%;
 
 	[hidden] {
-		display: none !important;
+		// display: none !important;
+		visibility: hidden !important;
+     	height: 0 !important;
+     	margin: 0 !important;
+     	padding: 0 !important;
 	}
 
 	.bold {
@@ -27,6 +31,10 @@ body {
 body {
 
 	&.alert-backdrop {
+		overflow: hidden;
+	}
+
+	.mat-drawer-content {
 		overflow: hidden;
 	}
 }

@@ -267,6 +267,9 @@ export class HtmlHelperService {
 
 								if ( !nextSibling.querySelector(':scope > [data-xsd2html2xml-type="attribute"]') ) {
 
+									// Mark the current one as the last child
+									fieldsetChild.setAttribute('data-last-attribute', '1');
+
 									// Add a new element before the nextSibling with the class break and reset the currentClass to odd
 									this.insertBreakDivBeforeElement(nextSibling);
 
@@ -304,6 +307,11 @@ export class HtmlHelperService {
 					for ( let fieldsetChild of fieldsetChildrenArray.reverse() ) {
 
 						if ( fieldsetChild.classList.contains('input-section') ) {
+
+							if ( fieldsetChild.hasAttribute('data-last-attribute') ) {
+								break;
+							}
+
 							inputSectionCount++;
 						} else {
 							break;
@@ -313,6 +321,7 @@ export class HtmlHelperService {
 
 				// If there are any put the number and even/odd in a data-attribute
 				if ( inputSectionCount > 0 ) {
+
 					fieldset.setAttribute('data-input-section-count', inputSectionCount.toString());
 
 					fieldset.setAttribute(

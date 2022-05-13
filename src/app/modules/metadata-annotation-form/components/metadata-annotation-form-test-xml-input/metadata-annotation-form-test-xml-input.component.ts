@@ -766,7 +766,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
 			// Don't select inputs that already have the event bound
 			// (There elements hat the data-autocomplete-flag attribute)
-			let allTextInputs = tab.tabContent?.contentElement?.querySelectorAll('input[type="text"]:not([data-autocomplete-flag])') as NodeList;
+			let allTextInputs = tab.tabContent?.contentElement?.querySelectorAll('input[type="text"]:not([data-autocomplete-flag]), input[type="url"]:not([data-autocomplete-flag])') as NodeList;
 
 			if ( allTextInputs && allTextInputs.length > 0 ) {
 
