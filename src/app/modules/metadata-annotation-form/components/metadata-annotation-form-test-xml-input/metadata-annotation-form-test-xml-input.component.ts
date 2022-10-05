@@ -1,3 +1,5 @@
+import { OidcService } from './../../../core/services/oidc.service';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { RenderHelperService } from './../../../shared/services/render-helper.service';
 import { UserResourceService } from './../../../shared/services/user-data.service';
 import { MetadataAnnotationFormHelperService } from './../../services/metadata-annotation-form-helper.service';
@@ -62,7 +64,8 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				private metadataAnnotationFormHelperService: MetadataAnnotationFormHelperService,
 				private htmlHelperService: HtmlHelperService,
 				private autocompleteService: AutocompleteService,
-				private keycloakService: KeycloakService,
+				public oidcSecurityService: OidcSecurityService,
+				private oidcService: OidcService,
 				private router: Router,
 				private route: ActivatedRoute,
 				private userResourceService: UserResourceService,
@@ -889,11 +892,22 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				if ( typeof resourceId !== 'undefined' && resourceId !== '' ) {
 
 					// Get User ID (only continue if user is logged in)
-					if ( typeof this.keycloakService.userInformation.id !== 'undefined' && this.keycloakService.userInformation.id !== '' ) {
+					this.oidcSecurityService.userData$.subscribe(userData => {
+
+						let userId = this.oidcService.getUserIdFromUserData(userData);
+
+						if ( userId !== '' ) {
+							this.userResourceService.updateUserResource(resourceId, userId, xmlData);
+						}
+				});
+
+					// REMOVE: OLD
+					// Get User ID (only continue if user is logged in)
+					/*if ( typeof this.keycloakService.userInformation.id !== 'undefined' && this.keycloakService.userInformation.id !== '' ) {
 						let userId = this.keycloakService.userInformation.id as string;
 
 						this.userResourceService.updateUserResource(resourceId, userId, xmlData);
-					}
+					}*/
 				}
 			}
 

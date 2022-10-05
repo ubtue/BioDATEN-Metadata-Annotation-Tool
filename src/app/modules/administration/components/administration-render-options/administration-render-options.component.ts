@@ -82,6 +82,7 @@ export class AdministrationRenderOptionsComponent implements OnInit, AfterViewIn
 		this.MAPPING_FIELD_VALUE.xpath,
 		this.MAPPING_FIELD_VALUE.active,
 		this.MAPPING_FIELD_VALUE.edit,
+		this.MAPPING_FIELD_VALUE.delete,
 	];
 
 	displayedColumns: string[] = this.displayedColumnsStandardView;

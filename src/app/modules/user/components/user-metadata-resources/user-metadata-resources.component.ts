@@ -1,3 +1,6 @@
+import { OidcService } from './../../../core/services/oidc.service';
+import { Observable } from 'rxjs';
+import { OidcSecurityService, UserDataResult } from 'angular-auth-oidc-client';
 import { MetadataUserResourceServerResponse } from './../../../shared/models/metadata-user-resource-server-response.model';
 import { MetadataUserResourceBlockSortableField } from './../../../shared/models/metadata-user-resource-block-sortable-field.model';
 import { HelperService } from './../../../shared/services/helper.service';
@@ -9,7 +12,6 @@ import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewEnc
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { KeycloakService } from 'src/app/modules/core/services/keycloak.service';
 import { UserResourceService } from 'src/app/modules/shared/services/user-data.service';
 
 
@@ -21,6 +23,7 @@ import { UserResourceService } from 'src/app/modules/shared/services/user-data.s
 })
 export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 
+	userData$: Observable<UserDataResult> = {} as any;
 	userId: string = '';
 
 	readonly RESOURCE_DATA_STATUS = {
@@ -141,19 +144,15 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 	constructor(private router: Router,
 				private cdRef: ChangeDetectorRef,
 				private updateNavigationService: UpdateNavigationService,
-				private keycloakService: KeycloakService,
 				private settingsService: SettingsService,
 				private helperService: HelperService,
-				private userResourceService: UserResourceService) {
+				private userResourceService: UserResourceService,
+				public oidcSecurityService: OidcSecurityService,
+				private oidcService: OidcService) {
 
 					// Get the default sorting field
 					this.selectedBlockSortableField =
 						this.settingsService.defaultUserResourceSortingField + '_' + this.settingsService.defaultUserResourceSortingMethod;
-
-					// Get User ID
-					if ( typeof this.keycloakService.userInformation.id !== 'undefined' && this.keycloakService.userInformation.id !== '' ) {
-						this.userId = this.keycloakService.userInformation.id as string;
-					}
 				}
 
 
@@ -188,45 +187,50 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 		// ];
 
 
-		// Get the data that is used for the table from the server
-		this.userResourceService.getAllUserResourcesFromServer(this.userId).then(
-			(userResourceDataFromServer: MetadataUserResourceServerResponse[]) => {
 
-				// Parse the data for the view
-				this.userResourceData = this.userResourceService.parseUserResourcesServerResponseToUserResources(userResourceDataFromServer);
+		// Get User ID
+		this.userData$ = this.oidcSecurityService.userData$;
 
-				// Put the data in an MatTableDataSource, so it can be sorted
-				this.dataSource = new MatTableDataSource(this.userResourceData);
+		this.userData$.subscribe( userData => {
 
-				// Activate the sorting
-				this.sort.sort((
-					{
-						id: this.settingsService.defaultUserResourceSortingField,
-						start: this.settingsService.defaultUserResourceSortingMethod
-					}
-				) as MatSortable);
-				this.dataSource.sort = this.sort;
+			this.userId = this.oidcService.getUserIdFromUserData(userData);
 
-				// Disable clearing the sorting state
-				this.dataSource.sort.disableClear = true;
+			// Get the data that is used for the table from the server
+			this.userResourceService.getAllUserResourcesFromServer(this.userId).then(
+				(userResourceDataFromServer: MetadataUserResourceServerResponse[]) => {
 
-				this.dataSource.paginator = this.paginator;
+					// Parse the data for the view
+					this.userResourceData = this.userResourceService.parseUserResourcesServerResponseToUserResources(userResourceDataFromServer);
 
-				// Sort the blocks (smaller devices)
-				this.userResourceDataSortedForBlocks = this.userResourceData;
-				this.sortBlocks();
+					// Put the data in an MatTableDataSource, so it can be sorted
+					this.dataSource = new MatTableDataSource(this.userResourceData);
 
-				// Detect the changes manually
-				// This needs to be done because Angular will throw an error if the data
-				// is manipulated within ngAfterViewInit. Sadly, mat-tables require
-				// the population of the sortable content within ngAfterViewInit.
-				this.cdRef.detectChanges();
-			}
-		)
+					// Activate the sorting
+					this.sort.sort((
+						{
+							id: this.settingsService.defaultUserResourceSortingField,
+							start: this.settingsService.defaultUserResourceSortingMethod
+						}
+					) as MatSortable);
+					this.dataSource.sort = this.sort;
 
+					// Disable clearing the sorting state
+					this.dataSource.sort.disableClear = true;
 
+					this.dataSource.paginator = this.paginator;
 
+					// Sort the blocks (smaller devices)
+					this.userResourceDataSortedForBlocks = this.userResourceData;
+					this.sortBlocks();
 
+					// Detect the changes manually
+					// This needs to be done because Angular will throw an error if the data
+					// is manipulated within ngAfterViewInit. Sadly, mat-tables require
+					// the population of the sortable content within ngAfterViewInit.
+					this.cdRef.detectChanges();
+				}
+			)
+		});
 	}
 
 

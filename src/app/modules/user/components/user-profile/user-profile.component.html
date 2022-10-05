@@ -2,8 +2,8 @@
 
 	<div class="user-profile-information-wrap" *ngIf="userInformation">
 
-		<div class="user-profile-information-logged-in-as" *ngIf="userInformation.firstName && userInformation.lastName">
-			Logged in as: <span class="bold">{{ userInformation.firstName }} {{ userInformation.lastName }}</span>
+		<div class="user-profile-information-logged-in-as" *ngIf="userInformation.given_name && userInformation.family_name">
+			Logged in as: <span class="bold">{{ userInformation.given_name }} {{ userInformation.family_name }}</span>
 		</div>
 
 	</div>

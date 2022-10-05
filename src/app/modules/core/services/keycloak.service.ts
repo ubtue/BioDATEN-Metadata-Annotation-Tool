@@ -154,14 +154,15 @@ export class KeycloakService extends AngularKeycloakService {
 								}
 							)
 						}
-					)
+					);
+
 				} else {
 					this.userInformation = null as any;
 					this.userGroups = [];
 					return;
 				}
 			}
-		)
+		);
 	}
 
 

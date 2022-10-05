@@ -163,8 +163,6 @@ export class DependencyService {
 			}
 		}
 
-		console.log(dependencies);
-
 		return dependencies;
 	}
 
@@ -220,6 +218,7 @@ export class DependencyService {
 			// Hide the section above
 			targetSection.setAttribute('hidden', '');
 
+
 			return targetSection;
 		}
 
@@ -255,6 +254,11 @@ export class DependencyService {
 
 			if ( childInputSelect ) {
 
+				// If the source element already has the source option, remove the hidden attribute of the target
+				if ( childInputSelect.value === sourceOption ) {
+					targetSection.removeAttribute('hidden');
+				}
+
 				// Add event listener on change
 				childInputSelect.addEventListener('change', (e) => {
 
@@ -279,6 +283,11 @@ export class DependencyService {
 			let childInput = sourceElement.querySelector('input');
 
 			if ( childInput ) {
+
+				// If the source element already has the source option, remove the hidden attribute of the target
+				if ( childInput.value === sourceOption ) {
+					targetSection.removeAttribute('hidden');
+				}
 
 				// Add event listener on input
 				childInput.addEventListener('input', (e) => {

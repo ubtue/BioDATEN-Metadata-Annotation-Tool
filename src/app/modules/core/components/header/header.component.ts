@@ -1,13 +1,12 @@
-import { KeycloakProfile } from 'keycloak-js';
+import { OidcService } from './../../services/oidc.service';
+import { OidcClientNotification, OidcSecurityService, OpenIdConfiguration, UserDataResult } from 'angular-auth-oidc-client';
 import { EventHelperService } from './../../../shared/services/event-helper.service';
 import { UpdateNavigation } from './../../../shared/models/update-navigation.model';
 import { UpdateNavigationService } from './../../../core/services/update-navigation.service';
 import { Component, Input, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Subscription, Subject } from 'rxjs';
-import { KeycloakService } from '../../services/keycloak.service';
+import { Subscription, Subject, Observable } from 'rxjs';
 import { SettingsService } from 'src/app/modules/shared/services/settings.service';
 import { takeUntil, startWith } from 'rxjs/operators';
-import { KeycloakEventType } from 'keycloak-angular';
 
 @Component({
 	selector: 'app-header',
@@ -25,65 +24,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
 	userIsLoggedIn: boolean = false;
 
-	userInformation: KeycloakProfile = null as any;
-
 	showUserMenu: boolean = false;
+
+	configuration$: Observable<OpenIdConfiguration> = {} as any;
+	userDataChanged$: Observable<OidcClientNotification<any>> = {} as any;
+	userData$: Observable<UserDataResult> = {} as any;
+	isAuthenticated = false;
 
 
 	/**
 	 * constructor
 	 */
 	constructor(private updateNavigationService: UpdateNavigationService,
-		public keycloakService: KeycloakService,
+		public oidcSecurityService: OidcSecurityService,
+		public oidcService: OidcService,
 		private settingsService: SettingsService,
 		private eventHelperService: EventHelperService) {
 
-		// Check if user is logged in
-		this.keycloakService.isLoggedIn().then(
-			(loginResult: boolean) => {
-				this.userIsLoggedIn = loginResult;
-
-				// Get user information
-				this.userInformation = this.keycloakService.userInformation;
-
-				this.keycloakService.keycloakEvents$
-				.pipe(
-					takeUntil(this.ngUnsubscribe)
-				)
-				.subscribe({
-					next: e => {
-
-						// Check if the event type is an expired token
-						if (e.type == KeycloakEventType.OnTokenExpired) {
-
-							if ( this.settingsService.enableConsoleLogs ) {
-								console.log('Keycloak token expired. Renewing...')
-								console.log(Date.now());
-								console.log(e);
-							}
-
-							// Renew the keycloak token
-							keycloakService.updateToken(60).then(
-								(result: boolean) => {
-
-									// Token has been renewed
-									if ( result ) {
-
-										if ( this.settingsService.enableConsoleLogs ) {
-											console.log('Keycloak token has been renewed.');
-										}
-									}
-								}
-							);
-						}
-					}
-				});
-
-				if (loginResult && this.settingsService.enableConsoleLogs) {
-					this.keycloakService.printLoginInformation();
-				}
-			}
-		);
 	}
 
 
@@ -103,6 +60,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
 		// Listen to clicks from the document
 		this.eventHelperService.documentClickedTarget.subscribe(target => this.documentClickListener(target));
+
+		this.configuration$ = this.oidcSecurityService.getConfiguration();
+		this.userData$ = this.oidcSecurityService.userData$;
+
+		this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {
+			this.userIsLoggedIn = isAuthenticated;
+		});
 	}
 
 
@@ -110,7 +74,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	 * ngOnDestroy
 	 */
 	ngOnDestroy(): void {
-		this.ngUnsubscribe.next();
+		this.ngUnsubscribe.next(null);
 		this.ngUnsubscribe.complete();
 	}
 
@@ -137,7 +101,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	 */
 	onClickLogin(event: Event): void {
 		event.preventDefault();
-		this.keycloakService.customLogin();
+		this.oidcService.customLogin();
 	}
 
 
@@ -147,7 +111,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	 */
 	onClickLogout(event: Event): void {
 		event.preventDefault();
-		this.keycloakService.customLogout();
+		this.oidcSecurityService.logoff();
 	}
 
 

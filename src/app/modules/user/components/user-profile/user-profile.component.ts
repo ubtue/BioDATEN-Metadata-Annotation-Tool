@@ -1,6 +1,6 @@
-import { KeycloakProfile } from 'keycloak-js';
+import { UserDataResult, OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
-import { KeycloakService } from 'src/app/modules/core/services/keycloak.service';
 import { UpdateNavigationService } from 'src/app/modules/core/services/update-navigation.service';
 
 @Component({
@@ -10,17 +10,22 @@ import { UpdateNavigationService } from 'src/app/modules/core/services/update-na
 })
 export class UserProfileComponent implements OnInit {
 
-	userInformation: KeycloakProfile = null as any;
+	userData$: Observable<UserDataResult> = {} as any;
+
+	userInformation: any;
 
 	constructor(private updateNavigationService: UpdateNavigationService,
-				private keycloakService: KeycloakService) {
-
-					this.userInformation = keycloakService.userInformation;
-
-				}
+				public oidcSecurityService: OidcSecurityService
+				) {}
 
 	ngOnInit(): void {
 		this.updateNavigationService.updateCurrentView("User profile", "");
+
+		this.userData$ = this.oidcSecurityService.userData$;
+
+		this.userData$.subscribe(userData => {
+			this.userInformation = userData.userData;
+		});
 	}
 
 	onClickTest(): void {

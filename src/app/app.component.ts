@@ -1,4 +1,6 @@
-import { KeycloakService } from './modules/core/services/keycloak.service';
+import { NavigationEnd, Router, Event } from '@angular/router';
+import { OidcService } from './modules/core/services/oidc.service';
+import { EventTypes, OidcSecurityService, PublicEventsService } from 'angular-auth-oidc-client';
 import { AlertService } from './modules/shared/services/alert.service';
 import { Platform } from '@angular/cdk/platform';
 import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
@@ -6,7 +8,7 @@ import { Subscription, Subject } from 'rxjs';
 import { UpdateNavigationService } from './modules/core/services/update-navigation.service';
 import { EventHelperService } from './modules/shared/services/event-helper.service';
 import { SettingsService } from './modules/shared/services/settings.service';
-import { startWith, takeUntil } from 'rxjs/operators';
+import { startWith, takeUntil, filter } from 'rxjs/operators';
 
 @Component({
 	selector: 'app-root',
@@ -31,7 +33,10 @@ export class AppComponent implements OnInit, OnDestroy {
 				private platform: Platform,
 				private alertService: AlertService,
 				private settingsService: SettingsService,
-				private keycloakService: KeycloakService) {}
+				public oidcSecurityService: OidcSecurityService,
+				private oidcService: OidcService,
+				private publicEventsService: PublicEventsService,
+				private router: Router) {}
 
 
 	/**
@@ -93,15 +98,65 @@ export class AppComponent implements OnInit, OnDestroy {
 			document.body.classList.add('css_property_support');
 		}
 
-		// Update User Information
-		this.keycloakService.updateLoginInformation();
+		// Set connection to authentication service
+		this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken }) => {
 
-		// Check if user is logged in
-		this.keycloakService.isLoggedIn().then(
-			(isLoggedIn: boolean) => {
-				this.userLoggedIn = isLoggedIn;
+			if ( this.settingsService.enableConsoleLogs ) {
+
+				console.groupCollapsed('user info');
+
+				console.log('app authenticated', isAuthenticated);
+				console.log(`Current access token is '${accessToken}'`);
+				console.log('userdata:');
+				console.log(userData);
+
+				console.groupEnd();
 			}
-		);
+
+			// If user is logged in
+			if ( isAuthenticated && accessToken ) {
+
+				// Set flag
+				this.userLoggedIn = true;
+
+				// Parse the access token
+				let parsedToken = this.oidcService.parseAccessToken(accessToken);
+
+				if ( this.settingsService.enableConsoleLogs ) {
+					console.log('Parsed access token:');
+					console.log(parsedToken);
+				}
+
+				// Get all client roles
+				let clientRoles = this.oidcService.getClientRolesFromAccessToken(parsedToken);
+
+				if ( clientRoles.length === 0 ) {
+					console.warn('There was a problem fetching client roles. Check the client or realm config.');
+				}
+
+				// Check if the user is admin and set state
+				if ( clientRoles.includes(OidcService.METADATA_ANNOTATION_ADMIN_ROLE) ) {
+					this.oidcService.setAdminState(true);
+				} else {
+					this.oidcService.setAdminState(false);
+				}
+
+				// If the user is logged in and the route is / the user needs to be redirected to /user/metadata-resources
+				this.router.events.subscribe((event: Event) => {
+
+					if (event instanceof NavigationEnd) {
+						if ( event.url === '/' ) {
+							this.router.navigate(['/user/metadata-resources']);
+						}
+					}
+				});
+			}
+		});
+
+		this.publicEventsService
+			.registerForEvents()
+			.pipe(filter((notification) => notification.type === EventTypes.CheckSessionReceived))
+			.subscribe((value) => {if ( this.settingsService.enableConsoleLogs ) {console.log('CheckSessionReceived with value from app', value)}});
 	}
 
 
@@ -109,7 +164,7 @@ export class AppComponent implements OnInit, OnDestroy {
 	 * ngOnDestroy
 	 */
 	ngOnDestroy(): void {
-		this.ngUnsubscribe.next();
+		this.ngUnsubscribe.next(null);
 		this.ngUnsubscribe.complete();
 	}
 

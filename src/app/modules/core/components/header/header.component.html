@@ -20,9 +20,6 @@
 						</button>
 					</div>
 					<div class="header-user-icon-menu-wrap" [ngClass]="{'show' : showUserMenu}">
-						<!-- <div class="header-user-icon-info" *ngIf="userInformation && userInformation.firstName && userInformation.lastName">
-							Logged in as: {{ userInformation.firstName }} {{ userInformation.lastName }}
-						</div> -->
 						<ul class="header-user-icon-menu">
 							<li *ngIf="!userIsLoggedIn">
 								<a href (click)="onClickLogin($event)">Login</a>
@@ -33,7 +30,7 @@
 							<li *ngIf="userIsLoggedIn">
 								<a routerLink="user/metadata-resources" (click)="closeUserMenu()">Metadata resources</a>
 							</li>
-							<li *ngIf="userIsLoggedIn && ( keycloakService.isUserAdmin$ | async )">
+							<li *ngIf="userIsLoggedIn && ( oidcService.isUserAdmin$ | async )">
 								<a routerLink="administration" (click)="closeUserMenu()">Administration</a>
 							</li>
 							<li *ngIf="userIsLoggedIn">

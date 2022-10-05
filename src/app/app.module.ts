@@ -1,9 +1,8 @@
+import { AuthConfigDevModule } from './auth-config-dev.module';
 import { SharedModule } from './modules/shared/shared.module';
 import { LoadingScreenComponent } from './modules/shared/components/loading-screen/loading-screen.component';
-import { KeycloakProfile } from 'keycloak-js';
-import { KeycloakService } from './modules/core/services/keycloak.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -21,38 +20,10 @@ import { LoadingInterceptor } from './modules/core/interceptors/loading.intercep
 import { LoadingService } from './modules/core/services/loading.service';
 import { FormsModule } from '@angular/forms';
 import { DirectivesModule } from './modules/shared/directives/directives.module';
-import { KeycloakAngularModule } from 'keycloak-angular';
 import { PlatformModule } from '@angular/cdk/platform';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { AuthConfigModule } from './auth-config.module';
 
-
-
-/**
- * initializeKeycloak
- *
- * Initializes the keycloak functionality (also connects to keycloak service)
- *
- * @param keycloak
- * @param loadingService
- * @returns
- */
- function initializeKeycloak(keycloak: KeycloakService, loadingService: LoadingService): () => Promise<void> {
-	return KeycloakService.initializeKeycloak(keycloak, loadingService);
-}
-
-
-/**
- * initializeKeycloakDev
- *
- * DEV VERSION: Initializes the keycloak functionality (also connects to keycloak service)
- *
- * @param keycloak
- * @param loadingService
- * @returns
- */
-function initializeKeycloakDev(keycloak: KeycloakService, loadingService: LoadingService): () => Promise<void> {
-	return KeycloakService.initializeKeycloak(keycloak, loadingService, true);
-}
 
 @NgModule({
 	declarations: [
@@ -71,10 +42,11 @@ function initializeKeycloakDev(keycloak: KeycloakService, loadingService: Loadin
 		MatIconModule,
 		MatProgressSpinnerModule,
 		DirectivesModule,
-		KeycloakAngularModule,
 		MatTableModule,
 		PlatformModule,
-		SharedModule
+		SharedModule,
+		AuthConfigModule,
+		// AuthConfigDevModule,
 	],
 	providers: [
 		DataTransferService,
@@ -84,12 +56,6 @@ function initializeKeycloakDev(keycloak: KeycloakService, loadingService: Loadin
 			provide: HTTP_INTERCEPTORS,
 			useClass: LoadingInterceptor,
 			multi: true,
-		},
-		{
-			provide: APP_INITIALIZER,
-			useFactory: initializeKeycloakDev,
-			multi: true,
-			deps: [KeycloakService],
 		},
 		{
 			provide: LocationStrategy,
