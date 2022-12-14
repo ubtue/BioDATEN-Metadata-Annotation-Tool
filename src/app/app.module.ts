@@ -45,8 +45,8 @@ import { AuthConfigModule } from './auth-config.module';
 		MatTableModule,
 		PlatformModule,
 		SharedModule,
-		// AuthConfigModule,
-		AuthConfigDevModule,
+		AuthConfigModule,
+		// AuthConfigDevModule,
 	],
 	providers: [
 		DataTransferService,
