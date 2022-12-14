@@ -5,7 +5,6 @@ import { AdministrationAutocompleteComponent } from './components/administration
 import { AdministrationComponent } from './components/administration/administration.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from '../core/authguard/authguard.authgard';
 import { AdministrationSchemasComponent } from './components/administration-schemas/administration-schemas.component';
 import { AdministrationRenderOptionsComponent } from './components/administration-render-options/administration-render-options.component';
 
@@ -25,7 +24,6 @@ const routes: Routes = [
 
 @NgModule({
 	imports: [RouterModule.forChild(routes)],
-	exports: [RouterModule],
-	providers: [AuthGuard]
+	exports: [RouterModule]
 })
 export class AdministrationRoutingModule { }

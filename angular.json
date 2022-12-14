@@ -56,7 +56,9 @@
 									"with": "src/environments/environment.prod.ts"
 								}
 							],
-							"outputHashing": "all"
+							"outputHashing": "all",
+							"baseHref": "/metadata-annotation/",
+							"deployUrl": "/metadata-annotation/"
 						},
 						"development": {
 							"buildOptimizer": false,
@@ -64,7 +66,9 @@
 							"vendorChunk": true,
 							"extractLicenses": false,
 							"sourceMap": true,
-							"namedChunks": true
+							"namedChunks": true,
+							"baseHref": "/metadata-annotation/",
+							"deployUrl": "/metadata-annotation/"
 						}
 					},
 					"defaultConfiguration": "production"
@@ -73,10 +77,12 @@
 					"builder": "@angular-devkit/build-angular:dev-server",
 					"configurations": {
 						"production": {
-							"browserTarget": "metadata-annotation:build:production"
+							"browserTarget": "metadata-annotation:build:production",
+							"servePath": "/metadata-annotation/"
 						},
 						"development": {
-							"browserTarget": "metadata-annotation:build:development"
+							"browserTarget": "metadata-annotation:build:development",
+							"servePath": "/metadata-annotation/"
 						}
 					},
 					"defaultConfiguration": "development"

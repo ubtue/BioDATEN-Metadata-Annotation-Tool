@@ -17,7 +17,6 @@ import { HelperService } from '../../../shared/services/helper.service';
 import { HtmlHelperService } from '../../../shared/services/html-helper.service';
 import { AutocompleteService } from '../../../shared/services/autocomplete.service';
 import { SettingsService } from 'src/app/modules/shared/services/settings.service';
-import { KeycloakService } from 'src/app/modules/core/services/keycloak.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DependencyService } from 'src/app/modules/shared/services/dependency.service';
 
