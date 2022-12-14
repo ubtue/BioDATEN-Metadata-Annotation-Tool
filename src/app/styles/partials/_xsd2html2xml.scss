@@ -196,80 +196,84 @@
 	/* FLEX */
 	.metadata-form-flex-layout & {
 
-		@include respond-above(xxl) {
+		fieldset:not([data-xsd2html2xml-xpath="/cmdp:BiodatenMinimal"]) {
+			@include respond-above(xxl) {
 
-			fieldset {
-				display: flex;
-				flex-wrap: wrap;
+				fieldset {
+					display: flex;
+					flex-wrap: wrap;
 
-				&[data-input-section-even-odd="even"] {
+					&[data-input-section-even-odd="even"] {
 
-					> section.input-section {
+						> section.input-section {
 
-						&:last-child,
-						&:nth-last-child(2) {
-							margin-bottom: 0;
-						}
-					}
-				}
-
-				&[data-input-section-even-odd="odd"] {
-
-					> section.input-section {
-
-						&:last-child {
-							margin-bottom: 0;
-						}
-					}
-				}
-
-				div.break {
-					flex-basis: 100%;
-				}
-
-				> legend {
-					flex: 100%;
-				}
-
-				> label {
-					flex: 50%;
-
-					&.stretch {
-						flex: 100%;
-					}
-				}
-
-				> section {
-
-					flex: 100%;
-
-					&.input-section {
-						flex: 50%;
-
-						justify-content: flex-end;
-
-						&.odd {
-							padding-right: 26px;
-						}
-
-						&.even {
-
-							.autocomplete-popout-description-wrap {
-								width: 200px;
-
-								@include respond-above(xxxl) {
-									width: 260px;
-								}
-
-								@include respond-above(xxxxl) {
-									width: 300px;
-								}
+							&:last-child,
+							&:nth-last-child(2) {
+								margin-bottom: 0;
 							}
 						}
 					}
 
+					&[data-input-section-even-odd="odd"] {
+
+						> section.input-section {
+
+							&:last-child {
+								margin-bottom: 0;
+							}
+						}
+					}
+
+					div.break {
+						flex-basis: 100%;
+					}
+
+					> legend {
+						flex: 100%;
+					}
+
+					> label {
+						flex: 50%;
+
+						&.stretch {
+							flex: 100%;
+						}
+					}
+
+					> section {
+
+						flex: 100%;
+
+						&.input-section {
+							flex: 50%;
+
+							justify-content: flex-end;
+
+							&.odd {
+								padding-right: 26px;
+							}
+
+							&.even {
+
+								.autocomplete-popout-description-wrap {
+									width: 200px;
+
+									@include respond-above(xxxl) {
+										width: 260px;
+									}
+
+									@include respond-above(xxxxl) {
+										width: 300px;
+									}
+								}
+							}
+						}
+
+					}
 				}
 			}
 		}
+
+
 	}
 }

@@ -98,6 +98,39 @@
 	}
 }
 
+
+/* As a backup loading animation for browsers that don't support @property, use a spinning circle */
+$offset: 187;
+$duration: 1.4s;
+
+@keyframes rotator {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(270deg); }
+}
+
+@keyframes colors {
+	0% { stroke:$biodatenRed; }
+	// 25% { stroke: #DE3E35; }
+	50% { stroke: $biodatenGrey; }
+	// 75% { stroke: #1B9A59; }
+	100% { stroke: $biodatenYellow; }
+}
+
+@keyframes dash {
+	0% {
+		stroke-dashoffset: $offset;
+	}
+	50% {
+		stroke-dashoffset: $offset/4;
+		transform:rotate(135deg);
+	}
+	100% {
+		stroke-dashoffset: $offset;
+		transform:rotate(450deg);
+	}
+}
+
+
 .loader-wrap {
 
 	display: block;
@@ -147,6 +180,19 @@
 		// Browsers that support @property will hide this container
 		.backup-loader {
 			display: var(--hide);
+
+			.spinner {
+				animation: rotator $duration linear infinite;
+			}
+
+			.path {
+				stroke-dasharray: $offset;
+				stroke-dashoffset: 0;
+				transform-origin: center;
+				animation:
+					dash $duration ease-in-out infinite,
+					colors ($duration*4) ease-in-out infinite;
+			}
 		}
 
 		.logo {
@@ -159,7 +205,5 @@
 				max-width: 1400px;
 			}
 		}
-
 	}
-
 }

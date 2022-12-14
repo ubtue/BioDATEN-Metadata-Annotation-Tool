@@ -10,8 +10,8 @@ export class SettingsService {
 	*******************************************************************/
 
 	// Backend server address
-	private _backendServerAddress: string = 'https://193.196.29.32/metadata/';
-	// private _backendServerAddress: string = 'http://localhost:8080/metadata/';
+	// private _backendServerAddress: string = 'https://193.196.29.32/metadata/';
+	private _backendServerAddress: string = 'http://localhost:8080/metadata/';
 
 	// Enable console logs
 	private _enableConsoleLogs: boolean = false;

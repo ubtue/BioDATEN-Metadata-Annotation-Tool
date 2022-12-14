@@ -1,3 +1,4 @@
+import { AutoincrementService } from './../../../shared/services/autoincrement.service';
 import { OidcService } from './../../../core/services/oidc.service';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { RenderHelperService } from './../../../shared/services/render-helper.service';
@@ -70,7 +71,8 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				private route: ActivatedRoute,
 				private userResourceService: UserResourceService,
 				private renderHelperService: RenderHelperService,
-				private dependencyService: DependencyService) {
+				private dependencyService: DependencyService,
+				private autoincrementService: AutoincrementService) {
 
 					// Get the server address
 					this.serverAddress = this.settingsService.backendServerAddress;
@@ -652,6 +654,9 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 
 						// Apply the dependencies
 						this.dependencyService.applyDependencies();
+
+						// Handle the autoincrement
+						this.autoincrementService.handleAutoincrement();
 
 						// Update the navigation
 						this.updateNavigationService.updateCurrentView("Metadata for resource:", resourceId);

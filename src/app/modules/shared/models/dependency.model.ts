@@ -1,5 +1,5 @@
 export interface Dependency {
-	sourceElementName: string;
+	sourceElement: HTMLLabelElement | null;
 	sourceOption: string;
 	targetElementName: string;
 }

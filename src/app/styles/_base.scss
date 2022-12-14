@@ -15,7 +15,9 @@ body {
     padding: 0;
 	height: 100%;
 
-	[hidden] {
+	[hidden],
+	[dependency-hidden],
+	[sub-dependency-hidden] {
 		// display: none !important;
 		visibility: hidden !important;
      	height: 0 !important;

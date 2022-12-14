@@ -170,6 +170,10 @@ window['xsd2html2xml']["<<REPLACE>>"].clickRemoveButton = function (button) {
 			.length > 0
 	)
 	window['xsd2html2xml']["<<REPLACE>>"].updateIdentifiers(button);
+
+	/* CHANGE JK: Fire an event after the new element was removed */
+	const removeEvent = new Event('xsd2html2xml-remove-button');
+	window.dispatchEvent(removeEvent);
 };
 
 window['xsd2html2xml']["<<REPLACE>>"].clickRadioInput = function (input, name) {
@@ -811,6 +815,11 @@ window['xsd2html2xml']["<<REPLACE>>"].setValues = function () {
 					.concat(o.getAttribute("value").substring(1));
 			}
 		});
+
+
+	/* CHANGE JK: Fire an event after the new element was created */
+	const valuesSetEvent = new Event('xsd2html2xml-values-set');
+	window.dispatchEvent(valuesSetEvent);
 };
 
 /* XML GENERATORS */
