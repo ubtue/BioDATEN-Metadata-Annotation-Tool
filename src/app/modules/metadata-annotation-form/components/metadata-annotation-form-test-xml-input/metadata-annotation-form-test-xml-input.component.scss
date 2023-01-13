@@ -116,9 +116,13 @@
 
 				@include respond-above(lg) {
 					display: flex;
-					justify-content: space-evenly;
+					// justify-content: space-evenly;
+					// margin-top: 20px;
 
-					margin-top: 20px;
+					justify-content: flex-start;
+					padding: 24px 0;
+					margin: 20px;
+					border-top: 1px solid;
 				}
 
 			}

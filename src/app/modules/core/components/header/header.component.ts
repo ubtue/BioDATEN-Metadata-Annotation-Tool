@@ -111,7 +111,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	 */
 	onClickLogout(event: Event): void {
 		event.preventDefault();
-		this.oidcSecurityService.logoff();
+		this.oidcSecurityService.logoff().subscribe(() => {});
 	}
 
 
