@@ -1,3 +1,10 @@
+import { FormValidationService } from './../../../shared/services/form-validation.service';
+import { AutoincrementService } from './../../../shared/services/autoincrement.service';
+import { OidcService } from './../../../core/services/oidc.service';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { RenderHelperService } from './../../../shared/services/render-helper.service';
+import { UserResourceService } from './../../../shared/services/user-data.service';
+import { MetadataAnnotationFormHelperService } from './../../services/metadata-annotation-form-helper.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import { DataTransferService } from '../../../core/services/data-transfer.service';
@@ -6,7 +13,15 @@ import { MetadataServerResponse } from 'src/app/modules/shared/models/metadata-s
 import { MetadataCreatedTab } from './../../../shared/models/metadata-created-tab.model';
 import { LoadingService } from '../../../core/services/loading.service';
 import { UpdateNavigationService } from '../../../core/services/update-navigation.service';
-import { MetadataCreatedTabContent } from '../../../shared/models/metadata-created-tab-content.model';
+import { MetadataCreatedTabContent } from 'src/app/modules/shared/models/metadata-created-tab-content.model';
+import { HelperService } from '../../../shared/services/helper.service';
+import { HtmlHelperService } from '../../../shared/services/html-helper.service';
+import { AutocompleteService } from '../../../shared/services/autocomplete.service';
+import { SettingsService } from 'src/app/modules/shared/services/settings.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DependencyService } from 'src/app/modules/shared/services/dependency.service';
+import { MetadataStatus } from 'src/app/modules/shared/models/metadata-status.model';
+
 
 @Component({
 	selector: 'app-metadata-annotation-form',
@@ -16,12 +31,24 @@ import { MetadataCreatedTabContent } from '../../../shared/models/metadata-creat
 
 export class MetadataAnnotationFormComponent implements OnInit {
 
-	serverAddress: string = 'http://localhost:8080/xsd';
+	serverAddress: string = '';
+	serverAdressXMLInput: string = this.settingsService.metadataAnnotationFormServerAddress + 'xml-input/';
+
+	serverAdressXMLAddress: string = this.settingsService.metadataAnnotationFormServerAddress + 'xml-system/';
+	serverAdressXMLAddressWithMetsId: string = this.settingsService.metadataAnnotationFormServerAddress + 'xml/';
 
 	currentTab: string = '';
 	saveEnabled: boolean = false;
 
+	toggleAutoComplete: boolean = true;
+
 	createdTabs: MetadataCreatedTab[] = [];
+
+	onInputTimeout: any = null;
+
+	hideSettings: boolean = false;
+
+	currentStatus: string = '';
 
 	@ViewChild('templateTab') templateTab!: ElementRef;
 	@ViewChild('templateTabContent') templateTabContent!: ElementRef;
@@ -29,14 +56,46 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	@ViewChild('inputFilesTemplate') inputFilesTemplate!: ElementRef;
 	@ViewChild('inputFilesXML') inputFilesXML!: ElementRef;
 
-	constructor(private dataTransferService: DataTransferService,
-				private updateNavigationService: UpdateNavigationService,
-				public loadingService: LoadingService) {}
 
+	/**
+	 * constructor
+	 */
+	constructor(private settingsService: SettingsService,
+				private dataTransferService: DataTransferService,
+				private updateNavigationService: UpdateNavigationService,
+				public loadingService: LoadingService,
+				private helperService: HelperService,
+				private metadataAnnotationFormHelperService: MetadataAnnotationFormHelperService,
+				private htmlHelperService: HtmlHelperService,
+				private autocompleteService: AutocompleteService,
+				public oidcSecurityService: OidcSecurityService,
+				private oidcService: OidcService,
+				private router: Router,
+				private route: ActivatedRoute,
+				private userResourceService: UserResourceService,
+				private renderHelperService: RenderHelperService,
+				private dependencyService: DependencyService,
+				private autoincrementService: AutoincrementService,
+				private formValidationService: FormValidationService) {
+
+					// Get the server address
+					this.serverAddress = this.settingsService.backendServerAddress;
+				}
+
+
+	/**
+	 * ngOnInit
+	 */
 	ngOnInit(): void {
 		this.currentTab = 'settings';
 
-		this.updateNavigationService.updateCurrentView("Metadata for resource:", "LIVE");
+		this.updateNavigationService.updateCurrentView("Metadata for resource:", "");
+
+		// Check if there is an id as a GET param -> send to handler
+		if (this.route.snapshot.queryParamMap.get("id") !== null ) {
+			this.hideSettings = true;
+			this.handleGetResourceId(this.route.snapshot.queryParamMap.get("id"));
+		}
 	}
 
 
@@ -53,8 +112,16 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 * onClickTest
 	 */
 	onClickTest(): void {
-		this.addTab("datacite", "Datacite", true);
-		this.addTab("premis", "Premis", true);
+		this.dataTransferService.getData(this.settingsService.autocompleteSchemasServerAddress).then(
+			(result: any) => {
+				console.log(result);
+			}
+		);
+	}
+
+
+	onClickValidate(): void {
+		this.formValidationService.validate();
 	}
 
 
@@ -72,20 +139,23 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 */
 	onClickSave():void {
 
-		if ( document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml') ) {
-
-			let schemaFilename = document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] span[data-schema-file]')?.getAttribute('data-schema-file') as string;
-
-			console.log((window as any)['xsd2html2xml'][schemaFilename].htmlToXML(document.querySelector('div.tabcontent[data-tab="' + this.currentTab + '"] form.xsd2html2xml')));
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('Saving the data...');
 		}
 
-
+		this.saveXMLData();
 	}
 
 	/**
 	 * onClickReset
 	 */
 	onClickReset(): void {
+		// this.router.navigate(["annotation/test-xml-input"]).then(
+		// 	() => {
+		// 		window.location.reload();
+		// 	}
+		// );
+
 		window.location.reload();
 	}
 
@@ -95,21 +165,7 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 * @param input
 	 */
 	onChangeFileInput(input: HTMLInputElement) {
-		this.setCustomFileTitle(input);
-	}
-
-	/**
-	 * onSubmitSingleFile
-	 */
-	onSubmitSingleFile(): void {
-
-		let fileTemplate = this.inputFilesTemplate.nativeElement
-			.files[0] as File;
-
-		let fileXML = this.inputFilesXML.nativeElement.files[0] as File;
-
-		this.loadSingleSchemaByFile(fileTemplate, fileXML);
-
+		this.htmlHelperService.setCustomFileTitle(input);
 	}
 
 
@@ -118,16 +174,39 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 */
 	onSubmitMultipleFiles(): void {
 
-		let filesTemplate = this.inputFilesTemplate.nativeElement.files as FileList;
-
 		let filesXML = this.inputFilesXML.nativeElement.files as FileList;
 
-		if ( filesTemplate.length > 0 ) {
-			this.loadMultipleSchemas(filesTemplate, filesXML);
+		if ( filesXML.length > 0 ) {
+			this.loadSchemas(filesXML);
 		} else {
-			alert('At least one template file (xsd) needs to be selected.');
+			alert('At least one XML file needs to be selected.');
 		}
+	}
 
+	/**
+	 * onSubmitMultipleTemplates
+	 */
+	onSubmitMultipleTemplates(): void {
+
+		let templateFiles = this.inputFilesTemplate.nativeElement.files as FileList;
+
+		if ( templateFiles.length > 0 ) {
+			this.loadMultipleSchemas(templateFiles);
+		} else {
+			alert('At least one template file needs to be selected');
+		}
+	}
+
+
+	/**
+	 * onClickResourceLink
+	 * @param event
+	 */
+	onClickResourceLink(event: Event): void {
+
+		event.preventDefault();
+
+		this.getDataByResourceId("22586-5596337946-21147");
 
 	}
 
@@ -153,10 +232,7 @@ export class MetadataAnnotationFormComponent implements OnInit {
 		// Get all elements with class="tablinks" and remove the class "active"
 		tablinks = document.getElementsByClassName('tablink');
 		for (i = 0; i < tablinks.length; i++) {
-			tablinks[i].className = tablinks[i].className.replace(
-				' active',
-				''
-			);
+			tablinks[i].classList.remove('active');
 		}
 
 		// Show the current tab, and add an "active" class to the button that opened the tab
@@ -184,7 +260,10 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 * @param addTabContent
 	 */
 	private addTab(tabName: string, tabNameDisplay: string, addTabContent?: boolean): MetadataCreatedTab {
-		console.log('creating tab "' + tabNameDisplay + '" with internal name "' + tabName + '"');
+
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('creating tab "' + tabNameDisplay + '" with internal name "' + tabName + '"');
+		}
 
 		// Clone the template tab and add/remove specific properties
 		let clonedTab = this.templateTab.nativeElement.cloneNode(true) as HTMLElement;
@@ -231,7 +310,10 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 * @returns
 	 */
 	private addTabContent(tabName: string, returnElement?: boolean): HTMLElement | void {
-		console.log('creating tab content for "' + tabName + '"');
+
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('creating tab content for "' + tabName + '"');
+		}
 
 		// Clone the template tab content and add/remove specific properties
 		let clonedTabContent = this.templateTabContent.nativeElement.cloneNode(true) as HTMLElement;
@@ -250,6 +332,47 @@ export class MetadataAnnotationFormComponent implements OnInit {
 
 
 	/**
+	 * selectFirstTab
+	 *
+	 * Selects first tab (DOM hierarchy)
+	 */
+	private selectFirstTab(): void {
+
+		if ( this.createdTabs.length > 0 ) {
+			let firstTab = document.querySelector('.metadata-annotation-form-menu button[data-tab="' + this.createdTabs[0].tabName + '"]') as HTMLElement;
+			firstTab.click();
+		}
+	}
+
+
+	/**
+	 * scrollToInput
+	 *
+	 * Scrolls to an specific input field
+	 *
+	 * @param inputElement
+	 */
+	private scrollToInput(inputElement: HTMLElement): void {
+
+		// Get the tab name
+		let tabName = inputElement.closest('div[data-tab]')?.getAttribute('data-tab') as string;
+
+		// Activate the tab
+		this.activateTab(tabName);
+
+		// Scroll to the inputElement
+		// Check if the function 'scrollIntoViewIfNeeded' is available
+		// @ts-ignore: Browser specific (Not all browsers support the function scrollIntoViewIfNeeded)
+		if ( typeof inputElement.scrollIntoViewIfNeeded !== 'undefined' && typeof inputElement.scrollIntoViewIfNeeded === 'function' ) {
+			// @ts-ignore: Browser specific (Not all browsers support the function scrollIntoViewIfNeeded)
+			inputElement.scrollIntoViewIfNeeded();
+		} else {
+			inputElement.scrollIntoView();
+		}
+	}
+
+
+	/**
 	 * updateSaveButton
 	 *
 	 * Checks if the save button should be enabled
@@ -261,7 +384,43 @@ export class MetadataAnnotationFormComponent implements OnInit {
 		} else {
 			this.saveEnabled = false;
 		}
+	}
 
+
+	/**
+	 * loadSchemas
+	 *
+	 * Loads all schemas present in the given XML
+	 *
+	 * @param filesXML
+	 */
+	private loadSchemas(filesXML: FileList): void {
+
+		let formDatas = this.helperService.fileListsToFormDataXML(filesXML);
+
+		let postRequest: MetadataPostRequest;
+
+		// Take the first and only entry in formData and make the post request
+		if ( formDatas.length > 0 ) {
+			postRequest = (new MetadataPostRequest(this.serverAdressXMLInput, formDatas[0]));
+
+			// Send the post requests
+			this.dataTransferService.postData(postRequest.url, postRequest.body).then(
+				(results: any) => {
+
+					// Create the tabs for all schemas
+					this.createTabsForAllSchemas(results);
+
+					// Load the JS for all schemas
+					this.loadJSForAllSchemas(results).then(
+						() => {
+							this.activateAutocomplete(this.createdTabs);
+							this.metadataAnnotationFormHelperService.replaceOntologyIdentifiers();
+						}
+					);
+				}
+			);
+		}
 	}
 
 	/**
@@ -333,15 +492,17 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 * @param filesTemplate
 	 * @param filesXML
 	 */
-	private loadMultipleSchemas(filesTemplate: FileList, filesXML: FileList): void {
+	private loadMultipleSchemas(filesTemplate: FileList, filesXML?: FileList): void {
 
-		console.log('loading schemas:');
-		console.log(filesTemplate);
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log('loading schemas:');
+			console.log(filesTemplate);
 
-		console.log('adding content from files:');
-		console.log(filesXML);
+			console.log('adding content from files:');
+			console.log(filesXML);
+		}
 
-		let formDatas = this.fileListsToFormData(filesTemplate, filesXML);
+		let formDatas = this.helperService.fileListsToFormDataTemplate(filesTemplate, filesXML);
 
 		let postRequests: MetadataPostRequest[] = [];
 
@@ -354,46 +515,15 @@ export class MetadataAnnotationFormComponent implements OnInit {
 		this.dataTransferService.postDataMultiple(postRequests).then(
 			(results: MetadataServerResponse[]) => {
 
-				// Loop through each result and add the content to the page
-				results.forEach((result: MetadataServerResponse) => {
+				// Create the tabs for all schemas
+				this.createTabsForAllSchemas(results);
 
-					let createdTab = this.addTab(
-						this.removeFileExtension(result.schema),
-						this.mapTabNames(
-							this.removeFileExtension(result.schema)
-						),
-						true
-					);
-
-					let createdTabContent = createdTab.tabContent?.contentElement;
-
-					// If there is a content element, display the result html there
-					if ( createdTabContent ) {
-						createdTabContent.innerHTML = result.html;
-						this.removeDoubleLegends(createdTabContent);
+				// Load the JS for all schemas
+				this.loadJSForAllSchemas(results).then(
+					() => {
+						this.activateAutocomplete(this.createdTabs);
+						this.metadataAnnotationFormHelperService.replaceOntologyIdentifiers();
 					}
-
-				});
-
-
-				// Load the jsfile an execute the code
-				this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
-					((resultFile: any) => {
-
-						results.forEach((result: MetadataServerResponse) => {
-
-							let changedResultFile = resultFile.replaceAll('<<REPLACE>>', result.schema);
-							eval(changedResultFile);
-
-							// Dispatch the custom event to trigger the code
-							const event = new Event('load' + result.schema);
-							window.dispatchEvent(event);
-						});
-
-						// Update the save button state
-						this.updateSaveButton();
-
-					})
 				);
 			}
 		);
@@ -411,11 +541,14 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	private loadSingleSchemaByFile(fileTemplate: File, fileXML?: File): void {
 
 		if (fileTemplate) {
-			console.log(
-				'Parsing data at server for template file "' +
-					fileTemplate.name +
-					'"...'
-			);
+
+			if ( this.settingsService.enableConsoleLogs ) {
+				console.log(
+					'Parsing data at server for template file "' +
+						fileTemplate.name +
+						'"...'
+				);
+			}
 
 			const formData: FormData = new FormData();
 			formData.append('file', fileTemplate, fileTemplate.name);
@@ -430,24 +563,27 @@ export class MetadataAnnotationFormComponent implements OnInit {
 
 			// Send the files to the server for parsing
 			this.dataTransferService
-				.postData('http://localhost:8080/xsdnojs', formData)
+				.postData('http://193.196.20.98/xsdnojs', formData)
 				.then((result: any) => {
-					console.log('Parsing complete!');
+
+					if ( this.settingsService.enableConsoleLogs ) {
+						console.log('Parsing complete!');
+					}
 
 					let currentTabContent: any | null = document.querySelector(
 						'div.tabcontent[data-tab="custom"]'
 					);
 
-					currentTabContent.innerHTML = this.customizeHTML(result['html']);
+					currentTabContent.innerHTML = this.htmlHelperService.removeFormValidation(result['html']);
 
 					// load the jsfile an execute the code
 					this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
 						((resultFile: any) => {
 
-							resultFile = resultFile.replaceAll('<<REPLACE>>','custom');
+							resultFile = resultFile.replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(fileTemplate.name));
 							eval(resultFile);
 
-							const event = new Event('ubtuejk');
+							const event = new Event('load' + this.helperService.removeFileExtension(fileTemplate.name));
 							window.dispatchEvent(event);
 
 							// update the save button state
@@ -463,203 +599,366 @@ export class MetadataAnnotationFormComponent implements OnInit {
 
 
 	/**
-	 * setCustomFileTitle
+	 * handleGetResourceId
 	 *
-	 * Sets the title of the custom file input label to the filename
+	 * Handler for the resource ID
 	 *
-	 * @param input
+	 * @param resourceId
 	 */
-	private setCustomFileTitle(input: HTMLInputElement) {
+	private handleGetResourceId(resourceId: string | null): void {
 
-		// Get the parent label and check if it exists
-		let parentLabel = input.closest('label.custom-file-input');
+		if ( resourceId !== null ) {
 
-		if ( parentLabel ) {
+			// Check if the passed resource ID is correct
+			if ( this.evaluateResourceId(resourceId) ) {
 
-			// Search for the span with the title
-			let spanTitle = parentLabel.querySelector('.custom-file-input-title');
+				// Get the data for the passed resource ID
+				this.getDataByResourceId(resourceId);
 
-			if ( spanTitle ) {
+				// Update the status of the resource
+				this.updateResourceStatus(resourceId);
+			}
+		}
+	}
 
-				let fileNames = '';
 
-				// Loop through all selected files and get the filename
-				let files: FileList | null = input.files;
+	/**
+	 * evaluateResourceId
+	 *
+	 * Evaluates the resource ID.
+	 *
+	 * @param resourceId
+	 * @returns
+	 */
+	private evaluateResourceId(resourceId: string): boolean {
+		return true;
+	}
 
-				for ( let i = 0; i < files!.length; i ++ ) {
 
-					fileNames+= files![i].name;
+	/**
+	 * updateResourceStatus
+	 *
+	 * Updates the current status of the resource
+	 *
+	 * @param resourceId
+	 */
+	private updateResourceStatus(resourceId: string): void {
 
-					// Add a , if the file is not the last
-					if ( i !== ( files!.length -1 ) ) {
-						fileNames+= ', ';
+		// Get the current status of the resource
+		this.userResourceService.getUserResourceStatus(resourceId).then(
+			(currentStatus: MetadataStatus) => {
+
+				// Update the status
+				this.currentStatus = currentStatus.status;
+			}
+		)
+	}
+
+
+	/**
+	 * getDataByResourceId
+	 *
+	 * Gets metadata from server by the corresponding resource ID
+	 *
+	 * @param resourceId
+	 */
+	private getDataByResourceId(resourceId: string): void {
+
+		this.dataTransferService.getData(this.serverAdressXMLAddressWithMetsId + resourceId).then(
+			(results: MetadataServerResponse[]) => {
+
+				// Create the tabs for all schemas
+				this.createTabsForAllSchemas(results);
+
+				// Load the JS for all schemas
+				this.loadJSForAllSchemas(results).then(
+					() => {
+
+						// Add autocomplete functionality
+						this.activateAutocomplete(this.createdTabs);
+
+						// Replaces the ontology identifiers with the human readable value
+						this.metadataAnnotationFormHelperService.replaceOntologyIdentifiers();
+
+						// Apply the custom render options
+						this.renderHelperService.applyRenderOptions();
+
+						// Set all the placeholders
+						this.htmlHelperService.setPlaceholders();
+
+						// Apply the dependencies
+						this.dependencyService.applyDependencies();
+
+						// Handle the autoincrement
+						this.autoincrementService.handleAutoincrement();
+
+						// Update the navigation
+						this.updateNavigationService.updateCurrentView("Metadata for resource:", resourceId);
+
+						// Select the first tab
+						this.selectFirstTab();
 					}
-				}
-
-				spanTitle.innerHTML = fileNames;
+				);
 			}
-		}
+		)
 	}
 
 
 	/**
-	 * customizeHTML
+	 * createTabsForAllSchemas
 	 *
-	 * Modifies the html for better use
+	 * Creates the tabs and the content elements for all fetched schemas
 	 *
-	 * @param htmlString
-	 * @returns
+	 * @param results
 	 */
-	private customizeHTML(htmlString: string): string {
+	private createTabsForAllSchemas(results: MetadataServerResponse[]): void {
 
-		// Add novalidate to the form /*TODO*/
-		htmlString = htmlString.replace('<form', '<form novalidate');
-
-		return htmlString;
-	}
-
-
-	/**
-	 * removeFileExtension
-	 *
-	 * Returns the filename without the file extension
-	 *
-	 * @param filename
-	 * @returns
-	 */
-	private removeFileExtension(filename: string): string {
-		return filename.replace(/(.*)\.(.*?)$/, "$1");
-	}
-
-
-	/**
-	 * fileListsToFormData
-	 *
-	 * Converts the FileLists to FormDatas
-	 *
-	 * @param filesTemplate
-	 * @param filesXML
-	 * @returns
-	 */
-	private fileListsToFormData(filesTemplate: FileList, filesXML: FileList): FormData[] {
-
-		let formDatas: FormData[] = [];
-
-		// Loop through the template files and search for matching xml files
-		for ( let i = 0; i < filesTemplate.length; i++ ) {
-
-			let formData: FormData = new FormData();
-
-			let match = false;
-
-			let currentFilenameTemplate = this.removeFileExtension(filesTemplate.item(i)?.name as string);
-
-			// Add the template file to the formData
-			formData.append('file', filesTemplate.item(i) as File, filesTemplate.item(i)?.name);
-
-			for ( let j = 0; j < filesXML.length; j++ ) {
-
-				let currentFilenameXML = this.removeFileExtension(filesXML.item(j)?.name as string);
-
-				// If the template and xml match -> add XML to formData
-				if ( currentFilenameTemplate === currentFilenameXML ) {
-
-					formData.append('fileXML',  filesXML.item(j) as File,  filesXML.item(j)?.name);
-
-					match = true;
-
-					break;
-				}
-			}
-
-			// If there was no match -> no XML file in formData
-			if ( !match ) {
-				formData.append('fileXML', '');
-			}
-
-			formDatas.push(formData);
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log(results);
+			console.log(typeof results);
 		}
 
-		return formDatas;
+		// Loop through each result and add the content to the page
+		results.forEach((result: MetadataServerResponse) => {
+
+			let createdTab = this.addTab(
+				this.helperService.removeFileExtension(result.schema),
+				this.mapTabNames(
+					this.helperService.removeFileExtension(result.schema)
+				),
+				true
+			);
+
+			let createdTabContent = createdTab.tabContent?.contentElement;
+
+			// If there is a content element, display the result html there
+			if ( createdTabContent ) {
+
+				createdTabContent.innerHTML = result.html;
+
+				// If NOT in flex layout: Remove double legends
+				if ( this.settingsService.metadataAnnotationFormFlexLayout === false ) {
+					this.htmlHelperService.removeDoubleLegends(createdTabContent);
+				}
+
+				// In flex layout: Add sections around fieldsets without fieldsets
+				if ( this.settingsService.metadataAnnotationFormFlexLayout === true ) {
+					this.htmlHelperService.addSectionsInFieldset(createdTabContent);
+				}
+
+				// Mark the parent sections of inputs
+				this.htmlHelperService.markParentInputSections(createdTabContent);
+
+				// REMOVE: This is now handled in the administration
+				// Hide the unwanted sections
+				// this.htmlHelperService.hideUnwantedSections(createdTabContent);
+
+				// In flex layout: Add a count of the input-sections to the parent fieldset
+				if ( this.settingsService.metadataAnnotationFormFlexLayout === true ) {
+					this.htmlHelperService.addDataCountToFieldset(createdTabContent);
+				}
+			}
+
+		});
+	}
+
+	/**
+	 * loadJSForAllSchemas
+	 *
+	 * Loads the JS for all fetched schemas
+	 *
+	 * @param results
+	 */
+	private loadJSForAllSchemas(results: MetadataServerResponse[]): Promise<void> {
+
+		// Load the jsfile an execute the code
+		return this.dataTransferService.getData("assets/xsd2html2xml/js/xsd2html2xml-global.js?" + Date.now(), "text").then(
+			((resultFile: any) => {
+
+				results.forEach((result: MetadataServerResponse) => {
+
+					let changedResultFile = resultFile
+						.replaceAll('<<REPLACE_FULL>>', result.schema)
+						.replaceAll('<<REPLACE>>', this.helperService.removeFileExtension(result.schema));
+
+					eval(changedResultFile);
+
+					// Dispatch the custom event to trigger the code
+					const event = new Event('load' + this.helperService.removeFileExtension(result.schema));
+					window.dispatchEvent(event);
+				});
+
+				// Update the save button state
+				this.updateSaveButton();
+			})
+		);
 	}
 
 
 	/**
-	 * organizeFileLists
+	 * activateAutocomplete
 	 *
-	 * Iterates the FileLists and returns a organized array
-	 *
-	 * @param filesTemplate
-	 * @param filesXML
-	 * @returns
+	 * Activates the autocomplete for all content in desired tabs
 	 */
-	private organizeFileLists(filesTemplate: FileList, filesXML: FileList): any[] {
+	private activateAutocomplete(tabs: MetadataCreatedTab[]): void {
 
-		let files = [];
+		// Loop through all created tabs and bind a oninput function to the text inputs
+		tabs.forEach((tab: MetadataCreatedTab) => {
 
-		// Loop through the template files and search for matching xml files
-		for ( let i = 0; i < filesTemplate.length; i++ ) {
+			// Don't select inputs that already have the event bound
+			// (There elements hat the data-autocomplete-flag attribute)
+			let allTextInputs = tab.tabContent?.contentElement?.querySelectorAll('input[type="text"]:not([data-autocomplete-flag]), input[type="url"]:not([data-autocomplete-flag])') as NodeList;
 
-			let match = false;
+			if ( allTextInputs && allTextInputs.length > 0 ) {
 
-			let currentFilenameTemplate = this.removeFileExtension(filesTemplate.item(i)?.name as string);
+				// Bind the input event and call the function for autocomplete init
+				// and hand over the text input as an argument
+				allTextInputs.forEach((textInput: Node) => {
 
-			for ( let j = 0; j < filesXML.length; j++ ) {
+					let textInputElement = textInput as HTMLElement;
 
-				let currentFilenameXML = this.removeFileExtension(filesXML.item(j)?.name as string);
+					textInput.addEventListener(
+						'input',
+						(event) => {
+							this.autocompleteOnInput(event.target as HTMLInputElement)
+						},
+						false
+					);
 
-				// If the template and xml match -> save
-				if ( currentFilenameTemplate === currentFilenameXML ) {
-
-					files.push({
-						templateFile: filesTemplate.item(i),
-						xmlFile: filesXML.item(j)
-					});
-
-					match = true;
-
-					break;
-				}
-			}
-
-			// If there was no match, set xmlFile to null
-			if ( !match ) {
-
-				files.push({
-					templateFile: filesTemplate.item(i),
-					xmlFile: null
+					// Set a flag that autocomplete was init
+					textInputElement.setAttribute('data-autocomplete-flag', 'true');
 				});
 			}
-		}
 
-		return files;
+			// Make sure that the newly created nodes (via add buttons)
+			// also can use the autocomplete function.
+			// The problem here is that the function cloneNode does not clone event listeners.
+			// Don't select buttons that already have the event bound
+			// (There buttons hat the data-autocomplete-flag attribute)
+			let addButtons = tab.tabContent?.contentElement?.querySelectorAll('button.add:not([data-autocomplete-flag])');
+
+			addButtons?.forEach(addButton => {
+				addButton.addEventListener('click', () => {
+					this.activateAutocomplete(this.createdTabs);
+				});
+
+				// Set a flag that autocomplete was init
+				addButton.setAttribute('data-autocomplete-flag', 'true');
+			});
+
+
+		});
+
+		// Add the ontologies to the inputs
+		this.autocompleteService.addOntologiesToInputs();
 	}
 
 
 	/**
-	 * removeDoubleLegends
+	 * autocompleteOnInput
 	 *
-	 * Removes spans if the previous legend is the exact same text
+	 * Handles the inputs on a autocomplete element
 	 *
-	 * @param rootElement
+	 * @param event
 	 */
-	private removeDoubleLegends(rootElement: HTMLElement): void {
+	private autocompleteOnInput(input: HTMLInputElement): void {
 
-		let labelSpans = rootElement.querySelectorAll('label > span');
+		// If the autocomplete data for the element is not yet loaded
+		// use a timeout to make sure that the app waits at least 1.5 seconds
+		// for the code to execute so that there won't be too many requests if the user
+		// types a longer word
 
-		if ( labelSpans.length ) {
+		// if ( this.autocompleteService.checkIfAutocompleteNotInit(input) ||
+		// 	 this.autocompleteService.checkIfAutocompleteInitIsInProgress(input) ) {
 
-			labelSpans.forEach((labelSpan) => {
+		// 	if ( this.onInputTimeout !== null ) {
+		// 		clearTimeout(this.onInputTimeout);
+		// 		this.onInputTimeout = null;
+		// 	}
 
-				let parentLegend = labelSpan.closest('label')?.parentNode?.querySelector('legend');
+		// 	this.onInputTimeout = window.setTimeout(
+		// 		() => {
 
-				if ( parentLegend ) {
+		// 			// handle autocomplete for the input element
+		// 			this.autocompleteService.handleAutocomplete(input);
 
-					if ( parentLegend.innerHTML.includes(labelSpan.innerHTML) ) {
-						labelSpan.remove();
-					}
+		// 			// Set the variable back to null
+		// 			this.onInputTimeout = null;
+		// 		},
+		// 		1500
+		// 	);
+		// } else {
+
+		// 	// handle autocomplete for the input element
+		// 	this.autocompleteService.handleAutocomplete(input);
+		// }
+		if ( this.toggleAutoComplete ) {
+			this.autocompleteService.handleAutocomplete(input);
+		}
+
+
+	}
+
+
+	/**
+	 * saveXMLData
+	 *
+	 * Saves the XML data
+	 */
+	private saveXMLData(): void {
+
+		let invalidElement = this.formValidationService.checkIfAutocompleteIsValid();
+
+		// Check if the form is valid
+		if ( invalidElement === null ) {
+
+			// Create the XML Data
+			let xmlData = this.metadataAnnotationFormHelperService.createXMLData(this.createdTabs);
+
+			if ( xmlData ) {
+
+				// Add the XML structure to it
+				xmlData = this.helperService.addXMLStructure(xmlData);
+
+				if ( this.settingsService.enableConsoleLogs ) {
+					console.log(xmlData);
 				}
-			});
+
+				// Save the changes to the database
+				// Get resource id
+				let resourceId = this.route.snapshot.queryParamMap.get("id") as string;
+				if ( typeof resourceId !== 'undefined' && resourceId !== '' ) {
+
+					// Get User ID (only continue if user is logged in)
+					this.oidcSecurityService.userData$.subscribe(userData => {
+
+						let userId = this.oidcService.getUserIdFromUserData(userData);
+
+						if ( userId !== '' ) {
+							this.userResourceService.updateUserResource(resourceId, userId, xmlData).then(
+								() => {
+
+									// Update the status
+									this.updateResourceStatus(resourceId);
+								}
+							);
+						}
+				});
+
+					// REMOVE: OLD
+					// Get User ID (only continue if user is logged in)
+					/*if ( typeof this.keycloakService.userInformation.id !== 'undefined' && this.keycloakService.userInformation.id !== '' ) {
+						let userId = this.keycloakService.userInformation.id as string;
+
+						this.userResourceService.updateUserResource(resourceId, userId, xmlData);
+					}*/
+				}
+			}
+
+		} else {
+
+			// Scroll to the invalid input element
+			this.scrollToInput(invalidElement);
 		}
 	}
 
@@ -679,15 +978,15 @@ export class MetadataAnnotationFormComponent implements OnInit {
 		switch (tabName.toLowerCase()) {
 
 			case 'datacite':
-				result = 'Datacite';
+				result = 'Descriptive Metadata';
 				break;
 
 			case 'premis':
-				result = 'Premis';
+				result = 'File Metadata';
 				break;
 
 			case 'biodatenminimal':
-				result = 'BioDATEN Minimal';
+				result = 'Research Metadata';
 				break;
 
 			default:
@@ -704,6 +1003,9 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 * @param input
 	 */
 	debug(input: any): void {
-		console.log(input.closest('label').querySelector('span.custom-file-input-title'));
+
+		if ( this.settingsService.enableConsoleLogs ) {
+			console.log(input.closest('label').querySelector('span.custom-file-input-title'));
+		}
 	}
 }

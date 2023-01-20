@@ -3,9 +3,7 @@
 
 /* GENERAL */
 
-/* MENU */
-$menuWidth: 240px;
-$menuBackground: #f8f8f8;
+
 
 :host {
 	display: flex;
@@ -17,13 +15,49 @@ $menuBackground: #f8f8f8;
 	display: flex;
 	flex: 1;
 
-	.metadata-annotation-form-menu-wrap {
+	flex-direction: column;
 
-		flex: 0 0 $menuWidth;
+	position: relative;
+
+	@include respond-above(lg) {
+		flex-direction: row;
+	}
+
+	.metadata-annotation-form-menu-wrap {
 
 		background: $menuBackground;
 
-		border-right: 1px solid $borderGrey;
+		// position: absolute;
+		// top: 0;
+
+		// bottom: 0;
+		// max-height: 100vh;
+
+		// right: 100%;
+
+		// z-index: 1;
+
+		@include respond-below(lg) {
+			border-bottom: 1px solid $borderGrey;
+		}
+
+		@include respond-above(lg) {
+			// position: relative;
+			// top: auto;
+			// right: auto;
+			// bottom: auto;
+
+			// max-height: auto;
+
+			// z-index: auto;
+
+			flex: 0 0 $menuWidth;
+
+			width: $menuWidth;
+
+			border-right: 1px solid $borderGrey;
+		}
+
 
 		.metadata-annotation-form-menu {
 
@@ -34,16 +68,31 @@ $menuBackground: #f8f8f8;
 
 			.metadata-annotation-form-menu-schemas {
 				display: flex;
-				flex-direction: column;
+				flex-direction: row;
+
+				@include respond-above(lg) {
+					flex-direction: column;
+				}
 
 				.tablink {
 					background: none;
 					border: none;
-					text-align: left;
+					text-align: center;
 
-					padding: 24px 20px;
+					padding: 10px 6px;
 
 					cursor: pointer;
+
+					flex: 1 1 0px;
+
+					@include respond-above(md) {
+						padding: 24px 20px;
+					}
+
+					@include respond-above(lg) {
+						flex: auto;
+						text-align: left;
+					}
 
 					&.active {
 						background: $navigationGrey;
@@ -61,21 +110,70 @@ $menuBackground: #f8f8f8;
 				}
 			}
 
-			.metadata-annotation-form-menu-buttons {
-				display: flex;
-				justify-content: space-evenly;
+			.metadata-annotation-form-menu-status-and-buttons {
 
-				margin-top: 20px;
+				display: none;
+
+				@include respond-above(lg) {
+					display: flex;
+					flex-direction: column;
+					// justify-content: space-evenly;
+					// margin-top: 20px;
+
+					justify-content: flex-start;
+					padding: 24px 0;
+					margin: 20px;
+					border-top: 1px solid;
+				}
+
+				.metadata-annotation-form-menu-status {
+
+					@include addMarginBottom(large);
+				}
+
+				.metadata-annotation-form-menu-buttons {
+					display: flex;
+					flex-direction: row;
+					justify-content: flex-start;
+
+					button {
+						margin-left: 20px;
+
+						&:first-of-type {
+							margin-left: 0;
+						}
+					}
+				}
 			}
 
-			.metadata-annotation-form-menu-server-address {
-				margin-top: auto;
-				padding: 10px;
 
-				> span {
-					display: inline-block;
-					margin-bottom: 2px;
+			.metadata-annotation-form-menu-settings {
+
+				display: none;
+
+				// @include respond-above(lg) {
+				// 	display: block;
+				// 	margin-top: auto;
+				// 	padding: 10px;
+				// }
+
+				> div {
+
+					padding: 10px 0;
+
+					&.metadata-annotation-form-menu-autocomplete {
+						display: flex;
+						align-items: center;
+					}
+
+					> span,
+					> label {
+						display: inline-block;
+						margin-bottom: 2px;
+					}
 				}
+
+
 			}
 		}
 	}
@@ -84,7 +182,7 @@ $menuBackground: #f8f8f8;
 
 		flex: 1;
 
-		padding: 30px;
+		@include contentPadding();
 
 		.content-block {
 
@@ -97,6 +195,10 @@ $menuBackground: #f8f8f8;
 				}
 			}
 
+			.content-inner-block {
+				@include addMarginBottom(large);
+			}
+
 			form.parse-single-file {
 				input[type="file"] {
 					@include addMarginBottom();
@@ -105,6 +207,49 @@ $menuBackground: #f8f8f8;
 				div.form-submit {
 					margin-top: 20px;
 				}
+			}
+
+			.small-content-heading {
+				display: block;
+			}
+		}
+	}
+
+	.metadata-annotation-form-mobile-buttons-wrap {
+
+		@include contentPadding();
+		@include contentMargin();
+
+		margin-top: 0;
+
+		padding-left: 0;
+		padding-right: 0;
+		padding-bottom: 0;
+
+		position: relative;
+
+		text-align: right;
+
+		@include respond-above(lg) {
+			display: none;
+		}
+
+		&:before {
+			content: " ";
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 1px;
+			background: $borderGrey;
+		}
+
+		.menu-button {
+
+			margin-left: 10px;
+
+			&:first-of-type {
+				margin-left: 0;
 			}
 		}
 	}

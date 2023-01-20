@@ -1,3 +1,4 @@
+import { MetadataStatus } from './../models/metadata-status.model';
 import { HttpHeaders } from '@angular/common/http';
 import { MetadataUserResource } from './../models/metadata-user-resource.model';
 import { SettingsService } from 'src/app/modules/shared/services/settings.service';
@@ -36,7 +37,7 @@ export class UserResourceService {
 			(result: MetadataUserResourceServerResponse[]) => {
 				return result;
 			}
-		)
+		);
 	}
 
 
@@ -109,31 +110,7 @@ export class UserResourceService {
 								+ ('0' + date.getMinutes()).slice(-2);
 
 				// Status
-				let status = '';
-				let statusKey = '';
-
-				switch ( currentServerResource.metadata_status ) {
-
-					case 'created':
-						status = 'new';
-						statusKey = 'a_new';
-						break;
-
-					case 'progress':
-						status = 'In progress';
-						statusKey = 'k_progress';
-						break;
-
-					case 'finished':
-						status = 'Finished';
-						statusKey = 't_finished';
-						break;
-
-					case 'pub':
-						status = 'Published';
-						statusKey = 'z_pub';
-						break;
-				}
+				let metadataStatus = this.parseStatus(currentServerResource.metadata_status);
 
 				// Add new Resource to the result
 				let metadataUserResource = new MetadataUserResource(
@@ -141,8 +118,8 @@ export class UserResourceService {
 					currentServerResource.metsId,
 					'Example resource ' + position,
 					lastChange,
-					status,
-					statusKey
+					metadataStatus.status,
+					metadataStatus.statusKey
 				);
 
 				result.push(metadataUserResource);
@@ -153,6 +130,68 @@ export class UserResourceService {
 		}
 
 		return result;
+	}
+
+
+	/**
+	 * parseStatus
+	 *
+	 * Parses the metadata status string to a MetadataStatus object
+	 *
+	 * @param statusString
+	 * @returns
+	 */
+	parseStatus(statusString: string): MetadataStatus {
+
+		let metadataStatus: MetadataStatus = {
+			status: '',
+			statusKey: ''
+		};
+
+		switch ( statusString ) {
+
+			case 'created':
+				metadataStatus.status = 'new';
+				metadataStatus.statusKey = 'a_new';
+				break;
+
+			case 'progress':
+				metadataStatus.status = 'In progress';
+				metadataStatus.statusKey = 'k_progress';
+				break;
+
+			case 'finished':
+				metadataStatus.status = 'Finished';
+				metadataStatus.statusKey = 't_finished';
+				break;
+
+			case 'pub':
+				metadataStatus.status = 'Published';
+				metadataStatus.statusKey = 'z_pub';
+				break;
+		}
+
+		return metadataStatus;
+	}
+
+
+	/**
+	 * getUserResourceStatus
+	 *
+	 * Gets the current status of the user resource from the server
+	 *
+	 * @param metsId
+	 * @returns
+	 */
+	getUserResourceStatus(metsId: string): Promise<MetadataStatus> {
+
+		// Get the user resources status from the server
+		return this.dataTransferService.getData(this.settingsService.userResourceServerAddress + '/status/' + metsId).then(
+
+			(result: string) => {
+				return this.parseStatus(result);
+			}
+		);
 	}
 
 

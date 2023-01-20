@@ -245,7 +245,7 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 
 		// Redirects the user to the xml-input view with the selected resource ID as a
 		// GET param
-		this.router.navigate(["annotation/test-xml-input"], { queryParams: {id: row.id}});
+		this.router.navigate(["annotation"], { queryParams: {id: row.id}});
 	}
 
 

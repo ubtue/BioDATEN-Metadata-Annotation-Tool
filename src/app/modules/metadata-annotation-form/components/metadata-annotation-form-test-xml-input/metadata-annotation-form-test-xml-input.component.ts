@@ -1,3 +1,4 @@
+import { FormValidationService } from './../../../shared/services/form-validation.service';
 import { AutoincrementService } from './../../../shared/services/autoincrement.service';
 import { OidcService } from './../../../core/services/oidc.service';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
@@ -71,7 +72,8 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 				private userResourceService: UserResourceService,
 				private renderHelperService: RenderHelperService,
 				private dependencyService: DependencyService,
-				private autoincrementService: AutoincrementService) {
+				private autoincrementService: AutoincrementService,
+				private formValidationService: FormValidationService) {
 
 					// Get the server address
 					this.serverAddress = this.settingsService.backendServerAddress;
@@ -873,7 +875,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 	 */
 	private saveXMLData(): void {
 
-		let invalidElement = this.metadataAnnotationFormHelperService.checkIfFormIsValid();
+		let invalidElement = this.formValidationService.checkIfAutocompleteIsValid();
 
 		// Check if the form is valid
 		if ( invalidElement === null ) {

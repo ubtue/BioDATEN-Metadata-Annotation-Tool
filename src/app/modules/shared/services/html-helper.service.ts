@@ -429,4 +429,31 @@ export class HtmlHelperService {
 		// Add the new div before the element
 		element.parentNode?.insertBefore(newDiv, element);
 	}
+
+
+	/**
+	 * setPlaceholders
+	 *
+	 * Searches for elements with the custom placeholder attribute and sets that value to the following input or textarea element
+	 */
+	setPlaceholders(): void {
+
+		// Get all elements with a placeholder
+		let allPlaceholderElements = document.querySelectorAll('[data-xsd2html2xml-custom-placeholder]');
+
+		// Loop through elements
+		for ( let i = 0; i < allPlaceholderElements.length; i++ ) {
+
+			// Get the placeholder text
+			let placeholder = allPlaceholderElements[i].getAttribute('data-xsd2html2xml-custom-placeholder');
+
+			if ( placeholder && placeholder !== '' ) {
+
+				// Find the next input or textarea element
+				let input = allPlaceholderElements[i].querySelector('input, textarea') as HTMLInputElement | HTMLTextAreaElement;
+
+				input.setAttribute('placeholder', placeholder);
+			}
+		}
+	}
 }
