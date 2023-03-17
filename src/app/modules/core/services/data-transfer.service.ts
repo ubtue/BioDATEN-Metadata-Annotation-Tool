@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-import { Observable, throwError } from 'rxjs';
+import { lastValueFrom, Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { MetadataPostRequest } from '../../shared/models/metadata-post-request.model';
 import { SettingsService } from '../../shared/services/settings.service';
@@ -63,7 +63,8 @@ export class DataTransferService {
 			};
 		}
 
-		return this.httpClient.get(url, httpOpts).toPromise();
+		const data$$ =  this.httpClient.get(url, httpOpts);
+		return lastValueFrom(data$$);
 	}
 
 	/**
@@ -100,9 +101,11 @@ export class DataTransferService {
 	postData(url: string, body: any, httpOpts?: any): Promise<any> {
 
 		if ( httpOpts ) {
-			return this.httpClient.post(url, body, httpOpts).toPromise();
+			const data$$ = this.httpClient.post(url, body, httpOpts);
+			return lastValueFrom(data$$);
 		} else {
-			return this.httpClient.post(url, body).toPromise();
+			const data$$ = this.httpClient.post(url, body);
+			return lastValueFrom(data$$);
 		}
 	}
 
@@ -138,12 +141,14 @@ export class DataTransferService {
 	 * @param httpOpts
 	 * @returns
 	 */
-	putData(url: string, body: any, httpOpts?: any) {
+	putData(url: string, body: any, httpOpts?: any): Promise<any> {
 
 		if ( httpOpts ) {
-			return this.httpClient.put(url, body, httpOpts).toPromise();
+			const data$$ = this.httpClient.put(url, body, httpOpts);
+			return lastValueFrom(data$$);
 		} else {
-			return this.httpClient.put(url, body).toPromise();
+			const data$$ = this.httpClient.put(url, body);
+			return lastValueFrom(data$$);
 		}
 	}
 
@@ -155,7 +160,8 @@ export class DataTransferService {
 	 * @param url
 	 * @returns
 	 */
-	deleteData(url:string) {
-		return this.httpClient.delete(url).toPromise();
+	deleteData(url:string): Promise<any> {
+		const data$$ = this.httpClient.delete(url);
+		return lastValueFrom(data$$);
 	}
 }

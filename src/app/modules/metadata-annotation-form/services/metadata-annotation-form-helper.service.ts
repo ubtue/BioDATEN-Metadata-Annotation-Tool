@@ -150,19 +150,26 @@ export class MetadataAnnotationFormHelperService {
 		inputElementsWithOntologyIdentifiers.forEach(
 			(inputElement: HTMLInputElement) => {
 
-				let ontology = inputElement.getAttribute('data-ontology');
+				if ( inputElement ) {
+					let ontology = inputElement.getAttribute('data-ontology');
 
-				// Find the corresponding label
-				this.getOntologyLabelByIdentifier(inputElement.value, ontology).then(
-					(result: any) => {
+					if ( ontology && ontology !== '' ) {
 
-						// Set the current value as identifier
-						inputElement.setAttribute('data-identifier', inputElement.value);
+						// Find the corresponding label
+						this.getOntologyLabelByIdentifier(inputElement.value, ontology).then(
+							(result: any) => {
 
-						// Change the value to the label
-						inputElement.value = result;
+								if ( result ) {
+									// Set the current value as identifier
+									inputElement.setAttribute('data-identifier', inputElement.value);
+
+									// Change the value to the label
+									inputElement.value = result;
+								}
+							}
+						);
 					}
-				)
+				}
 			}
 		);
 	}
@@ -186,15 +193,16 @@ export class MetadataAnnotationFormHelperService {
 		inputsWithOntology.forEach(
 			(input: Element) => {
 
-				let thisInput = input as HTMLInputElement;
+				if ( input ) {
+					let thisInput = input as HTMLInputElement;
 
-				// Does this input have a value that fits the ontology criteria?
-				let regEx = /\b(https?:\/\/.*?\.[a-z]{2,4}\/[^\s]*\b)/g;
+					// Does this input have a value that fits the ontology criteria?
+					let regEx = /\b(https?:\/\/.*?\.[a-z]{2,4}\/[^\s]*\b)/g;
 
-				if ( thisInput.value !== '' && thisInput.value.match(regEx) ) {
-					resultInputs.push(thisInput);
+					if ( thisInput.value !== '' && thisInput.value.match(regEx) ) {
+						resultInputs.push(thisInput);
+					}
 				}
-
 			}
 		);
 
@@ -221,7 +229,7 @@ export class MetadataAnnotationFormHelperService {
 				let result: string = identifier;
 
 				// Check if results and bindings exist
-				if (data.results !== null && data.results.bindings !== null) {
+				if (data && data.results !== null && data.results.bindings !== null) {
 
 					let bindings = data.results.bindings;
 

@@ -19,7 +19,10 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 	showId: boolean = false;
 
 	readonly INPUT_PREFIX: any = {
-		schema: 'input-schema-'
+		schema: 'input-schema-',
+		fileName: 'input-file-name-',
+		tabName: 'input-tab-name-',
+		active: 'input-active-'
 	}
 
 	dataSource: any = [];
@@ -31,6 +34,9 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 	readonly MAPPING_FIELD_VALUE = {
 		id: 'id',
 		schema: 'schema',
+		fileName: 'fileName',
+		tabName: 'tabName',
+		active: 'active',
 		save: 'save',
 		delete: 'delete'
 	};
@@ -38,6 +44,9 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 	readonly displayedColumns: string[] = [
 		this.MAPPING_FIELD_VALUE.id,
 		this.MAPPING_FIELD_VALUE.schema,
+		this.MAPPING_FIELD_VALUE.fileName,
+		this.MAPPING_FIELD_VALUE.tabName,
+		this.MAPPING_FIELD_VALUE.active,
 		this.MAPPING_FIELD_VALUE.save,
 		this.MAPPING_FIELD_VALUE.delete,
 	];
@@ -47,6 +56,9 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 
 
 	@ViewChild('addNewInputSchema') addNewInputSchema!: ElementRef;
+	@ViewChild('addNewInputFileName') addNewInputFileName!: ElementRef;
+	@ViewChild('addNewInputTabName') addNewInputTabName!: ElementRef;
+	@ViewChild('addNewInputActive') addNewInputActive!: ElementRef;
 
 	/**
 	 * constructor
@@ -98,8 +110,20 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 		let schemaInput = document.getElementById(this.INPUT_PREFIX.schema + element.id) as HTMLInputElement;
 		let schemaValue = schemaInput.value;
 
+		// File name
+		let fileNameInput = document.getElementById(this.INPUT_PREFIX.fileName + element.id) as HTMLInputElement;
+		let fileNameValue = fileNameInput.value;
+
+		// Tab name
+		let tabNameInput = document.getElementById(this.INPUT_PREFIX.tabName + element.id) as HTMLInputElement;
+		let tabNameValue = tabNameInput.value;
+
+		// Active
+		let activeInput = document.getElementById(this.INPUT_PREFIX.active + element.id) as HTMLInputElement;
+		let activeValue = activeInput.checked;
+
 		// Update the schema in the database
-		this.updateAutocompleteSchema(element, schemaValue);
+		this.updateAutocompleteSchema(element, schemaValue, fileNameValue, tabNameValue, activeValue);
 	}
 
 
@@ -153,12 +177,15 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 
 		// Get the values for schema
 		let schema = this.addNewInputSchema.nativeElement.value;
+		let fileName = this.addNewInputFileName.nativeElement.value;
+		let tabName = this.addNewInputTabName.nativeElement.value;
+		let active = this.addNewInputActive.nativeElement.checked;
 
 		// Check if input is valid
 		if ( this.isInputValid(schema) ) {
 
 			// Add new schema to the database
-			this.autocompleteSchemaService.addNewSchema(schema).then(
+			this.autocompleteSchemaService.addNewSchema(schema, fileName, tabName, active).then(
 				(response: any) => {
 
 					// Update the List if the response is not null
@@ -179,13 +206,13 @@ export class AdministrationSchemasComponent implements OnInit, AfterViewInit {
 	 * @param schemaObj
 	 * @param schema
 	 */
-	private updateAutocompleteSchema(schemaObj: AutocompleteSchema, schema: string): void {
+	private updateAutocompleteSchema(schemaObj: AutocompleteSchema, schema: string, fileName: string, tabName: string, active: boolean): void {
 
 		// Check if input is valid
 		if ( this.isInputValid(schema) ) {
 
 			// Update schema in the database
-			this.autocompleteSchemaService.updateAutocompleteSchema(schemaObj, schema).then(
+			this.autocompleteSchemaService.updateAutocompleteSchema(schemaObj, schema, fileName, tabName, active).then(
 				(response: any) => {
 
 					// Update the List if the response is not null

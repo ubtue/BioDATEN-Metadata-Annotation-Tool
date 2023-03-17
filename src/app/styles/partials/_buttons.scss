@@ -13,6 +13,9 @@ label {
 		color: $buttonColorDisabled !important;
 
 		cursor: default !important;
+
+		/*TODO: Currently hidden?*/
+		display: none;
 	}
 
 	&.biodaten-button {

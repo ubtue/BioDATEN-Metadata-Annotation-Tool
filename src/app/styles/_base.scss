@@ -25,6 +25,10 @@ body {
      	padding: 0 !important;
 	}
 
+	[no-display] {
+		display: none !important;
+	}
+
 	.bold {
 		font-weight: $fontWeightBoldContent;
 	}

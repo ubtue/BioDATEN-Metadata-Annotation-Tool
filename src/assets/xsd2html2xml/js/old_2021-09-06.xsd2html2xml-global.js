@@ -787,6 +787,9 @@ window.htmlToXML = function (root) {
 window.getXML = function (parent, attributesOnly, namespaceString) {
 	var xml = "";
 	var children = [].slice.call(parent.children);
+
+	/*TODO: dependency-hidden beim parent muss rausgefiltert werden oder die minOccur auf 0 im XSD und die Anzeige immer rein ohne + */
+
 	children.forEach(function (o) {
 		if (!o.hasAttribute("hidden")) {
 			switch (o.getAttribute("data-xsd2html2xml-type")) {

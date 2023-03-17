@@ -25,7 +25,19 @@ form {
 	}
 
 	.invalid-input {
-		border: 2px solid #ff0000;
+		border: 2px solid $errorColor;
+
+		&:focus {
+			outline: none !important;
+			border: 2px solid $errorColor;
+			box-shadow: 0 0 4px;
+		}
+	}
+
+	.invalid-text-span {
+		display: inline-block;
+		margin-top: -2px;
+		color: $errorColor;
 	}
 }
 

@@ -1,3 +1,7 @@
+import { AutocompleteSchema } from './../../../shared/models/autocomplete-schema.model';
+import { AutocompleteSchemaService } from './../../../shared/services/autocomplete-schema.service';
+import { AlertButton } from './../../../shared/models/alert-button.model';
+import { AlertService } from 'src/app/modules/shared/services/alert.service';
 import { FormValidationService } from './../../../shared/services/form-validation.service';
 import { AutoincrementService } from './../../../shared/services/autoincrement.service';
 import { OidcService } from './../../../core/services/oidc.service';
@@ -5,7 +9,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { RenderHelperService } from './../../../shared/services/render-helper.service';
 import { UserResourceService } from './../../../shared/services/user-data.service';
 import { MetadataAnnotationFormHelperService } from './../../services/metadata-annotation-form-helper.service';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, HostListener } from '@angular/core';
 
 import { DataTransferService } from '../../../core/services/data-transfer.service';
 import { MetadataPostRequest } from 'src/app/modules/shared/models/metadata-post-request.model';
@@ -21,6 +25,7 @@ import { SettingsService } from 'src/app/modules/shared/services/settings.servic
 import { ActivatedRoute, Router } from '@angular/router';
 import { DependencyService } from 'src/app/modules/shared/services/dependency.service';
 import { MetadataStatus } from 'src/app/modules/shared/models/metadata-status.model';
+import { DisplayService } from 'src/app/modules/core/services/display.service';
 
 
 @Component({
@@ -29,13 +34,14 @@ import { MetadataStatus } from 'src/app/modules/shared/models/metadata-status.mo
 	styleUrls: ['./metadata-annotation-form.component.scss'],
 })
 
-export class MetadataAnnotationFormComponent implements OnInit {
+export class MetadataAnnotationFormComponent implements OnInit, OnDestroy {
 
 	serverAddress: string = '';
 	serverAdressXMLInput: string = this.settingsService.metadataAnnotationFormServerAddress + 'xml-input/';
 
 	serverAdressXMLAddress: string = this.settingsService.metadataAnnotationFormServerAddress + 'xml-system/';
 	serverAdressXMLAddressWithMetsId: string = this.settingsService.metadataAnnotationFormServerAddress + 'xml/';
+	serverAdressXMLAddressWithMetsIdCustomSchemas: string = this.settingsService.metadataAnnotationFormServerAddress + 'xml-data/';
 
 	currentTab: string = '';
 	saveEnabled: boolean = false;
@@ -76,7 +82,10 @@ export class MetadataAnnotationFormComponent implements OnInit {
 				private renderHelperService: RenderHelperService,
 				private dependencyService: DependencyService,
 				private autoincrementService: AutoincrementService,
-				private formValidationService: FormValidationService) {
+				private formValidationService: FormValidationService,
+				private alertService: AlertService,
+				public displayService: DisplayService,
+				private autocompleteSchemaService: AutocompleteSchemaService) {
 
 					// Get the server address
 					this.serverAddress = this.settingsService.backendServerAddress;
@@ -120,8 +129,68 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	}
 
 
+	/**
+	 * onClickValidate
+	 */
 	onClickValidate(): void {
-		this.formValidationService.validate();
+
+		// Get all invalid elements
+		let invalidElements = this.formValidationService.validate();
+
+		let buttons: AlertButton[] = [];
+
+		if ( invalidElements.length > 0 ) {
+
+			// After pressing OK, scroll to the first invalid element and focus ist
+			buttons.push(
+				new AlertButton(
+					'OK',
+					() => {
+						this.alertService.hideAlert();
+
+						// Scroll to the first invalid input element
+						this.scrollToInput(invalidElements[0], true);
+					}
+				)
+			);
+
+			// Show an alert telling the user that there is an invalid input
+			this.alertService.showAlert(
+				'Invalid Input',
+				'There was at least one invalid input.<br>Please check the highlighted inputs.',
+				buttons
+			);
+
+		} else {
+
+			// Save button
+			buttons.push(
+				new AlertButton(
+					'Save and finish',
+					() => {
+						this.alertService.hideAlert();
+						this.saveXMLData('finished');
+					}
+				)
+			);
+
+			// Cancel button
+			buttons.push(
+				new AlertButton(
+					'Cancel',
+					() => {
+						this.alertService.hideAlert();
+					}
+				)
+			);
+
+			// Show an alert telling the user that there was no invalid input. Ask the user to save and finalize the data
+			this.alertService.showAlert(
+				'Validation check successful',
+				'No invalid inputs detected.<br>Do you want to save your data and mark it as done?',
+				buttons
+			);
+		}
 	}
 
 
@@ -348,11 +417,11 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	/**
 	 * scrollToInput
 	 *
-	 * Scrolls to an specific input field
+	 * Scrolls to an specific input field and optionally puts the focus on it
 	 *
 	 * @param inputElement
 	 */
-	private scrollToInput(inputElement: HTMLElement): void {
+	private scrollToInput(inputElement: HTMLElement, focus?: boolean): void {
 
 		// Get the tab name
 		let tabName = inputElement.closest('div[data-tab]')?.getAttribute('data-tab') as string;
@@ -368,6 +437,10 @@ export class MetadataAnnotationFormComponent implements OnInit {
 			inputElement.scrollIntoViewIfNeeded();
 		} else {
 			inputElement.scrollIntoView();
+		}
+
+		if ( focus ) {
+			inputElement.focus();
 		}
 	}
 
@@ -588,7 +661,6 @@ export class MetadataAnnotationFormComponent implements OnInit {
 
 							// update the save button state
 							this.updateSaveButton();
-
 						})
 					);
 
@@ -664,43 +736,66 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 */
 	private getDataByResourceId(resourceId: string): void {
 
-		this.dataTransferService.getData(this.serverAdressXMLAddressWithMetsId + resourceId).then(
-			(results: MetadataServerResponse[]) => {
+		// Get all the active schemas
+		this.autocompleteSchemaService.getAllSchemas().then(
+			(schemas: AutocompleteSchema[]) => {
 
-				// Create the tabs for all schemas
-				this.createTabsForAllSchemas(results);
+				// Get all the active schema filenames
+				let schemasList: string[] = [];
 
-				// Load the JS for all schemas
-				this.loadJSForAllSchemas(results).then(
-					() => {
-
-						// Add autocomplete functionality
-						this.activateAutocomplete(this.createdTabs);
-
-						// Replaces the ontology identifiers with the human readable value
-						this.metadataAnnotationFormHelperService.replaceOntologyIdentifiers();
-
-						// Apply the custom render options
-						this.renderHelperService.applyRenderOptions();
-
-						// Set all the placeholders
-						this.htmlHelperService.setPlaceholders();
-
-						// Apply the dependencies
-						this.dependencyService.applyDependencies();
-
-						// Handle the autoincrement
-						this.autoincrementService.handleAutoincrement();
-
-						// Update the navigation
-						this.updateNavigationService.updateCurrentView("Metadata for resource:", resourceId);
-
-						// Select the first tab
-						this.selectFirstTab();
+				for ( let i = 0; i < schemas.length; i++ ) {
+					if ( schemas[i].active ) {
+						schemasList.push(schemas[i].fileName);
 					}
-				);
+				}
+
+				if ( schemasList.length > 0 ) {
+
+					// Old version without schema handling:serverAdressXMLAddressWithMetsId
+					// this.dataTransferService.getData(this.serverAdressXMLAddressWithMetsId + resourceId).then(
+					this.dataTransferService.getData(this.serverAdressXMLAddressWithMetsIdCustomSchemas + '?metsId=' + resourceId + '&schemas=' + schemasList.join(",")).then(
+						(results: MetadataServerResponse[]) => {
+
+							// Create the tabs for all schemas
+							this.createTabsForAllSchemas(results).then(
+								() => {
+
+									// Load the JS for all schemas
+									this.loadJSForAllSchemas(results).then(
+										() => {
+
+											// Add autocomplete functionality
+											this.activateAutocomplete(this.createdTabs);
+
+											// Replaces the ontology identifiers with the human readable value
+											this.metadataAnnotationFormHelperService.replaceOntologyIdentifiers();
+
+											// Apply the custom render options
+											this.renderHelperService.applyRenderOptions();
+
+											// Set all the placeholders
+											this.htmlHelperService.setPlaceholders();
+
+											// Apply the dependencies
+											this.dependencyService.applyDependencies();
+
+											// Handle the autoincrement
+											this.autoincrementService.handleAutoincrement();
+
+											// Update the navigation
+											this.updateNavigationService.updateCurrentView("Metadata for resource:", resourceId);
+
+											// Select the first tab
+											this.selectFirstTab();
+										}
+									);
+								}
+							);
+						}
+					);
+				}
 			}
-		)
+		);
 	}
 
 
@@ -711,54 +806,86 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 *
 	 * @param results
 	 */
-	private createTabsForAllSchemas(results: MetadataServerResponse[]): void {
+	private createTabsForAllSchemas(results: MetadataServerResponse[]): Promise<unknown> {
 
 		if ( this.settingsService.enableConsoleLogs ) {
 			console.log(results);
 			console.log(typeof results);
 		}
 
-		// Loop through each result and add the content to the page
-		results.forEach((result: MetadataServerResponse) => {
+		// Count of finished tabs
+		let finishedTabs = 0;
 
-			let createdTab = this.addTab(
-				this.helperService.removeFileExtension(result.schema),
-				this.mapTabNames(
-					this.helperService.removeFileExtension(result.schema)
-				),
-				true
-			);
+		return new Promise((resolve, reject) => {
 
-			let createdTabContent = createdTab.tabContent?.contentElement;
+			// Loop through each result and add the content to the page
+			results.forEach((result: MetadataServerResponse) => {
 
-			// If there is a content element, display the result html there
-			if ( createdTabContent ) {
+				// Get the filename without extension
+				let schemaFileNameWithoutExtension = this.helperService.removeFileExtension(result.schema);
 
-				createdTabContent.innerHTML = result.html;
+				// Get the schema information by the schema file
+				this.autocompleteSchemaService.getSchemaByFileName(schemaFileNameWithoutExtension).then(
+					(schema: AutocompleteSchema) => {
 
-				// If NOT in flex layout: Remove double legends
-				if ( this.settingsService.metadataAnnotationFormFlexLayout === false ) {
-					this.htmlHelperService.removeDoubleLegends(createdTabContent);
-				}
+						// Check if schema is active
+						if ( schema.active ) {
 
-				// In flex layout: Add sections around fieldsets without fieldsets
-				if ( this.settingsService.metadataAnnotationFormFlexLayout === true ) {
-					this.htmlHelperService.addSectionsInFieldset(createdTabContent);
-				}
+							let tabName = schema.tabName;
 
-				// Mark the parent sections of inputs
-				this.htmlHelperService.markParentInputSections(createdTabContent);
+							// Get tab name
+							if ( !tabName || tabName === '' ) {
+								tabName = schemaFileNameWithoutExtension;
+							}
 
-				// REMOVE: This is now handled in the administration
-				// Hide the unwanted sections
-				// this.htmlHelperService.hideUnwantedSections(createdTabContent);
+							// Create tab
+							let createdTab = this.addTab(
+								schemaFileNameWithoutExtension,
+								tabName,
+								true
+							);
 
-				// In flex layout: Add a count of the input-sections to the parent fieldset
-				if ( this.settingsService.metadataAnnotationFormFlexLayout === true ) {
-					this.htmlHelperService.addDataCountToFieldset(createdTabContent);
-				}
-			}
+							let createdTabContent = createdTab.tabContent?.contentElement;
 
+							// If there is a content element, display the result html there
+							if ( createdTabContent ) {
+
+								createdTabContent.innerHTML = result.html;
+
+								// If NOT in flex layout: Remove double legends
+								if ( this.settingsService.metadataAnnotationFormFlexLayout === false ) {
+									this.htmlHelperService.removeDoubleLegends(createdTabContent);
+								}
+
+								// In flex layout: Add sections around fieldsets without fieldsets
+								if ( this.settingsService.metadataAnnotationFormFlexLayout === true ) {
+									this.htmlHelperService.addSectionsInFieldset(createdTabContent);
+								}
+
+								// Mark the parent sections of inputs
+								this.htmlHelperService.markParentInputSections(createdTabContent);
+
+								// REMOVE: This is now handled in the administration
+								// Hide the unwanted sections
+								// this.htmlHelperService.hideUnwantedSections(createdTabContent);
+
+								// In flex layout: Add a count of the input-sections to the parent fieldset
+								if ( this.settingsService.metadataAnnotationFormFlexLayout === true ) {
+									this.htmlHelperService.addDataCountToFieldset(createdTabContent);
+								}
+							}
+						}
+
+						// Up the count of finished tabs
+						finishedTabs++;
+
+						// If the count of the finished tabs is the same as the result count, resolve the promise
+						if ( finishedTabs === results.length ) {
+							resolve(true);
+						}
+					}
+				);
+			});
 		});
 	}
 
@@ -845,8 +972,6 @@ export class MetadataAnnotationFormComponent implements OnInit {
 				// Set a flag that autocomplete was init
 				addButton.setAttribute('data-autocomplete-flag', 'true');
 			});
-
-
 		});
 
 		// Add the ontologies to the inputs
@@ -895,8 +1020,6 @@ export class MetadataAnnotationFormComponent implements OnInit {
 		if ( this.toggleAutoComplete ) {
 			this.autocompleteService.handleAutocomplete(input);
 		}
-
-
 	}
 
 
@@ -905,9 +1028,13 @@ export class MetadataAnnotationFormComponent implements OnInit {
 	 *
 	 * Saves the XML data
 	 */
-	private saveXMLData(): void {
+	private saveXMLData(specialStatus?: string): void {
 
-		let invalidElement = this.formValidationService.checkIfAutocompleteIsValid();
+		// TODO: Will we need this?
+		// let invalidElement = this.formValidationService.checkIfAutocompleteIsValid();
+
+		// TODO: PLACEHOLDER for problem above
+		let invalidElement = null;
 
 		// Check if the form is valid
 		if ( invalidElement === null ) {
@@ -924,6 +1051,15 @@ export class MetadataAnnotationFormComponent implements OnInit {
 					console.log(xmlData);
 				}
 
+				const queryString = window.location.hash;
+				const urlParams = new URLSearchParams(queryString);
+				const debugxml = urlParams.get('debugxml');
+
+				if ( debugxml && debugxml === '1' ) {
+					console.log(xmlData);
+				}
+
+
 				// Save the changes to the database
 				// Get resource id
 				let resourceId = this.route.snapshot.queryParamMap.get("id") as string;
@@ -934,8 +1070,14 @@ export class MetadataAnnotationFormComponent implements OnInit {
 
 						let userId = this.oidcService.getUserIdFromUserData(userData);
 
+						// Special status for the resource?
+						let status = 'progress';
+						if ( specialStatus ) {
+							status = specialStatus;
+						}
+
 						if ( userId !== '' ) {
-							this.userResourceService.updateUserResource(resourceId, userId, xmlData).then(
+							this.userResourceService.updateUserResource(resourceId, userId, xmlData, status).then(
 								() => {
 
 									// Update the status
@@ -1007,5 +1149,11 @@ export class MetadataAnnotationFormComponent implements OnInit {
 		if ( this.settingsService.enableConsoleLogs ) {
 			console.log(input.closest('label').querySelector('span.custom-file-input-title'));
 		}
+	}
+
+
+	@HostListener('unloaded')
+	ngOnDestroy(): void {
+		this.autoincrementService.clearEverything();
 	}
 }

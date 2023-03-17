@@ -1,3 +1,5 @@
+import { AlertButton } from './../../../shared/models/alert-button.model';
+import { AlertService } from 'src/app/modules/shared/services/alert.service';
 import { OidcService } from './../../../core/services/oidc.service';
 import { Observable } from 'rxjs';
 import { OidcSecurityService, UserDataResult } from 'angular-auth-oidc-client';
@@ -26,6 +28,8 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 	userData$: Observable<UserDataResult> = {} as any;
 	userId: string = '';
 
+	showId: boolean = false;
+
 	readonly RESOURCE_DATA_STATUS = {
 		new: {
 			label: "New",
@@ -51,7 +55,8 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 		title: 'title',
 		lastChange: 'lastChange',
 		status: 'status',
-		statusKey: 'statusKey'
+		statusKey: 'statusKey',
+		export: 'export'
 	};
 
 	readonly RESOURCE_FIELD_LABELS = {
@@ -60,7 +65,8 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 		title: 'Title',
 		lastChange: 'Last change',
 		status: 'Status',
-		statusKey: ''
+		statusKey: '',
+		export: ''
 	};
 
 	readonly SORT_METHODS = {
@@ -85,7 +91,8 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 		this.RESOURCE_FIELD_VALUES.id,
 		this.RESOURCE_FIELD_VALUES.title,
 		this.RESOURCE_FIELD_VALUES.lastChange,
-		this.RESOURCE_FIELD_VALUES.status
+		this.RESOURCE_FIELD_VALUES.status,
+		this.RESOURCE_FIELD_VALUES.export
 	];
 
 	dataSource: any = [];
@@ -148,7 +155,8 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 				private helperService: HelperService,
 				private userResourceService: UserResourceService,
 				public oidcSecurityService: OidcSecurityService,
-				private oidcService: OidcService) {
+				private oidcService: OidcService,
+				private alertService: AlertService) {
 
 					// Get the default sorting field
 					this.selectedBlockSortableField =
@@ -268,6 +276,49 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 		this.addNewResource();
 	}
 
+
+	/**
+	 * onClickExportResource
+	 *
+	 * @param resource
+	 */
+	onClickExportResource(resource: MetadataUserResource): void {
+
+		// // Create buttons for publish and for Cancel
+		// let buttons: AlertButton[] = [];
+
+		// buttons.push(
+		// 	new AlertButton(
+		// 		'Publish',
+		// 		() => {
+		// 			this.alertService.hideAlert();
+		// 		}
+		// 	)
+		// );
+
+		// buttons.push(
+		// 	new AlertButton(
+		// 		'Cancel',
+		// 		() => {
+		// 			this.alertService.hideAlert();
+		// 		}
+		// 	)
+		// );
+
+		// // Show alert
+		// this.alertService.showAlert(
+		// 	'Publish resource',
+		// 	'Do you want to publish your resource with the title</br><b>' + resource.title + '</b>?',
+		// 	buttons
+		// );
+
+		this.alertService.showAlert(
+			'Next steps',
+			'Next steps will be implemented here'
+		);
+	}
+
+
 	/**
 	 * sortBlocks
 	 *
@@ -354,7 +405,6 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 
 				location.reload();
 			}
-		)
+		);
 	}
-
 }

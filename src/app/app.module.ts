@@ -23,6 +23,7 @@ import { DirectivesModule } from './modules/shared/directives/directives.module'
 import { PlatformModule } from '@angular/cdk/platform';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { AuthConfigModule } from './auth-config.module';
+import { DisplayService } from './modules/core/services/display.service';
 
 
 @NgModule({
@@ -45,13 +46,14 @@ import { AuthConfigModule } from './auth-config.module';
 		MatTableModule,
 		PlatformModule,
 		SharedModule,
-		AuthConfigModule,
-		// AuthConfigDevModule,
+		// AuthConfigModule,
+		AuthConfigDevModule,
 	],
 	providers: [
 		DataTransferService,
 		HeaderComponent,
 		LoadingService,
+		DisplayService,
 		{
 			provide: HTTP_INTERCEPTORS,
 			useClass: LoadingInterceptor,

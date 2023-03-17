@@ -9,6 +9,14 @@
 		@include addMarginBottom();
 	}
 
+	.user-metadata-resource-show-id-wrap {
+
+		@include addMarginBottom();
+
+		display: flex;
+	}
+
+
 	.user-metadata-resource-wrap-blocks {
 
 		display: block;
@@ -116,7 +124,19 @@
 		.user-metadata-resource-table {
 			width: 100%;
 
-			border: 1px solid $borderGrey;
+			/*border: 1px solid $borderGrey;*/
+
+			.mat-header-row,
+			.mat-row {
+
+				.cdk-column-id {
+					display: none;
+
+					&.show {
+						display: table-cell;
+					}
+				}
+			}
 
 			.mat-header-row {
 				background: $navigationGrey;
@@ -131,10 +151,24 @@
 							color: #fff;
 						}
 					}
+
+					&.cdk-column-export {
+						width: 14px;
+
+						background: #fff;
+						border: none;
+					}
 				}
 			}
 
 			.mat-row {
+
+				&:last-child {
+
+					td {
+						border-bottom: 1px solid $borderGrey;
+					}
+				}
 
 				&:hover {
 
@@ -144,16 +178,28 @@
 				}
 
 				.mat-cell {
-					border-bottom: 1px solid transparent;
-					border-top: 1px solid transparent;
+					/*border-bottom: 1px solid transparent;
+					border-top: 1px solid transparent;*/
+
+					border-bottom: none;
+					border-top: none;
+
 					cursor: pointer;
 
 					padding-right: 10px;
 
 					font-size: $fontSizeContent;
 
+					&.cdk-column-position {
+						border-left: 1px solid $borderGrey;
+					}
+
 					&.cdk-column-title {
-						width: 28%;
+						width: 40%;
+
+						&.showId {
+							width: 28%;
+						}
 					}
 
 					&.cdk-column-status {
@@ -161,15 +207,17 @@
 
 						position: relative;
 
+						border-right: 1px solid $borderGrey;
+
 						&:after {
 							content: " ";
 							position: absolute;
 
-							height: 100%;
+							height: calc(100% - 2px);
 							width: 14px;
 
 							right: 0;
-							top: 0;
+							top: 1px;
 						}
 
 						&.a_new {
@@ -196,7 +244,23 @@
 								background: #ff9101;
 							}
 						}
+					}
 
+					&.cdk-column-export {
+						width: 14px;
+
+						background: none;
+						border: none;
+
+						cursor: default;
+
+						button {
+							background: none;
+							//border: 1px solid $borderGrey;
+							border: none;
+							padding: 4px 4px 0px 5px;
+							cursor: pointer;
+						}
 					}
 				}
 			}

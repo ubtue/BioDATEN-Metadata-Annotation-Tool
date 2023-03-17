@@ -13,6 +13,7 @@ import { Injectable } from '@angular/core';
 })
 export class UserResourceService {
 
+	public readonly NO_TITLE_SET:string = 'No title set (datacite)';
 
 	/**
 	 * constructor
@@ -50,14 +51,14 @@ export class UserResourceService {
 	 * @param xmlData
 	 * @returns
 	 */
-	updateUserResource(metsId: string, userId: string, xmlData: string): Promise<any> {
+	updateUserResource(metsId: string, userId: string, xmlData: string, status: string): Promise<any> {
 
 		// Create params string
 		let params = {
 			'metsId': metsId,
 			'userId': userId,
 			'hpc_job_id': 0,
-			'metadata_status': 'progress',
+			'metadata_status': status,
 			'mets_xml': xmlData,
 			'lastmodified': Date.now()
 		};
@@ -112,11 +113,14 @@ export class UserResourceService {
 				// Status
 				let metadataStatus = this.parseStatus(currentServerResource.metadata_status);
 
+				// Get the title from the mets_xml (datacite)
+				let title = this.parseTitleFromMetsXML(currentServerResource.mets_xml);
+
 				// Add new Resource to the result
 				let metadataUserResource = new MetadataUserResource(
 					position,
 					currentServerResource.metsId,
-					'Example resource ' + position,
+					title,
 					lastChange,
 					metadataStatus.status,
 					metadataStatus.statusKey
@@ -132,6 +136,34 @@ export class UserResourceService {
 		return result;
 	}
 
+
+	/**
+	 * parseTitleFromMetsXML
+	 *
+	 * Extracts the title from a mets_xml string
+	 *
+	 * @param xml
+	 * @returns
+	 */
+	parseTitleFromMetsXML(xml: string): string {
+
+		let title: string = '';
+
+		// Search for a title node
+		const regex = /<title>(.+?)<\/title>/gm;
+
+		// Get the content of the node
+		let result = regex.exec(xml);
+
+		if ( result && result.length > 1 ) {
+			title = result[1];
+		} else {
+
+			title = this.NO_TITLE_SET;
+		}
+
+		return title;
+	}
 
 	/**
 	 * parseStatus

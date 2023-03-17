@@ -4,6 +4,11 @@
 		Add new Resource
 	</button>
 
+	<div class="user-metadata-resource-show-id-wrap">
+		<input #checkBoxShowId id="user-metadata-resource-show-id-input" type="checkbox" [(ngModel)]="showId"/>
+		<label for="user-metadata-resource-show-id-input">Show Resource ID column</label>
+	</div>
+
 	<!-- For small devices list the content in blocks -->
 	<div class="user-metadata-resource-wrap-blocks">
 
@@ -99,14 +104,14 @@
 
 			<!-- ID Column -->
 			<ng-container matColumnDef="id">
-				<th mat-header-cell *matHeaderCellDef mat-sort-header>Resource</th>
-				<td mat-cell *matCellDef="let element">{{element.id}}</td>
+				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'show': showId}">Resource</th>
+				<td mat-cell *matCellDef="let element" [ngClass]="{'show': showId}">{{element.id}}</td>
 			</ng-container>
 
 			<!-- Title Column -->
 			<ng-container matColumnDef="title">
-				<th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
-				<td mat-cell *matCellDef="let element">{{element.title}}</td>
+				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'showId': showId}">Title</th>
+				<td mat-cell *matCellDef="let element" [ngClass]="{'showId': showId}">{{element.title}}</td>
 			</ng-container>
 
 
@@ -119,7 +124,17 @@
 			<!-- Status Column -->
 			<ng-container matColumnDef="status">
 				<th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-				<td [ngClass]="element.statusKey" mat-cell *matCellDef="let element">{{element.status}}</td>
+				<td [ngClass]="element.statusKey" mat-cell *matCellDef="let element">
+					{{element.status}}
+				</td>
+			</ng-container>
+
+			<!-- Export Column-->
+			<ng-container matColumnDef="export">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+				<td [ngClass]="element.statusKey" mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+					<button *ngIf="(element.status | uppercase) === 'FINISHED'" (click)="onClickExportResource(element)"><mat-icon>exit_to_app</mat-icon></button>
+				</td>
 			</ng-container>
 
 			<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

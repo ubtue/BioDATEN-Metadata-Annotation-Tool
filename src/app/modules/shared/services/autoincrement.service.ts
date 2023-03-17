@@ -1,5 +1,5 @@
 import { SettingsService } from './settings.service';
-import { Injectable } from "@angular/core";
+import { Injectable, NgModuleRef } from "@angular/core";
 
 @Injectable({
 	providedIn: 'root',
@@ -7,6 +7,9 @@ import { Injectable } from "@angular/core";
 export class AutoincrementService {
 
 	firstInitDone: boolean = false;
+
+	addButtonBind: any = null;
+	removeButtonBind: any = null;
 
 	/**
 	* constructor
@@ -31,18 +34,18 @@ export class AutoincrementService {
 			this.initDropDowns();
 
 			// Add an event listener to the custom event that triggers when a new section is added via the add button on the form
-			window.addEventListener('xsd2html2xml-add-button', () => {
-
-				// If the add button is used, call the handle the autoincrement for the new elements
-				this.handleAutoincrement();
-			});
+			// This workaround with the bind and the function has to be used because of a weird functionality in Angular
+			// when lazy loading is active and a component ist destroyed. The attached module content will not be destroyed with it
+			// See clear function in this service
+			this.addButtonBind = this.addButtonFunction.bind(this);
+			window.addEventListener('xsd2html2xml-add-button', this.addButtonBind);
 
 			// Add an event listener to the custom event that triggers when a section is removed via the remove button on the form
-			window.addEventListener('xsd2html2xml-remove-button', () => {
-
-				// If a section is removed refresh the dropdowns
-				this.refreshDropDowns();
-			});
+			// This workaround with the bind and the function has to be used because of a weird functionality in Angular
+			// when lazy loading is active and a component ist destroyed. The attached module content will not be destroyed with it
+			// See clear function in this service
+			this.removeButtonBind = this.removeButtonFunction.bind(this);
+			window.addEventListener('xsd2html2xml-remove-button', this.removeButtonBind);
 		}
 
 		// Get all the autoincrement elements
@@ -56,6 +59,30 @@ export class AutoincrementService {
 			// Refresh the drop downs
 			this.refreshDropDowns();
 		}
+	}
+
+
+	/**
+	 * addButtonFunction
+	 *
+	 * Function that is triggered when the add button is clicked
+	 */
+	addButtonFunction(): void {
+
+		// If the add button is used, call the handle the autoincrement for the new elements
+		this.handleAutoincrement();
+	}
+
+
+	/**
+	 * removeButtonFunction
+	 *
+	 * Function that is triggered when the remove button is clicked
+	 */
+	removeButtonFunction(): void {
+
+		// If a section is removed refresh the dropdowns
+		this.refreshDropDowns();
 	}
 
 
@@ -307,5 +334,30 @@ export class AutoincrementService {
 				}
 			}
 		}
+	}
+
+
+	/**
+	 * clearEverything
+	 *
+	 * Removes all events and attributes created by this module
+	 *
+	 * Note: This is needed because Angular does NOT remove everything from a module that is loaded in a component when its destroyed if lazy loading is used
+	 */
+	clearEverything(): void {
+
+		// Add an event listener to the custom event that triggers when a new section is added via the add button on the form
+		window.removeEventListener('xsd2html2xml-add-button', this.addButtonBind);
+
+		// Add an event listener to the custom event that triggers when a section is removed via the remove button on the form
+		window.removeEventListener('xsd2html2xml-remove-button', this.removeButtonBind);
+
+		document.querySelectorAll('[data-autoincrement-init]').forEach(
+			(element: Element) => {
+				element?.removeAttribute('data-autoincrement-init');
+			}
+		);
+
+		this.firstInitDone = false;
 	}
 }

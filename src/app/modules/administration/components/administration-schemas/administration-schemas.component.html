@@ -10,7 +10,22 @@
 
 			<div class="administration-schemas-add-new">
 
-				<input #addNewInputSchema id="administration-schemas-add-new-input-schema" type="text" placeholder="schema" />
+				<input #addNewInputSchema id="administration-schemas-add-new-input-schema" type="text" placeholder="schema (internal description)" />
+
+				<br />
+
+				<input #addNewInputFileName id="administration-schemas-add-new-input-file-name" type="text" placeholder="schema file name (without file extension)" />
+
+				<br />
+
+				<input #addNewInputTabName id="administration-schemas-add-new-input-tab-name" type="text" placeholder="schema tab name" />
+
+				<br />
+
+				<div class="administration-schemas-add-new-input-active-wrap">
+					<input #addNewInputActive id="administration-schemas-add-new-input-active" type="checkbox" />
+					<label for="administration-schemas-add-new-input-active">Active</label>
+				</div>
 
 				<br />
 
@@ -107,7 +122,31 @@
 			<ng-container matColumnDef="schema">
 				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'id-hidden': !showId}">Schema</th>
 				<td mat-cell *matCellDef="let element" [ngClass]="{'id-hidden': !showId}">
-					<input id="input-schema-{{element.id}}" type="text" value="{{element.schema}}" placeholder="schema" />
+					<input id="input-schema-{{element.id}}" type="text" value="{{element.schema}}" placeholder="schema (internal description)" />
+				</td>
+			</ng-container>
+
+			<!-- File name Column -->
+			<ng-container matColumnDef="fileName">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'id-hidden': !showId}">File name (wihout file extension)</th>
+				<td mat-cell *matCellDef="let element" [ngClass]="{'id-hidden': !showId}">
+					<input id="input-file-name-{{element.id}}" type="text" value="{{element.fileName}}" placeholder="schema file name (without file extension)" />
+				</td>
+			</ng-container>
+
+			<!-- Tab name Column -->
+			<ng-container matColumnDef="tabName">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'id-hidden': !showId}">Tab name</th>
+				<td mat-cell *matCellDef="let element" [ngClass]="{'id-hidden': !showId}">
+					<input id="input-tab-name-{{element.id}}" type="text" value="{{element.tabName}}" placeholder="schema tab name" />
+				</td>
+			</ng-container>
+
+			<!-- Active Column -->
+			<ng-container matColumnDef="active">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{'id-hidden': !showId}">Active</th>
+				<td mat-cell *matCellDef="let element">
+					<input id="input-active-{{element.id}}" type="checkbox" [checked]="element.active === true" />
 				</td>
 			</ng-container>
 

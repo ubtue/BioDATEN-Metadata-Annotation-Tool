@@ -42,7 +42,7 @@ export class AutocompleteSchemaService {
 	 *
 	 * Adds new schema to the database
 	 */
-	 addNewSchema(schema: string): Promise<any> {
+	 addNewSchema(schema: string, fileName: string, tabName: string, active: boolean): Promise<any> {
 
 		// Check if the schema already has been added (only continue if not)
 		return this.checkIfSchemaAlreadyExists(schema).then(
@@ -52,7 +52,10 @@ export class AutocompleteSchemaService {
 
 					// Create params string
 					let params = {
-						'schema': schema
+						'schema': schema,
+						'fileName': fileName,
+						'tabName': tabName,
+						'active': active
 					};
 
 					let paramsString = JSON.stringify(params);
@@ -88,12 +91,15 @@ export class AutocompleteSchemaService {
 	 * @param schemaObj
 	 * @param schema
 	 */
-	 updateAutocompleteSchema(schemaObj: AutocompleteSchema, schema: string): Promise<any> {
+	 updateAutocompleteSchema(schemaObj: AutocompleteSchema, schema: string, fileName: string, tabName: string, active: boolean): Promise<any> {
 
 		// Create params string
 		let params = {
 			'id': schemaObj.id,
-			'schema': schema
+			'schema': schema,
+			'fileName': fileName,
+			'tabName': tabName,
+			'active': active
 		};
 
 		let paramsString = JSON.stringify(params);
@@ -231,6 +237,23 @@ export class AutocompleteSchemaService {
 
 				// Schema has no mappings
 				return 0;
+			}
+		);
+	}
+
+
+	/**
+	 * getSchemaByFileName
+	 *
+	 * Gets a schema by its file name
+	 *
+	 * @param fileName
+	 * @returns
+	 */
+	getSchemaByFileName(fileName: string): Promise<AutocompleteSchema> {
+		return this.dataTransferService.getData(this.settingsService.autocompleteSchemasServerAddress + '/schema/' + fileName).then(
+			(schema: AutocompleteSchema) => {
+				return schema;
 			}
 		);
 	}

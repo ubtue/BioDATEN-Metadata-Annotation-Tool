@@ -933,6 +933,7 @@ window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly,
 
 	children.forEach(function (o) {
 
+		/* CHANGE JK: If the element is a custom created one, take the first child node */
 		if ( o.hasAttribute('data-created') ) {
 			var oChildren = [].slice.call(o.children);
 
@@ -941,7 +942,8 @@ window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly,
 			}
 		}
 
-		if (!o.hasAttribute("hidden")) {
+		/* CHANGE JK: Also filter out objects that have a parent with the attribute 'dependency-hidden' */
+		if (!o.hasAttribute("hidden") && !o.closest('[dependency-hidden]') ) {
 			switch (o.getAttribute("data-xsd2html2xml-type")) {
 				case "element":
 					if (!attributesOnly) {

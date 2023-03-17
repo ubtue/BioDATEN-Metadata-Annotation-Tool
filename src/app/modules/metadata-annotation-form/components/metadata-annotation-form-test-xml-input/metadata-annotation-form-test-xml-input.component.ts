@@ -903,7 +903,7 @@ export class MetadataAnnotationFormTestXmlInputComponent implements OnInit {
 						let userId = this.oidcService.getUserIdFromUserData(userData);
 
 						if ( userId !== '' ) {
-							this.userResourceService.updateUserResource(resourceId, userId, xmlData);
+							this.userResourceService.updateUserResource(resourceId, userId, xmlData, 'progress');
 						}
 				});
 

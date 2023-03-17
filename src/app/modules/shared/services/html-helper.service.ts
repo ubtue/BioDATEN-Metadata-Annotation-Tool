@@ -349,7 +349,7 @@ export class HtmlHelperService {
 
 		// Cache the current parent and previous sibling of the first node.
 		var parent = node.parentNode;
-		var previousSibling = node.previousSibling;
+		var previousSibling = node.previousSibling as null | HTMLElement;
 
 		// Place node in wrapper
 		wrapper.appendChild(node);

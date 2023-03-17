@@ -231,7 +231,8 @@ export class RenderHelperService {
 		let section  = parentElement.closest('section') as HTMLElement;
 
 		if ( typeof section !== 'undefined' && section !== null ) {
-			section.style.display = 'none';
+			// section.style.display = 'none';
+			section.setAttribute('no-display', '');
 		}
 	}
 

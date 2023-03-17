@@ -1,3 +1,5 @@
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -24,7 +26,9 @@ import { MatSelectModule } from '@angular/material/select';
 		MatSortModule,
 		MatPaginatorModule,
 		MatFormFieldModule,
-		MatSelectModule
+		MatSelectModule,
+		FormsModule,
+		MatIconModule
 	]
 })
 export class UserModule { }

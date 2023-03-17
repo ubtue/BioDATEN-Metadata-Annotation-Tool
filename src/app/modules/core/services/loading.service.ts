@@ -30,6 +30,4 @@ export class LoadingService {
 	 setLoadingFullscreen(isLoadingFullscreen: boolean) {
 		this.isLoadingFullscreen$$.next(isLoadingFullscreen);
 	}
-
-
 }
