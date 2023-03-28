@@ -123,7 +123,8 @@ export class UserResourceService {
 					title,
 					lastChange,
 					metadataStatus.status,
-					metadataStatus.statusKey
+					metadataStatus.statusKey,
+					currentServerResource.mets_xml
 				);
 
 				result.push(metadataUserResource);

@@ -46,8 +46,8 @@ import { DisplayService } from './modules/core/services/display.service';
 		MatTableModule,
 		PlatformModule,
 		SharedModule,
-		// AuthConfigModule,
-		AuthConfigDevModule,
+		AuthConfigModule,
+		// AuthConfigDevModule,
 	],
 	providers: [
 		DataTransferService,

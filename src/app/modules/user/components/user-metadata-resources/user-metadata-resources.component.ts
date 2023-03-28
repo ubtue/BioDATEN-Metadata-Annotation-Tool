@@ -312,6 +312,17 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 		// 	buttons
 		// );
 
+		const queryString = window.location.hash;
+
+		if ( queryString !== '' && queryString.indexOf('debugxml=1') !== -1 ) {
+			this.helperService.convertXmlToMets(resource.xml).then(
+				(metsXml: string) => {
+					console.log(metsXml);
+				}
+			);
+		}
+
+
 		this.alertService.showAlert(
 			'Next steps',
 			'Next steps will be implemented here'

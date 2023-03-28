@@ -173,7 +173,9 @@ export class RenderHelperService {
 		let inputElement = parentElement.querySelector(':scope > input[type="text"], :scope > input[type="url"]') as HTMLInputElement;
 
 		// Set the placeholder
-		inputElement.setAttribute('placeholder', renderOption.placeholder);
+		if ( typeof inputElement !== 'undefined' && inputElement !== null ) {
+			inputElement.setAttribute('placeholder', renderOption.placeholder);
+		}
 	}
 
 
@@ -191,7 +193,7 @@ export class RenderHelperService {
 		let inputElement = parentElement.querySelector(':scope > input[type="text"], :scope > input[type="url"]') as HTMLInputElement;
 
 		// Set the value if no other value is set yet
-		if ( inputElement.value.trim().length === 0 ) {
+		if ( typeof inputElement !== 'undefined' && inputElement !== null && inputElement.value.trim().length === 0 ) {
 			inputElement.value = renderOption.prefilled;
 		}
 	}
@@ -211,8 +213,10 @@ export class RenderHelperService {
 		// Get the input element
 		let inputElement = parentElement.querySelector(':scope > input[type="text"], :scope > input[type="url"]') as HTMLInputElement;
 
-		// Set the readonly value
-		inputElement.readOnly = renderOption.readonly;
+		// Set the readonly value (make)
+		if ( typeof inputElement !== 'undefined' && inputElement !== null ) {
+			inputElement.readOnly = renderOption.readonly;
+		}
 	}
 
 

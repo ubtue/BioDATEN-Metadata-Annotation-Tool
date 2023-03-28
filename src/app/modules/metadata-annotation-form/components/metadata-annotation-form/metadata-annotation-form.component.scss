@@ -4,6 +4,15 @@
 /* GENERAL */
 
 
+/* TAB ORDER */
+$tabOrderDatacite: 100;
+$tabOrderBiodatenMinimal: 200;
+$tabOrderPremis: 300;
+
+/* custom element (added after the initial release) */
+$tabOrderCustom: 1000;
+
+
 
 :host {
 	display: flex;
@@ -107,6 +116,21 @@
 					&.tab-hidden {
 						display: none;
 					}
+
+					// TAB ORDER:
+					order: $tabOrderCustom;
+
+					&[data-tab="datacite"] {
+						order: $tabOrderDatacite;
+					}
+
+					&[data-tab="BiodatenMinimal"] {
+						order: $tabOrderBiodatenMinimal;
+					}
+
+					&[data-tab="premis"] {
+						order: $tabOrderPremis;
+					}
 				}
 			}
 
@@ -145,7 +169,6 @@
 					}
 				}
 			}
-
 
 			.metadata-annotation-form-menu-settings {
 

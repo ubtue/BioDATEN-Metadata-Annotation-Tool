@@ -408,8 +408,43 @@ export class MetadataAnnotationFormComponent implements OnInit, OnDestroy {
 	private selectFirstTab(): void {
 
 		if ( this.createdTabs.length > 0 ) {
-			let firstTab = document.querySelector('.metadata-annotation-form-menu button[data-tab="' + this.createdTabs[0].tabName + '"]') as HTMLElement;
-			firstTab.click();
+
+			let lowestTab = null;
+			let lowestTabOrder = -1;
+
+			// Get all tabs
+			let allTabs = document.querySelectorAll('.metadata-annotation-form-menu button[data-tab]');
+
+			// Loop through all tabs and find the one with lowest order value
+			for ( let i = 0; i < allTabs.length; i++ ) {
+
+				// Get the computed style of the element
+				let currentTab = allTabs[i] as HTMLElement;
+				const style = getComputedStyle(currentTab);
+
+				// Check if order is available
+				if ( style && style.order && style.order !== '' ) {
+
+					// Check if there is a lowest; if not -> this is the lowest; if there is a lowest -> check if this is lower
+					if ( lowestTab && lowestTabOrder !== -1) {
+
+						if ( parseInt(style.order) < lowestTabOrder ) {
+
+							lowestTab = currentTab;
+							lowestTabOrder = parseInt(style.order);
+						}
+					} else {
+						lowestTab = currentTab;
+						lowestTabOrder = parseInt(style.order);
+					}
+				}
+			}
+
+			// If there was a lowest tab -> click it
+			if ( lowestTab ) {
+
+				lowestTab.click();
+			}
 		}
 	}
 

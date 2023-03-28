@@ -1,3 +1,7 @@
+import { MetadataPostRequest } from 'src/app/modules/shared/models/metadata-post-request.model';
+import { HttpHeaders } from '@angular/common/http';
+import { DataTransferService } from './../../core/services/data-transfer.service';
+import { SettingsService } from 'src/app/modules/shared/services/settings.service';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -14,7 +18,8 @@ export class HelperService {
 	/**
 	 * constructor
 	 */
-	constructor() {}
+	constructor(private settingsService: SettingsService,
+				private dataTransferService: DataTransferService) {}
 
 
 	/**
@@ -297,5 +302,19 @@ export class HelperService {
 			path.forEach((path: any) => obj = obj[path])
 			return obj;
 		}
+	}
+
+	convertXmlToMets(xmlString: string): Promise<string> {
+
+		let postRequest: MetadataPostRequest;
+
+		// Take the first and only entry in formData and make the post request
+		postRequest = (new MetadataPostRequest(this.settingsService.metadataAnnotationFormServerAddress + 'mets', xmlString));
+
+		return this.dataTransferService.postData(postRequest.url, postRequest.body, {responseType: 'text'}).then(
+			(metsString: string) => {
+				return metsString;
+			}
+		);
 	}
 }
