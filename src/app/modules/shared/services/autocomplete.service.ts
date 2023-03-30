@@ -1,3 +1,4 @@
+import { BioportalService } from './bioportal.service';
 import { AutocompleteSchema } from './../models/autocomplete-schema.model';
 import { LoadingService } from './../../core/services/loading.service';
 import { AutocompleteMappingService } from './autocomplete-mapping.service';
@@ -43,7 +44,11 @@ export class AutocompleteService {
 
 	cachedAutocompleteData: any = [];
 
+	handledBioportalData: any = [];
+
 	validityCheckTimeout: any = null;
+
+	handleBioportalAutocompleteTimeout: any = null;
 
 
 	/**
@@ -54,7 +59,8 @@ export class AutocompleteService {
 		private helperService: HelperService,
 		private htmlHelperService: HtmlHelperService,
 		private autocompleteMappingService: AutocompleteMappingService,
-		private autocompleteSchemaService: AutocompleteSchemaService) {
+		private autocompleteSchemaService: AutocompleteSchemaService,
+		private bioportalService: BioportalService) {
 
 		// If the document click event has not been initialized
 		// make sure that a click on the document closes all lists except the one clicked
@@ -81,6 +87,12 @@ export class AutocompleteService {
 				);
 			}
 		);
+
+		// If BIOPORTAL mode, load external script
+		if ( this.settingsService.autocompleteMode === this.settingsService.AUTOCOMPLETE_MODE_BIOPORTAL ) {
+			//this.helperService.loadScript("assets/bioportal/js/form_complete.js");
+		}
+
 	}
 
 
@@ -117,8 +129,18 @@ export class AutocompleteService {
 			let dataIndex = inputElement.getAttribute('data-autocomplete-index');
 
 			if (dataIndex) {
-				this.autocomplete(inputElement, parseInt(dataIndex));
+
+				// JSON mode autocomplete
+				if ( this.settingsService.autocompleteMode === this.settingsService.AUTOCOMPLETE_MODE_JSON ) {
+
+					this.autocomplete(inputElement, parseInt(dataIndex), this.cachedAutocompleteData[dataIndex]);
+				} else if ( this.settingsService.autocompleteMode === this.settingsService.AUTOCOMPLETE_MODE_BIOPORTAL ) {
+
+					// Bioportal autocomplete
+					this.handleAutocompleteBioportal(inputElement, parseInt(dataIndex));
+				}
 			}
+
 
 		} else if (this.checkIfAutocompleteInitIsInProgress(inputElement)) {
 
@@ -186,52 +208,87 @@ export class AutocompleteService {
 			}
 		}
 
+		console.log(autocompleteSource);
+
 		// Get the contents of the autocomplete source if available
 		if ( autocompleteSource !== '' ) {
 
-			// Get the data for the autocomplete
-			this.dataTransferService
-				.getData(autocompleteSource, "json", true)
-				.then((dataResult: any) => {
+			// BIOPORTAL or JSON method?
+			if ( this.settingsService.autocompleteMode === this.settingsService.AUTOCOMPLETE_MODE_BIOPORTAL ) {
 
-					let autocompleteData: AutocompleteData[] = [];
+				// inputElement.name = "a";
+				// inputElement.classList.add('bp_form_complete-' + autocompleteSource + '-name');
 
-					// Check if result is a string, an array or not (it is asumed the result is an object then)
-					if (typeof dataResult === 'string') {
-						// autocompleteData = this.structureDataFromString(dataResult);
-					} else if (Array.isArray(dataResult)) {
-						// autocompleteData = this.structureDataFromArray(dataResult);
-					} else {
-						autocompleteData = this.structureDataFromObject(dataResult);
-					}
+				inputElement.setAttribute('data-autocomplete-bioportal-url', this.settingsService.autocompleteBioportalSearchAddress.replace('{o}', autocompleteSource));
 
-					// Cache the data using the length of the cache array as index
-					let dataIndex = this.cachedAutocompleteData.length;
+				// Set the state of the autocomplete-init to 'done'
+				this.setAutocompleteInitStatus(
+					inputElement,
+					this.INIT_STATUS.DONE
+				);
 
-					this.cachedAutocompleteData[dataIndex] = autocompleteData;
+				if ( typeof "formComplete_setup_functions" === 'function') {
+					/* IGNORE */
+					//formComplete_setup_functions();
+				}
 
-					if (this.settingsService.enableConsoleLogs) {
-						console.log('data for autocomplete:')
-						console.log(autocompleteData);
-					}
+				// Cache the input element using the length of the cache array as index
+				let dataIndex = this.handledBioportalData.length;
 
-					// Add the data-index to the input element and focus it
-					inputElement.setAttribute('data-autocomplete-index', dataIndex.toString());
+				this.handledBioportalData[dataIndex] = inputElement;
 
-					inputElement.focus();
+				// Add the data-index to the input element and focus it
+				inputElement.setAttribute('data-autocomplete-index', dataIndex.toString());
 
-					// Call the autocomplete function
-					this.autocomplete(inputElement, dataIndex);
+				inputElement.focus();
 
-					// Activate the keydown handling
-					this.handleKeyDown(inputElement, dataIndex);
 
-					// Set the state of the autocomplete-init to 'done'
-					this.setAutocompleteInitStatus(
-						inputElement,
-						this.INIT_STATUS.DONE
-					);
-				});
+			} else if ( this.settingsService.autocompleteMode === this.settingsService.AUTOCOMPLETE_MODE_JSON ) {
+
+				// Get the data for the autocomplete
+				this.dataTransferService
+					.getData(autocompleteSource, "json", true)
+					.then((dataResult: any) => {
+
+						let autocompleteData: AutocompleteData[] = [];
+
+						// Check if result is a string, an array or not (it is asumed the result is an object then)
+						if (typeof dataResult === 'string') {
+							// autocompleteData = this.structureDataFromString(dataResult);
+						} else if (Array.isArray(dataResult)) {
+							// autocompleteData = this.structureDataFromArray(dataResult);
+						} else {
+							autocompleteData = this.structureDataFromObject(dataResult);
+						}
+
+						// Cache the data using the length of the cache array as index
+						let dataIndex = this.cachedAutocompleteData.length;
+
+						this.cachedAutocompleteData[dataIndex] = autocompleteData;
+
+						if (this.settingsService.enableConsoleLogs) {
+							console.log('data for autocomplete:')
+							console.log(autocompleteData);
+						}
+
+						// Add the data-index to the input element and focus it
+						inputElement.setAttribute('data-autocomplete-index', dataIndex.toString());
+
+						inputElement.focus();
+
+						// Call the autocomplete function
+						this.autocomplete(inputElement, dataIndex, autocompleteData);
+
+						// Activate the keydown handling
+						this.handleKeyDown(inputElement, dataIndex);
+
+						// Set the state of the autocomplete-init to 'done'
+						this.setAutocompleteInitStatus(
+							inputElement,
+							this.INIT_STATUS.DONE
+						);
+					});
+				}
 
 		} else {
 
@@ -254,9 +311,10 @@ export class AutocompleteService {
 	 *
 	 * @param inputElement
 	 * @param dataIndex
+	 * @param autocompleteData
 	 * @returns
 	 */
-	private autocomplete(inputElement: HTMLInputElement, dataIndex: number): void {
+	private autocomplete(inputElement: HTMLInputElement, dataIndex: number, autocompleteData: AutocompleteData[]): void {
 
 		let autocompleteDIV,
 			matchingElementDIV,
@@ -273,7 +331,7 @@ export class AutocompleteService {
 			return;
 		}
 
-		let data = this.cachedAutocompleteData[dataIndex] as AutocompleteData[];
+		let data = autocompleteData;
 
 		this.currentFocus = -1;
 
@@ -442,6 +500,62 @@ export class AutocompleteService {
 					break;
 				}
 			}
+		}
+	}
+
+
+	/**
+	 * handleAutocompleteBioportal
+	 *
+	 * Handles the autocomplete for the bioportal mode.
+	 * This will get the data from the bioportal and parse it correctly.
+	 * After the data gathering it will call the normal autocomplate function
+	 *
+	 * @param inputElement
+	 * @param dataIndex
+	 */
+	handleAutocompleteBioportal(inputElement: HTMLInputElement, dataIndex: number): void {
+
+		if ( inputElement.value.length >= this.settingsService.autocompleteMinCharCount ) {
+
+			// Add the loading animation
+			this.toggleInputLoadingAnimation(inputElement, true);
+
+			// Get the bioportal data url
+			let dataUrl = inputElement.getAttribute('data-autocomplete-bioportal-url')!.replace('{q}', inputElement.value);
+
+			// If the autocomplete data for the element is not yet loaded
+			// use a timeout to make sure that the app waits at least 1.5 seconds
+			// for the code to execute so that there won't be too many requests if the user
+			// types a longer word
+			if ( this.handleBioportalAutocompleteTimeout !== null ) {
+				clearTimeout(this.handleBioportalAutocompleteTimeout);
+				this.handleBioportalAutocompleteTimeout = null;
+			}
+
+			this.handleBioportalAutocompleteTimeout = window.setTimeout(
+				() => {
+
+					// Get the bioportal data
+					this.bioportalService.getData(dataUrl).then(
+						(parsedData: AutocompleteData[]) => {
+
+							// Set the variable back to null
+							this.handleBioportalAutocompleteTimeout = null;
+
+							// Remove the loading animation
+							this.toggleInputLoadingAnimation(inputElement, false);
+
+							// Save the data back (for validation use)
+							this.handledBioportalData[dataIndex] = parsedData;
+
+							// Start the autocomplete function
+							this.autocomplete(inputElement, dataIndex, parsedData);
+						}
+					);
+				},
+				this.settingsService.defaultTimeoutTime
+			);
 		}
 	}
 
@@ -647,8 +761,16 @@ export class AutocompleteService {
 					let found = false;
 					let identifier = '';
 
+					// Get the data that the input is checked against
+					let validationData = this.cachedAutocompleteData[parseInt(dataIndex)];
+
+					// This differs between modes
+					if ( this.settingsService.autocompleteMode === this.settingsService.AUTOCOMPLETE_MODE_BIOPORTAL ) {
+						validationData = this.handledBioportalData[parseInt(dataIndex)];
+					}
+
 					// If the xpath value is in one of the datasources -> use ontology
-					this.cachedAutocompleteData[parseInt(dataIndex)].some((e: AutocompleteData) => {
+					validationData.some((e: AutocompleteData) => {
 						if ( e.label === inputElement.value ) {
 							found = true;
 							identifier = e.identifier;
@@ -1100,6 +1222,29 @@ export class AutocompleteService {
 			} else {
 				popoutInputElement.classList.remove('popout-description-active');
 			}
+		}
+	}
+
+
+	/**
+	 * toggleInputLoadingAnimation
+	 *
+	 * Toggles the loading animation for a input field
+	 *
+	 * @param inputElement
+	 * @param activate
+	 */
+	private toggleInputLoadingAnimation(inputElement: HTMLInputElement, activate: boolean): void {
+
+		let loadingAnimationClassName = 'loading-animation';
+
+		let wrapperElement = inputElement.closest('.autocomplete-wrapper');
+
+		// Activate or deactivate?
+		if ( activate ) {
+			wrapperElement?.classList.add(loadingAnimationClassName);
+		} else {
+			wrapperElement?.classList.remove(loadingAnimationClassName);
 		}
 	}
 }

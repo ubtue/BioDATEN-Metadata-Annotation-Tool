@@ -8,7 +8,8 @@
 		width: 100%;
 	}
 
-	&[data-autocomplete-init="getting"] {
+	&[data-autocomplete-init="getting"],
+	&.loading-animation {
 
 		&:after {
 			content: " ";

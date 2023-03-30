@@ -963,7 +963,7 @@ export class MetadataAnnotationFormComponent implements OnInit, OnDestroy {
 	 * Activates the autocomplete for all content in desired tabs
 	 */
 	private activateAutocomplete(tabs: MetadataCreatedTab[]): void {
-
+console.log('trigger');
 		// Loop through all created tabs and bind a oninput function to the text inputs
 		tabs.forEach((tab: MetadataCreatedTab) => {
 
@@ -1000,12 +1000,17 @@ export class MetadataAnnotationFormComponent implements OnInit, OnDestroy {
 			let addButtons = tab.tabContent?.contentElement?.querySelectorAll('button.add:not([data-autocomplete-flag])');
 
 			addButtons?.forEach(addButton => {
-				addButton.addEventListener('click', () => {
-					this.activateAutocomplete(this.createdTabs);
-				});
 
-				// Set a flag that autocomplete was init
-				addButton.setAttribute('data-autocomplete-flag', 'true');
+				// Ignore Buttons that are hidden (They will be added once visible)
+				if ( !addButton.closest('[hidden]') && !addButton.closest('[dependency-hidden]') ) {
+
+					addButton.addEventListener('click', () => {
+						this.activateAutocomplete(this.createdTabs);
+					});
+
+					// Set a flag that autocomplete was init
+					addButton.setAttribute('data-autocomplete-flag', 'true');
+				}
 			});
 		});
 

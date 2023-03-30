@@ -16,6 +16,9 @@ export class SettingsService {
 	// Enable console logs
 	private _enableConsoleLogs: boolean = false;
 
+	// Timeout time for requests to start (e.g. autocomplete while typing) in ms
+	private _defaultTimeoutTime: number = 750;
+
 
 	/******************************************************************
 								ALERTS
@@ -30,19 +33,28 @@ export class SettingsService {
 	*******************************************************************/
 
 	// Setting options (DON'T CHANGE)
+	public readonly AUTOCOMPLETE_MODE_JSON: number = 0;
+	public readonly AUTOCOMPLETE_MODE_BIOPORTAL: number = 1;
+
 	public readonly DESCRIPTION_MODE_INLINE: number = 0;
 	public readonly DESCRIPTION_MODE_POPOUT: number = 1;
 
-	// Description mode
+	// Autocomplete mode
+	private _autocompleteMode: number = this.AUTOCOMPLETE_MODE_BIOPORTAL;
+
+	// Description mode (JSON mode only)
 	private _descriptionMode: number = this.DESCRIPTION_MODE_POPOUT;
 
-	// Max amount of entries
+	// Minimum amount of characters to activate autocomplete
+	private _autocompleteMinCharCount: number = 3;
+
+	// Max amount of entries (JSON mode only)
 	private _maxAutocompleteEntriesCount: number = 150;
 
-	// Pixel threshold for mobile display of popout
+	// Pixel threshold for mobile display of popout (JSON mode only)
 	private _popoutDescriptionMobileWidthThreshold:number = 768;
 
-	// Frontend sorting
+	// Frontend sorting (JSON mode only)
 	private _frontendSorting: boolean = false;
 
 	// Server Address to the schemas of the autocomplete
@@ -50,6 +62,9 @@ export class SettingsService {
 
 	// Server Address to the mappings of the autocomplete
 	private _autocompleteMappingServerAddress: string = this.backendServerAddress + 'autocomplete-mapping/';
+
+	// BIOPORTAL json search address
+	private _autocompleteBioportalSearchAddress: string = this.backendServerAddress + 'bioportal-autocomplete/autocomplete?q={q}&target_property=name&ontologies={o}&response=json';
 
 
 	/******************************************************************
@@ -132,6 +147,22 @@ export class SettingsService {
 
 
 	/**
+	 * Getter defaultTimeoutTime
+	 */
+	get defaultTimeoutTime(): number {
+		return this._defaultTimeoutTime;
+	}
+
+
+	/**
+	 * Setter defaultTimeoutTime
+	 */
+	set defaultTimeoutTime(defaultTimeoutTime: number) {
+		this._defaultTimeoutTime = defaultTimeoutTime;
+	}
+
+
+	/**
 	 * Getter defaultAlertHeaderText
 	 */
 	 get defaultAlertHeaderText(): string {
@@ -160,6 +191,38 @@ export class SettingsService {
 	 */
 	set maxAutocompleteEntriesCount(maxAutocompleteEntriesCount: number) {
 		this._maxAutocompleteEntriesCount = maxAutocompleteEntriesCount;
+	}
+
+
+	/**
+	 * Getter autocompleteMode
+	*/
+	get autocompleteMode(): number {
+		return this._autocompleteMode;
+	}
+
+
+	/**
+	 * Setter autocompleteMode
+	 */
+	set autocompleteMode(autocompleteMode: number) {
+		this._autocompleteMode = autocompleteMode;
+	}
+
+
+	/**
+	 * Getter autocompleteMinCharCount
+	*/
+	get autocompleteMinCharCount(): number {
+		return this._autocompleteMinCharCount;
+	}
+
+
+	/**
+	 * Setter autocompleteMinCharCount
+	 */
+	set autocompleteMinCharCount(autocompleteMinCharCount: number) {
+		this._autocompleteMinCharCount = autocompleteMinCharCount;
 	}
 
 
@@ -256,6 +319,22 @@ export class SettingsService {
 	 */
 	set renderOptionsServerAddress(renderOptionsServerAddress: string) {
 		this._renderOptionsServerAddress = renderOptionsServerAddress;
+	}
+
+
+	/**
+	 * Getter autocompleteBioportalSearchAddress
+	 */
+	get autocompleteBioportalSearchAddress(): string {
+		return this._autocompleteBioportalSearchAddress;
+	}
+
+
+	/**
+	 * Setter autocompleteBioportalSearchAddress
+	 */
+	set autocompleteBioportalSearchAddress(autocompleteBioportalSearchAddress: string) {
+		this._autocompleteBioportalSearchAddress = autocompleteBioportalSearchAddress;
 	}
 
 

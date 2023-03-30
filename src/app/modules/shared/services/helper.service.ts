@@ -304,6 +304,15 @@ export class HelperService {
 		}
 	}
 
+
+	/**
+	 * convertXmlToMets
+	 *
+	 * Converts a system created xml string to a mets xml string with the help of the backend (XSLT-script based)
+	 *
+	 * @param xmlString
+	 * @returns
+	 */
 	convertXmlToMets(xmlString: string): Promise<string> {
 
 		let postRequest: MetadataPostRequest;
@@ -316,5 +325,33 @@ export class HelperService {
 				return metsString;
 			}
 		);
+	}
+
+
+	/**
+	 * loadScript
+	 *
+	 * Loads a script to the header. Promise resolves after script is fully loaded
+	 *
+	 * @param src
+	 * @returns
+	 */
+	loadScript(src: string): Promise<string> {
+
+		return new Promise((resolve, reject) => {
+
+			// Load script
+			let script = document.createElement('script');
+			script.type = 'text/javascript';
+			script.src = src;
+
+			script.onload = () => {
+				resolve(src);
+			};
+
+			script.onerror = (error: any) => resolve(src);
+			document.getElementsByTagName('head')[0].appendChild(script);
+
+		});
 	}
 }
