@@ -559,8 +559,17 @@ window['xsd2html2xml']["<<REPLACE>>"].setValue = function (element, value) {
 
 window['xsd2html2xml']["<<REPLACE>>"].parseNode = function (node, element) {
 
+	// CHANGE JK: Special case for preIdentValue Attribute
+	var preIdentValue = '';
+
 	//iterate through the node's attributes and fill them out
 	for (var i = 0; i < node.attributes.length; i++) {
+
+		// CHANGE JK: Special case for preIdentValue Attribute
+		if ( node.attributes[i].nodeName === 'preIdentValue' ) {
+			preIdentValue = node.attributes[i].nodeValue;
+		}
+
 		var attribute = element.querySelector(
 			"[data-xsd2html2xml-xpath = '"
 				.concat(
@@ -636,6 +645,12 @@ window['xsd2html2xml']["<<REPLACE>>"].parseNode = function (node, element) {
 			);
 
 		} else {
+
+			// CHANGE JK: Special case for preIdentValue
+			if ( preIdentValue !== '' ) {
+				element.querySelector('input').setAttribute('data-xsd2html2xml-pre-filled-value-autocomplete', preIdentValue);
+			}
+
 			window['xsd2html2xml']["<<REPLACE>>"].setValue(element, node.childNodes[0].nodeValue);
 		}
 		//else, iterate through the children
@@ -950,7 +965,18 @@ window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly,
 						xml = xml
 							.concat(String.fromCharCode(60))
 							.concat(o.getAttribute("data-xsd2html2xml-name"))
-							.concat(window['xsd2html2xml']["<<REPLACE>>"].getXML(o, true))
+							.concat(window['xsd2html2xml']["<<REPLACE>>"].getXML(o, true));
+
+							// CHANGES JK: We need to keep the original value and save it to the node as an attribute
+							if ( o.querySelector(':scope > .autocomplete-wrapper > input[data-pre-identifier-value]') ) {
+								xml = xml.concat(' ' + 'preIdentValue="' + o.querySelector(':scope > .autocomplete-wrapper > input[data-pre-identifier-value]').getAttribute('data-pre-identifier-value') + '"');
+							}
+
+							if ( o.querySelector(':scope > input[data-pre-identifier-value]') ) {
+								xml = xml.concat(' ' + 'preIdentValue="' + o.querySelector(':scope > input[data-pre-identifier-value]').getAttribute('data-pre-identifier-value') + '"');
+							}
+
+						xml = xml
 							.concat(String.fromCharCode(62))
 							.concat(
 								(function () {

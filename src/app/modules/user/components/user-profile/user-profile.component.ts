@@ -27,8 +27,4 @@ export class UserProfileComponent implements OnInit {
 			this.userInformation = userData.userData;
 		});
 	}
-
-	onClickTest(): void {
-
-	}
 }

@@ -329,6 +329,37 @@ export class HelperService {
 
 
 	/**
+	 * sendDataToFdat
+	 *
+	 * Sends the xml data to FDAT
+	 *
+	 * @param xmlString
+	 * @param fdatToken
+	 * @returns
+	 */
+	sendDataToFdat(xmlString: string, fdatToken: string): Promise<string> {
+
+		let postRequest: MetadataPostRequest;
+
+		// Create the params JSON
+		let params = {
+			'xml': xmlString,
+			'fdatKey': fdatToken
+		}
+
+		// Create the post request
+		postRequest = (new MetadataPostRequest(this.settingsService.metadataAnnotationFormServerAddress + 'send-fdat', params));
+
+		// Send the post request to the backend
+		return this.dataTransferService.postData(postRequest.url, postRequest.body, {responseType: 'text'}).then(
+			(fdatJson: string) => {
+				return fdatJson;
+			}
+		);
+	}
+
+
+	/**
 	 * loadScript
 	 *
 	 * Loads a script to the header. Promise resolves after script is fully loaded

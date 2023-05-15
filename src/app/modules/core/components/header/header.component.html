@@ -24,7 +24,7 @@
 							<li *ngIf="!userIsLoggedIn">
 								<a href (click)="onClickLogin($event)">Login</a>
 							</li>
-							<li *ngIf="userIsLoggedIn" [hidden]="true">
+							<li *ngIf="userIsLoggedIn">
 								<a routerLink="user/profile" (click)="closeUserMenu()">Profile</a>
 							</li>
 							<li *ngIf="userIsLoggedIn">

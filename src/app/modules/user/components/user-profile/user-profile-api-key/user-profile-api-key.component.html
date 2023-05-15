@@ -1,0 +1,15 @@
+<div class="user-profile-api-key-outer-wrap">
+
+	<app-back-link></app-back-link>
+
+	<div class="user-profile-api-key-fdat-wrap">
+
+		<label>FDAT token (<a href="assets/manual/AccessToken_Manual.pdf" target="_blank">instructions</a>):</label>
+		<br />
+		<input id="input-fdat-key" type="text" [(ngModel)]="fdatKey" placeholder="FDAT token" />
+	</div>
+
+	<div class="user-profile-api-key-buttons-wrap">
+		<button class="biodaten-button" (click)="onClickSaveAPIKeys()">Save</button>
+	</div>
+</div>

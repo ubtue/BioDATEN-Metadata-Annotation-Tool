@@ -23,8 +23,8 @@ import { AdministrationRenderOptionsDetailsComponent } from './components/admini
 		AdministrationComponent,
  		AdministrationAutocompleteComponent,
    		AdministrationSchemasComponent,
-     AdministrationRenderOptionsComponent,
-     AdministrationRenderOptionsDetailsComponent
+     	AdministrationRenderOptionsComponent,
+     	AdministrationRenderOptionsDetailsComponent
   	],
 	imports: [
 		CommonModule,

@@ -1,5 +1,6 @@
 @import "../../../../styles/shared_variables";
 @import "../../../../styles/mixins";
+@import "../../../../styles/partials/buttons";
 
 .user-profile-outer-wrap {
 
@@ -8,6 +9,12 @@
 	.user-profile-information-wrap {
 
 		.user-profile-information-logged-in-as {
+
+			@include addMarginBottom();
+		}
+
+		.user-profile-links-wrap {
+
 
 		}
 	}

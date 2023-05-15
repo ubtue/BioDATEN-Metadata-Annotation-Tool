@@ -12,11 +12,14 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { UserProfileApiKeyComponent } from './components/user-profile/user-profile-api-key/user-profile-api-key.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
 	declarations: [
 		UserProfileComponent,
+		UserProfileApiKeyComponent,
 		UserMetadataResourcesComponent
 	],
 	imports: [
@@ -28,7 +31,8 @@ import { MatSelectModule } from '@angular/material/select';
 		MatFormFieldModule,
 		MatSelectModule,
 		FormsModule,
-		MatIconModule
+		MatIconModule,
+		SharedModule
 	]
 })
 export class UserModule { }

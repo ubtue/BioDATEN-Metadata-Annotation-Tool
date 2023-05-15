@@ -90,6 +90,14 @@ export class SettingsService {
 
 
 	/******************************************************************
+								USER INFORMATION
+	*******************************************************************/
+
+	// Server address to the xsd processor
+	private _userInformationServerAdress: string = this.backendServerAddress + 'user-information/'
+
+
+	/******************************************************************
 								USER RESOURCES
 	*******************************************************************/
 
@@ -431,5 +439,21 @@ export class SettingsService {
 	 */
 	set defaultUserResourceSortingMethod(defaultUserResourceSortingMethod: string) {
 		this._defaultUserResourceSortingMethod = defaultUserResourceSortingMethod;
+	}
+
+
+	/**
+	 * Getter defaultUserResourceSortingMethod
+	 */
+	get userInformationServerAdress(): string {
+		return this._userInformationServerAdress;
+	}
+
+
+	/**
+	 * Setter userInformationServerAdress
+	 */
+	set userInformationServerAdress(userInformationServerAdress: string) {
+		this._userInformationServerAdress = userInformationServerAdress;
 	}
 }

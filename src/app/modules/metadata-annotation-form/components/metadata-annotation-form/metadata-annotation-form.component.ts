@@ -963,7 +963,7 @@ export class MetadataAnnotationFormComponent implements OnInit, OnDestroy {
 	 * Activates the autocomplete for all content in desired tabs
 	 */
 	private activateAutocomplete(tabs: MetadataCreatedTab[]): void {
-console.log('trigger');
+
 		// Loop through all created tabs and bind a oninput function to the text inputs
 		tabs.forEach((tab: MetadataCreatedTab) => {
 

@@ -192,9 +192,42 @@ export class RenderHelperService {
 		// Get the input element
 		let inputElement = parentElement.querySelector(':scope > input[type="text"], :scope > input[type="url"]') as HTMLInputElement;
 
-		// Set the value if no other value is set yet
+		// Set the value if no other value is set yet | Also check if it is a select element
 		if ( typeof inputElement !== 'undefined' && inputElement !== null && inputElement.value.trim().length === 0 ) {
 			inputElement.value = renderOption.prefilled;
+		} else {
+
+			// Check if it is a select element
+			let selectElement = parentElement.querySelector(':scope > select') as HTMLSelectElement;
+
+			// Check if the select element exists
+			if ( typeof selectElement !== 'undefined' && selectElement !== null && selectElement.options.length > 0 ) {
+
+				// Check if there is a selected option (this would mean that the user made a selection before)
+				let selectedOption = false;
+
+				for ( let i = 0; i < selectElement.options.length; i++ ) {
+					let currentOption = selectElement.options[i] as HTMLOptionElement;
+
+					if  ( currentOption.getAttribute('selected') ) {
+						selectedOption = true;
+					}
+				}
+
+				// Only continue if there was no user selection before
+				if ( !selectedOption ) {
+
+					// Find the right option and select it
+					for ( let i = 0; i < selectElement.options.length; i++ ) {
+						let currentOption = selectElement.options[i] as HTMLOptionElement;
+
+						if  ( currentOption.value === renderOption.prefilled ) {
+							currentOption.selected = true;
+						}
+					}
+				}
+			}
+
 		}
 	}
 

@@ -1,6 +1,7 @@
 @import "../shared_variables";
 @import "../mixins";
 
+a.link-button,
 button,
 input[type="button"],
 input[type="file"],
@@ -19,6 +20,8 @@ label {
 	}
 
 	&.biodaten-button {
+
+		text-decoration: none;
 
 		background: $buttonBackground;
 		border: 1px solid $buttonBorder;

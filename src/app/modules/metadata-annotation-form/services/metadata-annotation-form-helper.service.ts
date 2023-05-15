@@ -151,23 +151,46 @@ export class MetadataAnnotationFormHelperService {
 			(inputElement: HTMLInputElement) => {
 
 				if ( inputElement ) {
-					let ontology = inputElement.getAttribute('data-ontology');
 
-					if ( ontology && ontology !== '' ) {
+					// Bioportal Mode
+					if ( this.settingsService.autocompleteMode === this.settingsService.AUTOCOMPLETE_MODE_BIOPORTAL ) {
 
-						// Find the corresponding label
-						this.getOntologyLabelByIdentifier(inputElement.value, ontology).then(
-							(result: any) => {
+						// Check if preIdentValue attribute is present
+						if ( inputElement.getAttribute('data-xsd2html2xml-pre-filled-value-autocomplete') ) {
 
-								if ( result ) {
-									// Set the current value as identifier
-									inputElement.setAttribute('data-identifier', inputElement.value);
+							// Set the current value as identifier
+							inputElement.setAttribute('data-identifier', inputElement.value);
 
-									// Change the value to the label
-									inputElement.value = result;
+							let preIdentValue = inputElement.getAttribute('data-xsd2html2xml-pre-filled-value-autocomplete') as string
+
+							// Change the value to the preIdentValue
+							inputElement.value = preIdentValue;
+
+							// Also add the attribute data-pre-identifier-value and fill the preIdentValue
+							inputElement.setAttribute('data-pre-identifier-value', preIdentValue);
+						}
+					}
+
+					// JSON Mode
+					if ( this.settingsService.autocompleteMode === this.settingsService.AUTOCOMPLETE_MODE_JSON ) {
+						let ontology = inputElement.getAttribute('data-ontology');
+
+						if ( ontology && ontology !== '' ) {
+
+							// Find the corresponding label
+							this.getOntologyLabelByIdentifier(inputElement.value, ontology).then(
+								(result: any) => {
+
+									if ( result ) {
+										// Set the current value as identifier
+										inputElement.setAttribute('data-identifier', inputElement.value);
+
+										// Change the value to the label
+										inputElement.value = result;
+									}
 								}
-							}
-						);
+							);
+						}
 					}
 				}
 			}

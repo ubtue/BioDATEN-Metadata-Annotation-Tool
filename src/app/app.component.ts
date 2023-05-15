@@ -9,6 +9,7 @@ import { UpdateNavigationService } from './modules/core/services/update-navigati
 import { EventHelperService } from './modules/shared/services/event-helper.service';
 import { SettingsService } from './modules/shared/services/settings.service';
 import { startWith, takeUntil, filter } from 'rxjs/operators';
+import { UserInformationService } from './modules/shared/services/user-information.service';
 
 @Component({
 	selector: 'app-root',
@@ -36,7 +37,8 @@ export class AppComponent implements OnInit, OnDestroy {
 				public oidcSecurityService: OidcSecurityService,
 				private oidcService: OidcService,
 				private publicEventsService: PublicEventsService,
-				private router: Router) {}
+				private router: Router,
+				private userInformationService: UserInformationService) {}
 
 
 	/**
@@ -133,6 +135,9 @@ export class AppComponent implements OnInit, OnDestroy {
 				if ( clientRoles.length === 0 ) {
 					console.warn('There was a problem fetching client roles. Check the client or realm config.');
 				}
+
+				// Check if there is a entry in the database for the user and handle everything about it
+				this.userInformationService.handleUserInformationOnLoad(this.oidcService.getUserIdFromUserData({'userData' : userData}));
 
 				// Check if the user is admin and set state
 				if ( clientRoles.includes(OidcService.METADATA_ANNOTATION_ADMIN_ROLE) ) {

@@ -1,0 +1,17 @@
+@import "../../../../../styles/shared_variables";
+@import "../../../../../styles/mixins";
+
+.user-profile-api-key-outer-wrap {
+
+	@include contentPadding();
+
+	.user-profile-api-key-fdat-wrap {
+
+		@include addMarginBottom(large);
+
+		input[type="text"] {
+			min-width: 300px;
+			width: 40%;
+		}
+	}
+}

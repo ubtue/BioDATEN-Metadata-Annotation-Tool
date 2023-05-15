@@ -15,6 +15,8 @@ import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { UserResourceService } from 'src/app/modules/shared/services/user-data.service';
+import { UserInformationService } from 'src/app/modules/shared/services/user-information.service';
+import { UserInformation } from 'src/app/modules/shared/models/user-information.model';
 
 
 @Component({
@@ -156,7 +158,8 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 				private userResourceService: UserResourceService,
 				public oidcSecurityService: OidcSecurityService,
 				private oidcService: OidcService,
-				private alertService: AlertService) {
+				private alertService: AlertService,
+				private userInformationService: UserInformationService) {
 
 					// Get the default sorting field
 					this.selectedBlockSortableField =
@@ -312,21 +315,39 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 		// 	buttons
 		// );
 
-		const queryString = window.location.hash;
+		// const queryString = window.location.hash;
 
-		if ( queryString !== '' && queryString.indexOf('debugxml=1') !== -1 ) {
-			this.helperService.convertXmlToMets(resource.xml).then(
-				(metsXml: string) => {
-					console.log(metsXml);
+		// if ( queryString !== '' && queryString.indexOf('debugxml=1') !== -1 ) {
+		// 	this.exportDataToFdat(resource).then(
+		// 		() => {
+		// 			this.alertService.showAlert(
+		// 				'Export successful',
+		// 				'The data was successfully exported.<br />This record can no longer be edited here.<br />For further handling, please visit the data respository.'
+		// 			);
+		// 		}
+		// 	);
+		// } else {
+
+		// 	this.alertService.showAlert(
+		// 		'Next steps',
+		// 		'Next steps will be implemented here'
+		// 	);
+		// }
+
+		// Export the data to the repository
+		this.exportDataToFdat(resource).then(
+			(result: boolean) => {
+
+				if ( result === true ) {
+					this.alertService.showAlert(
+						'Export successful',
+						//'The data was successfully exported.<br />This record can no longer be edited here.<br />For further handling, please visit the data respository.'
+						'The data was successfully exported.<br />For further handling, please visit the data respository.<br /><br />Check <a href="https://inveniordm.web.cern.ch/" target="_blank">https://inveniordm.web.cern.ch/</a> for your data.'
+					);
 				}
-			);
-		}
-
-
-		this.alertService.showAlert(
-			'Next steps',
-			'Next steps will be implemented here'
+			}
 		);
+
 	}
 
 
@@ -415,6 +436,62 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 				}
 
 				location.reload();
+			}
+		);
+	}
+
+
+	/**
+	 * exportDataToFdat
+	 *
+	 * Exports the data to FDAT
+	 *
+	 * @param resource
+	 */
+	exportDataToFdat(resource: MetadataUserResource): Promise<boolean> {
+
+		// Get the user information (for the fdat key)
+		return this.userInformationService.getUserInformationByUserId(this.userId).then(
+			(userInformation: UserInformation) => {
+
+				// Check if there is an fdat token
+				if ( userInformation.fdatKey && userInformation.fdatKey !== '' ) {
+
+					// Only for logging: Create the METS XML string and post it to the console
+					if ( this.settingsService.enableConsoleLogs ) {
+						this.helperService.convertXmlToMets(resource.xml).then(
+							(xmlMets: string) => {
+								console.log("METS XML:");
+								console.log(xmlMets);
+							}
+						);
+					}
+
+					// Send the data to the repository
+					return this.helperService.sendDataToFdat(resource.xml, userInformation.fdatKey).then(
+						(fdatJson: string) => {
+
+							if ( this.settingsService.enableConsoleLogs ) {
+								console.log("fdatJson");
+								console.log(fdatJson);
+							}
+
+							return true;
+						}
+					);
+
+				} else {
+
+					// Alert the user that they have to add a fdat token
+					this.alertService.showAlert(
+						'Missing FDAT token',
+						'To use the export function you need to have a FDAT token set in the user profile.<br />' +
+						'Please go to your user profile and add a FDAT token.<br /><br />' +
+						'For further information, click <a href="assets/manual/AccessToken_Manual.pdf" target="_blank">here</a>.'
+					);
+
+					return false;
+				}
 			}
 		);
 	}
