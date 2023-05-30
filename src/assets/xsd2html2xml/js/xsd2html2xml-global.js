@@ -473,6 +473,8 @@ window['xsd2html2xml']["<<REPLACE>>"].xmlToHTML = function (root) {
 
 window['xsd2html2xml']["<<REPLACE>>"].setValue = function (element, value) {
 
+	value = window['xsd2html2xml']["<<REPLACE>>"].escape(value, true);
+
 	var containerIdentifier = element.closest(TABCONTENT_SELECTOR_STRING).getAttribute('data-tab');
 
 	if ( typeof window['xsd2html2xml']["<<REPLACE>>"].globalValuesMap[containerIdentifier] === 'undefined' ) {
@@ -981,7 +983,7 @@ window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly,
 							.concat(
 								(function () {
 									if (o.nodeName.toLowerCase() === "label") {
-										return window['xsd2html2xml']["<<REPLACE>>"].getContent(o);
+										return window['xsd2html2xml']["<<REPLACE>>"].escape(window['xsd2html2xml']["<<REPLACE>>"].getContent(o));
 									} else {
 										return window['xsd2html2xml']["<<REPLACE>>"].getXML(o);
 									}
@@ -997,7 +999,7 @@ window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly,
 					if (attributesOnly) {
 
 						if (
-							window['xsd2html2xml']["<<REPLACE>>"].getContent(o) ||
+							window['xsd2html2xml']["<<REPLACE>>"].escape(window['xsd2html2xml']["<<REPLACE>>"].getContent(o)) ||
 							(o.getElementsByTagName("input").length > 0
 								? o
 										.getElementsByTagName("input")[0]
@@ -1013,14 +1015,14 @@ window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly,
 									o.getAttribute("data-xsd2html2xml-name")
 								)
 								.concat('="')
-								.concat(window['xsd2html2xml']["<<REPLACE>>"].getContent(o))
+								.concat(window['xsd2html2xml']["<<REPLACE>>"].escape(window['xsd2html2xml']["<<REPLACE>>"].getContent(o)))
 								.concat('"');
 						}
 					}
 
 					break;
 				case "content":
-					if (!attributesOnly) xml = xml.concat(window['xsd2html2xml']["<<REPLACE>>"].getContent(o));
+					if (!attributesOnly) xml = xml.concat(window['xsd2html2xml']["<<REPLACE>>"].escape(window['xsd2html2xml']["<<REPLACE>>"].getContent(o)));
 					break;
 				default:
 					if (!attributesOnly) {
@@ -1055,6 +1057,33 @@ window['xsd2html2xml']["<<REPLACE>>"].getXML = function (parent, attributesOnly,
 	}
 
 	return xml;
+};
+
+window['xsd2html2xml']["<<REPLACE>>"].escape = function(content, reverse) {
+
+	if ( content ) {
+
+		if ( typeof reverse !== 'undefined' && reverse === true ) {
+
+			return content
+			.replace("~amp;", "&")
+			.replace("~lt;", "<")
+			.replace("~gt;", ">")
+			.replace("~quot;", '"')
+			.replace("~#039;", "'");
+		}
+
+
+			return content
+			.replace(/&/g, "~amp;")
+			.replace(/</g, "~lt;")
+			.replace(/>/g, "~gt;")
+			.replace(/"/g, "~quot;")
+			.replace(/'/g, "~#039;");
+	}
+
+	return content;
+
 };
 
 window['xsd2html2xml']["<<REPLACE>>"].getContent = function (node) {

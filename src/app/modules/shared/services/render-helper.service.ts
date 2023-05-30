@@ -137,7 +137,6 @@ export class RenderHelperService {
 	 * @param isFieldset
 	 */
 	 applyLabel(parentElement: HTMLElement, renderOption: RenderOption, isFieldset?: boolean): void {
-
 		let labelContainer;
 
 		// Is parent element fieldset or span?
@@ -152,9 +151,12 @@ export class RenderHelperService {
 		}
 
 		// Change the label
-		// Because there is more in the span than the text only the innerText needs to be replaced by the custom label
+		// Because there is more in the span than the text only the textContent needs to be replaced by the custom label
+		// textContent is needed instead of innerText because the elements might be hidden. innerText will only have a value if the
+		// element is NOT hidden.
 		if ( labelContainer ) {
-			labelContainer.innerHTML = labelContainer.innerHTML.replace(labelContainer.innerText, renderOption.label);
+			let innerText = labelContainer.textContent as string;
+			labelContainer.innerHTML = labelContainer.innerHTML.replace(innerText, renderOption.label);
 		}
 	}
 

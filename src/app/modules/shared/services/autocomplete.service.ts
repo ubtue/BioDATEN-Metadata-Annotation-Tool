@@ -208,8 +208,6 @@ export class AutocompleteService {
 			}
 		}
 
-		console.log(autocompleteSource);
-
 		// Get the contents of the autocomplete source if available
 		if ( autocompleteSource !== '' ) {
 

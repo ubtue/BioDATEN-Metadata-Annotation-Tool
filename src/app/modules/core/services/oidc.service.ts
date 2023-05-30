@@ -28,8 +28,6 @@ export class OidcService {
 	 */
 	constructor(private settingsService: SettingsService,
 				public oidcSecurityService: OidcSecurityService) {
-
-					console.log(window.location.origin + '/metadata-annotation/#/user/metadata-resources');
 	}
 
 
