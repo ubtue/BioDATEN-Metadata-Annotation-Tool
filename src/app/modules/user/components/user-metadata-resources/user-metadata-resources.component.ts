@@ -27,6 +27,8 @@ import { UserInformation } from 'src/app/modules/shared/models/user-information.
 })
 export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 
+	exportInProgress: boolean = false;
+
 	userData$: Observable<UserDataResult> = {} as any;
 	userId: string = '';
 
@@ -287,64 +289,34 @@ export class UserMetadataResourcesComponent implements OnInit, AfterViewInit {
 	 */
 	onClickExportResource(resource: MetadataUserResource): void {
 
-		// // Create buttons for publish and for Cancel
-		// let buttons: AlertButton[] = [];
-
-		// buttons.push(
-		// 	new AlertButton(
-		// 		'Publish',
-		// 		() => {
-		// 			this.alertService.hideAlert();
-		// 		}
-		// 	)
-		// );
-
-		// buttons.push(
-		// 	new AlertButton(
-		// 		'Cancel',
-		// 		() => {
-		// 			this.alertService.hideAlert();
-		// 		}
-		// 	)
-		// );
-
-		// // Show alert
-		// this.alertService.showAlert(
-		// 	'Publish resource',
-		// 	'Do you want to publish your resource with the title</br><b>' + resource.title + '</b>?',
-		// 	buttons
-		// );
-
-		// const queryString = window.location.hash;
-
-		// if ( queryString !== '' && queryString.indexOf('debugxml=1') !== -1 ) {
-		// 	this.exportDataToFdat(resource).then(
-		// 		() => {
-		// 			this.alertService.showAlert(
-		// 				'Export successful',
-		// 				'The data was successfully exported.<br />This record can no longer be edited here.<br />For further handling, please visit the data respository.'
-		// 			);
-		// 		}
-		// 	);
-		// } else {
-
-		// 	this.alertService.showAlert(
-		// 		'Next steps',
-		// 		'Next steps will be implemented here'
-		// 	);
-		// }
+		// Set the export flag
+		this.exportInProgress = true;
 
 		// Export the data to the repository
 		this.exportDataToFdat(resource).then(
 			(result: boolean) => {
 
+				// Remove the export flag
+				this.exportInProgress = false;
+
 				if ( result === true ) {
 					this.alertService.showAlert(
 						'Export successful',
-						//'The data was successfully exported.<br />This record can no longer be edited here.<br />For further handling, please visit the data respository.'
-						'The data was successfully exported.<br />For further handling, please visit the data respository.<br /><br />Check <a href="https://inveniordm.web.cern.ch/" target="_blank">https://inveniordm.web.cern.ch/</a> for your data.'
+						'The data was successfully exported.<br />For further handling, please visit the data respository.<br /><br />Check <a href="https://publish.biodaten.info/" target="_blank">https://publish.biodaten.info/</a> for your data.'
 					);
 				}
+			}
+		).catch(
+			() => {
+
+				// Remove the export flag
+				this.exportInProgress = false;
+			}
+		).finally(
+			() => {
+
+				// Remove the export flag
+				this.exportInProgress = false;
 			}
 		);
 

@@ -6,4 +6,86 @@ $footerBackground: #dddddd;
 	display: flex;
 
 	background: $footerBackground;
+
+	padding: 14px;
+
+	.footer-inner-wrap {
+		display: flex;
+		flex-direction: row;
+		align-content: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		flex: 0 0 100%;
+
+		.footer-sponsor-wrap {
+
+			.footer-sponsor-text-wrap {
+				margin-bottom: 14px;
+
+				.footer-sponsor-text {
+					font-size: 13px;
+				}
+			}
+
+			.footer-sponsor-logo-wrap {
+				display: flex;
+				flex-direction: row;
+				align-content: center;
+				flex-wrap: wrap;
+				justify-content: space-between;
+				align-items: center;
+
+				.footer-bawue-wrap {
+					width: 320px;
+
+					margin-right: 40px;
+
+					a {
+						text-decoration: none;
+					}
+
+					.footer-bawue-link-wrap {
+						display: flex;
+
+						.footer-bawue-logo {
+
+							margin-right: 14px;
+
+							img {
+								width: 100px;
+							}
+						}
+
+						.footer-bawue-text {
+							text-decoration: none;
+							font-size: 13px;
+						}
+					}
+				}
+
+				.footer-digital-bw-wrap {
+
+					img {
+						width: 146px;
+					}
+				}
+			}
+		}
+
+		.footer-link-wrap {
+
+			display: flex;
+			flex-wrap: nowrap;
+			justify-content: space-between;
+
+			a {
+				margin-left: 14px;
+				font-size: 13px;
+
+				&:first-of-type {
+					margin-left: 0;
+				}
+			}
+		}
+	}
 }

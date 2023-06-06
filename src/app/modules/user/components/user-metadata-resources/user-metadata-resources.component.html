@@ -1,5 +1,9 @@
 <div class="user-metadata-resource-outer-wrap">
 
+	<div class="loading" *ngIf="exportInProgress">
+		<img src="assets/loader/ajax-loader.gif" alt="" />
+	</div>
+
 	<button class="biodaten-button new-resource-button" (click)="onClickAddNewResource()">
 		Add new submission
 	</button>

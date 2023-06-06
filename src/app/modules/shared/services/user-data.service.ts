@@ -164,11 +164,11 @@ export class UserResourceService {
 		}
 
 		// Replace specific placeholders
-		title = title.replace("~amp;", "&")
-		.replace("~lt;", "<")
-		.replace("~gt;", ">")
-		.replace("~quot;", '"')
-		.replace("~#039;", "'");
+		title = title.replace(/~amp;/g, "&")
+			.replace(/~lt;/g, "<")
+			.replace(/~gt;/g, ">")
+			.replace(/~quot;/g, '"')
+			.replace(/~#039;/g, "'");
 
 		return title;
 	}

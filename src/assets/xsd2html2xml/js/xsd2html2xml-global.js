@@ -1066,11 +1066,11 @@ window['xsd2html2xml']["<<REPLACE>>"].escape = function(content, reverse) {
 		if ( typeof reverse !== 'undefined' && reverse === true ) {
 
 			return content
-			.replace("~amp;", "&")
-			.replace("~lt;", "<")
-			.replace("~gt;", ">")
-			.replace("~quot;", '"')
-			.replace("~#039;", "'");
+			.replace(/~amp;/g, "&")
+			.replace(/~lt;/g, "<")
+			.replace(/~gt;/g, ">")
+			.replace(/~quot;/g, '"')
+			.replace(/~#039;/g, "'");
 		}
 
 
